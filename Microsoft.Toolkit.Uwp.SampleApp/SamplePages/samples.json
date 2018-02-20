@@ -271,6 +271,15 @@
         "XamlCodeFile": "StaggeredPanel.bind",
         "Icon": "/SamplePages/StaggeredPanel/StaggeredPanel.png",
         "DocumentationUrl": "https://raw.githubusercontent.com/Microsoft/UWPCommunityToolkit/master/docs/controls/StaggeredPanel.md"
+      },
+      {
+        "Name": "DataGrid",
+        "Type": "DataGridPage",
+        "About": "The DataGrid displays data in columns and rows.",
+        "CodeUrl": "https://github.com/Microsoft/UWPCommunityToolkit/tree/master/Microsoft.Toolkit.Uwp.UI.Controls.DataGrid/DataGrid",
+        "XamlCodeFile": "DataGridCode.bind",
+        "Icon": "/SamplePages/DataGrid/DataGrid.png",
+        "DocumentationUrl": "https://raw.githubusercontent.com/Microsoft/UWPCommunityToolkit/master/docs/controls/DataGrid.md"
       }
     ]
   },

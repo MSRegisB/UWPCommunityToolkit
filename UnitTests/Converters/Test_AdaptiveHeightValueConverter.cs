@@ -44,7 +44,6 @@ namespace UnitTests.Converters
             Assert.AreEqual(result, value);
         }
 
-
         [TestCategory("Converters")]
         [TestMethod]
         public void Convert_GridViewIsNull_ReturnsValue()

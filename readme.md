@@ -41,6 +41,7 @@ Once you search you should see a list similar to the one below (versions may be 
 | Microsoft.Toolkit.Uwp.UI | UI Packages - XAML converters, Visual tree extensions and helpers for your XAML UI. |
 | Microsoft.Toolkit.Uwp.UI.Animations | Animations and Composition behaviors such as Blur, Fade, Rotate, etc. |
 | Microsoft.Toolkit.Uwp.UI.Controls | XAML Controls such as RadialGauge, RangeSelector, etc. | 
+| Microsoft.Toolkit.Uwp.UI.Controls.DataGrid | XAML DataGrid control | 
 | Microsoft.Toolkit.Uwp.Connectivity | API helpers such as BluetoothLEHelper and Networking | 
 | Microsoft.Toolkit.Uwp.DeveloperTools | XAML user controls and services to help developer building their app | 
 
@@ -98,6 +99,10 @@ Once you search you should see a list similar to the one below (versions may be 
 * [TextToolbar](http://docs.uwpcommunitytoolkit.com/en/master/controls/TextToolbar/)
 * [TileControl](http://docs.uwpcommunitytoolkit.com/en/master/controls/TileControl/)
 * [WrapPanel](http://docs.uwpcommunitytoolkit.com/en/master/controls/WrapPanel/)
+
+### DataGrid
+
+* [DataGrid](http://docs.uwpcommunitytoolkit.com/en/master/controls/DataGrid/)
 
 ### Developer Tools
 * [AlignmentGrid](http://docs.uwpcommunitytoolkit.com/en/master/developer-tools/AlignmentGrid/)

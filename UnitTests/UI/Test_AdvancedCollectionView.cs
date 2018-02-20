@@ -96,7 +96,6 @@ namespace UnitTests.UI
             Assert.AreEqual("sit", a[0]);
             Assert.AreEqual("how", a[1]);
             Assert.AreEqual("amet", a[2]);
-
         }
 
         [TestCategory("AdvancedCollectionView")]
@@ -129,7 +128,6 @@ namespace UnitTests.UI
             Assert.AreEqual("ipsum", a[1]);
             Assert.AreEqual("dolor", a[2]);
             Assert.AreEqual("ipsum", a[3]);
-
         }
 
         [TestCategory("AdvancedCollectionView")]
@@ -162,7 +160,6 @@ namespace UnitTests.UI
             Assert.AreEqual("ipsum", a[1]);
             Assert.AreEqual("dolor", a[2]);
             Assert.AreEqual("ipsum", a[3]);
-
         }
 
         [TestCategory("AdvancedCollectionView")]
@@ -191,7 +188,6 @@ namespace UnitTests.UI
             Assert.AreEqual(2, a.Count);
             Assert.AreEqual(a[0], "how");
             Assert.AreEqual(a[1], "amet");
-
         }
 
         [TestCategory("AdvancedCollectionView")]
