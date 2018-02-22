@@ -11,6 +11,7 @@
 // ******************************************************************
 
 #if WINDOWS_UWP
+using System;
 using Windows.UI.Xaml.Controls;
 #endif
 
@@ -25,6 +26,32 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/> class.
         /// </summary>
         public DataGridRow()
+        {
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether ...
+        /// TODO - Temporary placeholder.
+        /// </summary>
+        internal bool IsRecyclable { get; }
+
+        /// <summary>
+        /// Gets this row's index...
+        /// TODO - Temporary placeholder.
+        /// </summary>
+        internal int Index { get; }
+
+        /// <summary>
+        /// Gets this row's slot...
+        /// TODO - Temporary placeholder.
+        /// </summary>
+        internal int Slot { get; }
+
+        /// <summary>
+        /// TODO: Temporary placeholder.
+        /// </summary>
+        /// <param name="recycle">True to recycle this row</param>
+        internal void DetachFromDataGrid(bool recycle)
         {
         }
     }

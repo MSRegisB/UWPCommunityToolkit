@@ -10,32 +10,18 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if WINDOWS_UWP
-using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-using Windows.UI.Xaml.Controls;
-#endif
-
-namespace Microsoft.Toolkit.Uwp.UI.Controls
+namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {
     /// <summary>
-    /// Represents the header of a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid" /> row group.
+    /// TODO - Placeholder implementation.
     /// </summary>
-    public class DataGridRowGroupHeader : Control
+    internal class CollectionViewGroup
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRowGroupHeader"/> class.
-        /// </summary>
-        public DataGridRowGroupHeader()
+        internal CollectionViewGroup()
         {
         }
 
-        /// <summary>
-        /// Gets a value indicating whether ...
-        /// TODO - Temporary placeholder.
-        /// </summary>
-        public bool IsRecycled { get; internal set; }
-
-        internal DataGridRowGroupInfo RowGroupInfo
+        internal string Name
         {
             get;
             set;

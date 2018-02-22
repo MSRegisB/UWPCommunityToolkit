@@ -49,6 +49,57 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             set { SetValue(BooleanPropertyProperty, value); }
         }
 
+        /// <summary>
+        /// Returns True if provided slot is visible.
+        /// TODO - Temporary placeholder.
+        /// </summary>
+        /// <returns>True if provided slot is visible</returns>
+        public bool IsSlotVisible(int slot)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Returns previous visible slot.
+        /// TODO - Temporary placeholder.
+        /// </summary>
+        /// <returns>reference slot</returns>
+        internal int GetPreviousVisibleSlot(int slot)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// Returns next visible slot.
+        /// TODO - Temporary placeholder.
+        /// </summary>
+        /// <returns>reference slot</returns>
+        internal int GetNextVisibleSlot(int slot)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// TODO - Temporary placeholder.
+        /// </summary>
+        /// <param name="startSlot">starting slot</param>
+        /// <param name="endSlot">ending slot</param>
+        /// <returns>collapsed slot count</returns>
+        internal int GetCollapsedSlotCount(int startSlot, int endSlot)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// TODO - Temporary placeholder.
+        /// </summary>
+        /// <param name="rowIndex">row index</param>
+        /// <returns>row slot</returns>
+        internal int SlotFromRowIndex(int rowIndex)
+        {
+            return 0;
+        }
+
         private static void OnBooleanPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataGrid dataGrid = (DataGrid)d;
