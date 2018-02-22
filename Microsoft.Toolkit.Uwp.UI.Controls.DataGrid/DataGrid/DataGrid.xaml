@@ -13,11 +13,14 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="using:Microsoft.Toolkit.Uwp.UI.Controls">
+                    <!--WPF version:
+                    xmlns:local="clr-namespace:Microsoft.Toolkit.Uwp.UI.Controls">-->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ms-appx:///Microsoft.Toolkit.Uwp.UI.Controls.DataGrid/DataGrid/Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.DataGridCheckBoxColumn.xaml" />
+        <ResourceDictionary Source="ms-appx:///Microsoft.Toolkit.Uwp.UI.Controls.DataGrid/DataGrid/Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.DataGridCheckBoxColumn.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="local:DataGrid">
+        <!--Remove UseSystemFocusVisuals in WPF-->
         <Setter Property="UseSystemFocusVisuals" Value="True"></Setter>
         <Setter Property="Template">
             <Setter.Value>

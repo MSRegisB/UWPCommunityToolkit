@@ -10,9 +10,7 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if WINDOWS_UWP
 using System;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {

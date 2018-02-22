@@ -162,6 +162,7 @@
                             </Rectangle.Stroke>
                         </Rectangle>
                         <!-- CheckBox content -->
+                        <!-- Remove Background, HorizontalContentAlignment, VerticalContentAlignment, Padding in WPF -->
                         <ContentPresenter
                               x:Name="Content"
                               Grid.Column="1"
@@ -169,8 +170,8 @@
                               ContentTemplate="{TemplateBinding ContentTemplate}"
                               Background="Transparent"
                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                              Padding="{TemplateBinding Padding}"
                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                              Padding="{TemplateBinding Padding}"
                               Margin="6,5.5,4,4"
                               IsHitTestVisible="true" />
                         <!-- Disabled -->

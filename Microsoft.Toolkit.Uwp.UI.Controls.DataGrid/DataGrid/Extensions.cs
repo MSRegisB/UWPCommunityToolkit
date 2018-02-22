@@ -10,10 +10,7 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if WINDOWS_UWP
 using System;
-#endif
-
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,6 +18,7 @@ using System.Reflection;
 
 #if !WINDOWS_UWP
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 #else
@@ -87,7 +85,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// <returns>True if the currently focused element is within the visual tree of the parent</returns>
         internal static bool ContainsFocusedElement(this DependencyObject element)
         {
+#if WINDOWS_UWP
             return (element == null) ? false : element.ContainsChild(FocusManager.GetFocusedElement() as DependencyObject);
+#else
+            return (element == null) ? false : element.ContainsChild(FocusManager.GetFocusedElement(null /*TODO - correct parameter?*/) as DependencyObject);
+#endif
         }
 
         /// <summary>

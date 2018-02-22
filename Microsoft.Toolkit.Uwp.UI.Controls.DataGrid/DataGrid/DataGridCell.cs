@@ -12,6 +12,8 @@
 
 #if WINDOWS_UWP
 using Windows.UI.Xaml.Controls;
+#else
+using System.Windows.Controls;
 #endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls

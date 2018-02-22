@@ -10,10 +10,8 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-using System.Diagnostics;
-#if WINDOWS_UWP
 using System;
-#endif
+using System.Diagnostics;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {

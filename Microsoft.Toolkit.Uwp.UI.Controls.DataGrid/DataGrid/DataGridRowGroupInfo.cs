@@ -13,7 +13,7 @@
 #if WINDOWS_UWP
 using Windows.UI.Xaml;
 #else
-using System.Windows.Data;
+using System.Windows;
 #endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals

@@ -10,9 +10,16 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
+#if WINDOWS_UWP
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Shapes;
+#else
+using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Shapes;
+#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {

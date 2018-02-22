@@ -11,7 +11,9 @@
 // ******************************************************************
 
 #if !WINDOWS_UWP
+
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 

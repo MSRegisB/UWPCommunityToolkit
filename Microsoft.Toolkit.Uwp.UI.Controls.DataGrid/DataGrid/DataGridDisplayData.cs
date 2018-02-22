@@ -14,10 +14,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 #if !WINDOWS_UWP
+using System.Windows;
 using System.Windows.Media;
-#endif
-
-#if WINDOWS_UWP
+#else
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 #endif

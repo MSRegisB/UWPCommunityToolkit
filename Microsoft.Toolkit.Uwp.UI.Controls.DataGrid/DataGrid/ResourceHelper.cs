@@ -44,7 +44,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 
         public static ControlTemplate GetControlTemplate(Type type, string resourceName)
         {
-            string xaml = ResourceHelper.GetTemplateXaml(type, resourceName);
+            string xaml = GetTemplateXaml(type, resourceName);
             if (string.IsNullOrEmpty(xaml))
             {
                 throw new Exception(type.Name + " XAML markup could not be loaded.");
@@ -55,7 +55,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 try
                 {
 #endif
+#if WINDOWS_UWP
                     return XamlReader.Load(xaml) as ControlTemplate;
+#else
+                    return XamlReader.Load(type.Assembly.GetManifestResourceStream(resourceName + ".xaml")) as ControlTemplate;
+#endif
 #if DEBUG
                 }
                 catch
