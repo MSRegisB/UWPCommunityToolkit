@@ -34,7 +34,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
     {
         private static Dictionary<DependencyObject, Dictionary<DependencyProperty, bool>> _suspendedHandlers = new Dictionary<DependencyObject, Dictionary<DependencyProperty, bool>>();
 
-        public static bool IsHandlersSuspended(this DependencyObject dependencyObject, DependencyProperty dependencyProperty)
+        public static bool IsHandlerSuspended(this DependencyObject dependencyObject, DependencyProperty dependencyProperty)
         {
             return _suspendedHandlers.ContainsKey(dependencyObject) ? _suspendedHandlers[dependencyObject].ContainsKey(dependencyProperty) : false;
         }
