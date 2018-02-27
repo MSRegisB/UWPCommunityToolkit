@@ -8,8 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ColorCode.UWP" Version="2.0.3" />
-    <PackageReference Include="Robmikh.CompositionSurfaceFactory" Version="0.7.3" />
+    <ProjectReference Include="..\Microsoft.Toolkit.Uwp\Microsoft.Toolkit.Uwp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

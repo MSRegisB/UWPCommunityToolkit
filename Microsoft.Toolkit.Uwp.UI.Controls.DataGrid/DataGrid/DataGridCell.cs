@@ -158,10 +158,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return this.OwningRow.OwningGrid;
                 }
+
                 if (this.OwningColumn != null)
                 {
                     return this.OwningColumn.OwningGrid;
                 }
+
                 return null;
             }
         }

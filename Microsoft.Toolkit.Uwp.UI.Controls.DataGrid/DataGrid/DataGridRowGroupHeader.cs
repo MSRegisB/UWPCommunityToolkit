@@ -14,6 +14,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
+using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 #if WINDOWS_UWP
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -36,12 +37,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// Represents the header of a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> row group.
     /// </summary>
     [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRoot, Type = typeof(Panel))]
-    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRowHeader, Type = typeof(DataGridRowHeader))]
+    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRowHeader, Type = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
     [TemplatePart(Name = DATAGRIDROWGROUPHEADER_expanderButton, Type = typeof(ToggleButton))]
     [TemplatePart(Name = DATAGRIDROWGROUPHEADER_indentSpacer, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = DATAGRIDROWGROUPHEADER_itemCountElement, Type = typeof(TextBlock))]
     [TemplatePart(Name = DATAGRIDROWGROUPHEADER_propertyNameElement, Type = typeof(TextBlock))]
-    [StyleTypedProperty(Property = "HeaderStyle", StyleTargetType = typeof(DataGridRowHeader))]
+    [StyleTypedProperty(Property = "HeaderStyle", StyleTargetType = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
     public class DataGridRowGroupHeader : Control
     {
         private const string DATAGRIDROWGROUPHEADER_expanderButton = "ExpanderButton";
@@ -51,7 +52,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private bool _areIsCheckedHandlersSuspended;
         private ToggleButton _expanderButton;
-        private DataGridRowHeader _headerElement;
+        private Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader _headerElement;
         private FrameworkElement _indentSpacer;
         private TextBlock _itemCountElement;
         private TextBlock _propertyNameElement;
@@ -89,7 +90,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "HeaderStyle",
                 typeof(Style),
                 typeof(DataGridRowGroupHeader),
-                new PropertyMetadata(OnHeaderStylePropertyChanged));
+                new PropertyMetadata(null, OnHeaderStylePropertyChanged));
 
         private static void OnHeaderStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -117,7 +118,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "ItemCountVisibility",
                 typeof(Visibility),
                 typeof(DataGridRowGroupHeader),
-                null);
+                new PropertyMetadata(Visibility.Visible));
 
         /// <summary>
         /// Gets or sets the name of the property that this <see cref="T:System.Windows.Controls.DataGrid"/> row is bound to.
@@ -155,7 +156,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "PropertyNameVisibility",
                 typeof(Visibility),
                 typeof(DataGridRowGroupHeader),
-                null);
+                new PropertyMetadata(Visibility.Visible));
 
         /// <summary>
         /// Gets or sets a value that indicates the amount that the
@@ -202,7 +203,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal DataGridRowHeader HeaderCell
+        internal Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader HeaderCell
         {
             get
             {
@@ -293,6 +294,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 VisualStates.GoToState(this, useTransitions, VisualStates.StateRegular);
             }
 
+#if FEATURE_COLLECTIONVIEWGROUP
             // Expanded States
             if (this.RowGroupInfo.CollectionViewGroup.ItemCount == 0)
             {
@@ -309,6 +311,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateCollapsed, VisualStates.StateEmpty);
                 }
             }
+#endif
         }
 
         /// <summary>
@@ -341,6 +344,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         if (DataGridFrozenGrid.GetIsFrozen(child) && child.Visibility == Visibility.Visible)
                         {
                             TranslateTransform transform = new TranslateTransform();
+
                             // Automatic layout rounding doesn't apply to transforms so we need to Round this
                             transform.X = Math.Round(this.OwningGrid.HorizontalOffset);
                             child.RenderTransform = transform;
@@ -416,11 +420,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void EnsureExpanderButtonIsChecked()
         {
+#if FEATURE_COLLECTIONVIEWGROUP
             if (_expanderButton != null && this.RowGroupInfo != null && this.RowGroupInfo.CollectionViewGroup != null &&
                 this.RowGroupInfo.CollectionViewGroup.ItemCount != 0)
             {
                 SetIsCheckedNoCallBack(this.RowGroupInfo.Visibility == Visibility.Visible);
             }
+#endif
         }
 
         internal void EnsureHeaderStyleAndVisibility(Style previousStyle)
@@ -490,7 +496,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _expanderButton.Unchecked += new RoutedEventHandler(ExpanderButton_Unchecked);
             }
 
-            _headerElement = GetTemplateChild(DataGridRow.DATAGRIDROW_elementRowHeader) as DataGridRowHeader;
+            _headerElement = GetTemplateChild(DataGridRow.DATAGRIDROW_elementRowHeader) as Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader;
             if (_headerElement != null)
             {
                 _headerElement.Owner = this;
@@ -570,6 +576,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void ToggleExpandCollapse(Visibility newVisibility, bool setCurrent)
         {
+#if FEATURE_COLLECTIONVIEWGROUP
             if (this.RowGroupInfo.CollectionViewGroup.ItemCount != 0)
             {
                 if (this.OwningGrid == null)
@@ -585,6 +592,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 EnsureExpanderButtonIsChecked();
                 ApplyState(true /*useTransitions*/);
             }
+#endif
         }
 
         internal void UpdateTitleElements()
@@ -594,6 +602,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _propertyNameElement.Text = string.Format(CultureInfo.CurrentCulture, "{0}:", this.PropertyName);
             }
 
+#if FEATURE_COLLECTIONVIEWGROUP
             if (_itemCountElement != null && this.RowGroupInfo != null && this.RowGroupInfo.CollectionViewGroup != null)
             {
                 _itemCountElement.Text = string.Format(
@@ -601,6 +610,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     this.RowGroupInfo.CollectionViewGroup.ItemCount == 1 ? "({0} item)" : "({0} items)",
                     this.RowGroupInfo.CollectionViewGroup.ItemCount);
             }
+#endif
         }
     }
 }

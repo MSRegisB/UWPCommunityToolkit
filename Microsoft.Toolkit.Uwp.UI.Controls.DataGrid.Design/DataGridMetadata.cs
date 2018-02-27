@@ -35,8 +35,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Design
                 b =>
                 {
                     b.AddCustomAttributes(new FeatureAttribute(typeof(DataGridDefaults)));
-                    b.AddCustomAttributes(nameof(DataGrid.BooleanProperty), new CategoryAttribute(Properties.Resources.CategoryCommon));
 // REGISB           b.AddCustomAttributes(nameof(DataGrid.MyProperty), new CategoryAttribute(Properties.Resources.CategoryCommon)); // vs. CategoryAppearance, CategoryBrush
+                    b.AddCustomAttributes(nameof(DataGrid.IsReadOnly), new CategoryAttribute(Properties.Resources.CategoryCommon));
                     b.AddCustomAttributes(new ToolboxCategoryAttribute(ToolboxCategoryPaths.Toolkit, false));
                 });
         }

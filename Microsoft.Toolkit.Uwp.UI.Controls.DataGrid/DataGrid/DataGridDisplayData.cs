@@ -380,7 +380,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                     DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
                     if (groupHeader != null)
                     {
-                        Debug.WriteLine(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Slot: {0} GroupHeader: {1}", groupHeader.RowGroupInfo.Slot, groupHeader.RowGroupInfo.CollectionViewGroup.Name));
+#if FEATURE_COLLECTIONVIEWGROUP
+                        Debug.WriteLine(string.Format(
+                            System.Globalization.CultureInfo.InvariantCulture,
+                            "Slot: {0} GroupHeader: {1}",
+                            groupHeader.RowGroupInfo.Slot,
+                            groupHeader.RowGroupInfo.CollectionViewGroup.Name));
+#else
+                        Debug.WriteLine(string.Format(
+                            System.Globalization.CultureInfo.InvariantCulture,
+                            "Slot: {0} GroupHeader: {1}",
+                            groupHeader.RowGroupInfo.Slot,
+                            groupHeader.RowGroupInfo.ToString()));
+#endif
                     }
                 }
             }

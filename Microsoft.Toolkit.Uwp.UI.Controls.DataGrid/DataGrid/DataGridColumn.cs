@@ -12,10 +12,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Reflection;
+using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 #if WINDOWS_UWP
 using System.Collections.Generic;
-using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -25,6 +26,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 #endif
@@ -118,7 +120,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// Gets or sets a value indicating whether the user can change the column display position by dragging the column header.
         /// </summary>
         /// <returns>
-        /// true if the user can drag the column header to a new position; otherwise, false. The default is the current <see cref="P:System.Windows.Controls.DataGrid.CanUserReorderColumns"/> property value.
+        /// true if the user can drag the column header to a new position; otherwise, false. The default is the current <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.CanUserReorderColumns"/> property value.
         /// </returns>
         public bool CanUserReorder
         {
@@ -148,7 +150,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// Gets or sets a value indicating whether the user can adjust the column width using the mouse.
         /// </summary>
         /// <returns>
-        /// true if the user can resize the column; false if the user cannot resize the column. The default is the current <see cref="P:System.Windows.Controls.DataGrid.CanUserResizeColumns"/> property value.
+        /// true if the user can resize the column; false if the user cannot resize the column. The default is the current <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.CanUserResizeColumns"/> property value.
         /// </returns>
         public bool CanUserResize
         {
@@ -182,7 +184,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// Gets or sets a value indicating whether the user can sort the column by clicking the column header.
         /// </summary>
         /// <returns>
-        /// true if the user can sort the column; false if the user cannot sort the column. The default is the current <see cref="P:System.Windows.Controls.DataGrid.CanUserSortColumns"/> property value.
+        /// true if the user can sort the column; false if the user cannot sort the column. The default is the current <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.CanUserSortColumns"/> property value.
         /// </returns>
         public bool CanUserSort
         {
@@ -238,7 +240,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// Gets or sets the display position of the column relative to the other columns in the <see cref="T:System.Windows.Controls.DataGrid"/>.
         /// </summary>
         /// <returns>
-        /// The zero-based position of the column as it is displayed in the associated <see cref="T:System.Windows.Controls.DataGrid"/>. The default is the index of the corresponding <see cref="P:System.Collections.ObjectModel.Collection`1.Item(System.Int32)"/> in the <see cref="P:System.Windows.Controls.DataGrid.Columns"/> collection.
+        /// The zero-based position of the column as it is displayed in the associated <see cref="T:System.Windows.Controls.DataGrid"/>. The default is the index of the corresponding <see cref="P:System.Collections.ObjectModel.Collection`1.Item(System.Int32)"/> in the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.Columns"/> collection.
         /// </returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// When setting this property, the specified value is less than -1 or equal to <see cref="F:System.Int32.MaxValue"/>.
@@ -248,7 +250,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// When setting this property on a column in a <see cref="T:System.Windows.Controls.DataGrid"/>, the specified value is less than zero or greater than or equal to the number of columns in the <see cref="T:System.Windows.Controls.DataGrid"/>.
         /// </exception>
         /// <exception cref="T:System.InvalidOperationException">
-        /// When setting this property, the <see cref="T:System.Windows.Controls.DataGrid"/> is already making <see cref="P:System.Windows.Controls.DataGridColumn.DisplayIndex"/> adjustments. For example, this exception is thrown when you attempt to set <see cref="P:System.Windows.Controls.DataGridColumn.DisplayIndex"/> in a <see cref="E:System.Windows.Controls.DataGrid.ColumnDisplayIndexChanged"/> event handler.
+        /// When setting this property, the <see cref="T:System.Windows.Controls.DataGrid"/> is already making <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn.DisplayIndex"/> adjustments. For example, this exception is thrown when you attempt to set <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn.DisplayIndex"/> in a <see cref="E:System.Windows.Controls.DataGrid.ColumnDisplayIndexChanged"/> event handler.
         ///
         /// -or-
         ///
@@ -411,10 +413,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return this._isReadOnly ?? DATAGRIDCOLUMN_defaultIsReadOnly;
                 }
+
                 if (this._isReadOnly != null)
                 {
                     return this._isReadOnly.Value || this.OwningGrid.IsReadOnly;
                 }
+
                 return this.OwningGrid.GetColumnReadOnlyState(this, DATAGRIDCOLUMN_defaultIsReadOnly);
             }
 
@@ -426,6 +430,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         this.OwningGrid.OnColumnReadOnlyStateChanging(this, value);
                     }
+
                     this._isReadOnly = value;
                 }
             }
@@ -594,8 +599,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                     if (this.OwningGrid != null)
                     {
+#if WINDOWS_UWP
+                        bool isDesignMode = Windows.ApplicationModel.DesignMode.DesignModeEnabled;
+#else
+                        bool isDesignMode = DesignerProperties.GetIsInDesignMode(this);
+#endif
                         DataGridLength width = CoerceWidth(value);
-                        if (width.IsStar != this.Width.IsStar || DesignerProperties.IsInDesignTool)
+                        if (width.IsStar != this.Width.IsStar || isDesignMode)
                         {
                             // If a column has changed either from or to a star value, we want to recalculate all
                             // star column widths.  They are recalculated during Measure based off what the value we set here.
@@ -649,6 +659,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return Math.Max(DataGrid.DATAGRID_minimumStarColumnWidth, minWidth);
                 }
+
                 return minWidth;
             }
         }
@@ -877,7 +888,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// When overridden in a derived class, gets an editing element that is bound to the column's <see cref="P:System.Windows.Controls.DataGridBoundColumn.Binding"/> property value.
+        /// When overridden in a derived class, gets an editing element that is bound to the column's <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridBoundColumn.Binding"/> property value.
         /// </summary>
         /// <param name="cell">
         /// The cell that will contain the generated element.
@@ -886,13 +897,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// The data item represented by the row that contains the intended cell.
         /// </param>
         /// <returns>
-        /// A new editing element that is bound to the column's <see cref="P:System.Windows.Controls.DataGridBoundColumn.Binding"/> property value.
+        /// A new editing element that is bound to the column's <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridBoundColumn.Binding"/> property value.
         /// </returns>
         protected abstract FrameworkElement GenerateEditingElement(DataGridCell cell, object dataItem);
 
         /// <summary>
         /// When overridden in a derived class, gets a read-only element that is bound to the column's
-        /// <see cref="P:System.Windows.Controls.DataGridBoundColumn.Binding"/> property value.
+        /// <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridBoundColumn.Binding"/> property value.
         /// </summary>
         /// <param name="cell">
         /// The cell that will contain the generated element.
@@ -901,7 +912,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// The data item represented by the row that contains the intended cell.
         /// </param>
         /// <returns>
-        /// A new, read-only element that is bound to the column's <see cref="P:System.Windows.Controls.DataGridBoundColumn.Binding"/> property value.
+        /// A new, read-only element that is bound to the column's <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridBoundColumn.Binding"/> property value.
         /// </returns>
         protected abstract FrameworkElement GenerateElement(DataGridCell cell, object dataItem);
 
@@ -1113,7 +1124,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         && bindingData.BindingExpression.ParentBinding != null
                         && bindingData.BindingExpression.ParentBinding.UpdateSourceTrigger != UpdateSourceTrigger.Explicit)
                     {
-                        Binding binding = new Binding(bindingData.BindingExpression.ParentBinding);
+                        // TODO - SL5 code is: Binding binding = new Binding(bindingData.BindingExpression.ParentBinding);
+                        // Is shallow copy correct?
+                        Binding binding = new Binding();
+                        binding.Converter = bindingData.BindingExpression.ParentBinding.Converter;
+#if WINDOWS_UWP
+                        binding.ConverterLanguage = bindingData.BindingExpression.ParentBinding.ConverterLanguage;
+#endif
+                        binding.ConverterParameter = bindingData.BindingExpression.ParentBinding.ConverterParameter;
+                        binding.ElementName = bindingData.BindingExpression.ParentBinding.ElementName;
+                        binding.FallbackValue = bindingData.BindingExpression.ParentBinding.FallbackValue;
+                        binding.Mode = bindingData.BindingExpression.ParentBinding.Mode;
+                        binding.Path = new PropertyPath(bindingData.BindingExpression.ParentBinding.Path.Path);
+                        binding.RelativeSource = bindingData.BindingExpression.ParentBinding.RelativeSource;
+                        binding.Source = bindingData.BindingExpression.ParentBinding.Source;
+                        binding.TargetNullValue = bindingData.BindingExpression.ParentBinding.TargetNullValue;
                         binding.UpdateSourceTrigger = UpdateSourceTrigger.Explicit;
                         bindingData.Element.SetBinding(bindingData.BindingTarget, binding);
                         bindingData.BindingExpression = bindingData.Element.GetBindingExpression(bindingData.BindingTarget);
@@ -1160,6 +1185,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return CreateBindings(element, dataItem, true /*twoWay*/);
         }
 
+#if FEATURE_ICOLLECTIONVIEW_SORT
         /// <summary>
         /// Gets the sort description from the data source.  We don't worry whether we can modify sort -- perhaps the sort description
         /// describes an unchangeable sort that exists on the data.
@@ -1185,6 +1211,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             return null;
         }
+#endif
 
         internal string GetSortPropertyName()
         {
@@ -1248,6 +1275,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 totalDisplayWidth += column.ActualWidth;
                 starColumnsCount += (column != this && column.Width.IsStar) ? 1 : 0;
             }
+
             bool hasInfiniteAvailableWidth = !this.OwningGrid.RowsPresenterAvailableSize.HasValue || double.IsPositiveInfinity(this.OwningGrid.RowsPresenterAvailableSize.Value.Width);
 
             // If we're using star sizing, we can only resize the column as much as the columns to the
@@ -1276,6 +1304,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     // The desired change is negative, so we need to increase the widths of columns to the right.
                     limitedDisplayValue += desiredChange + this.OwningGrid.IncreaseColumnWidths(this.DisplayIndex + 1, -desiredChange, userInitiated);
                 }
+
                 if (this.ActualCanUserResize || (this.Width.IsStar && !userInitiated))
                 {
                     newDisplayValue = limitedDisplayValue;

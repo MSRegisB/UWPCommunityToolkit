@@ -210,7 +210,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private FrameworkElement _rootElement;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Windows.Controls.Primitives.DataGridRowHeader"/> class.
+        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader"/> class.
         /// </summary>
         public DataGridRowHeader()
         {
@@ -235,7 +235,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         }
 
         /// <summary>
-        /// Identifies the <see cref="P:System.Windows.Controls.Primitives.DataGridRowHeader.SeparatorBrush"/> dependency property.
+        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader.SeparatorBrush"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty SeparatorBrushProperty =
             DependencyProperty.Register(
@@ -254,14 +254,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         }
 
         /// <summary>
-        /// Identifies the <see cref="P:System.Windows.Controls.Primitives.DataGridRowHeader.SeparatorVisibility"/> dependency property.
+        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader.SeparatorVisibility"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty SeparatorVisibilityProperty =
             DependencyProperty.Register(
                 "SeparatorVisibility",
                 typeof(Visibility),
                 typeof(DataGridRowHeader),
-                null);
+                new PropertyMetadata(Visibility.Visible));
 
         private DataGrid OwningGrid
         {
@@ -275,6 +275,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     return this.OwningRowGroupHeader.OwningGrid;
                 }
+
                 return null;
             }
         }
@@ -352,6 +353,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             {
                 return base.MeasureOverride(availableSize);
             }
+
             double measureHeight = double.IsNaN(this.OwningGrid.RowHeight) ? availableSize.Height : this.OwningGrid.RowHeight;
             double measureWidth = double.IsNaN(this.OwningGrid.RowHeaderWidth) ? availableSize.Width : this.OwningGrid.RowHeaderWidth;
             Size measuredSize = base.MeasureOverride(new Size(measureWidth, measureHeight));
@@ -398,19 +400,23 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                         {
                             idealStateMappingIndex += 16;
                         }
+
                         if (this.OwningGrid.ContainsFocus)
                         {
                             idealStateMappingIndex += 1;
                         }
                     }
+
                     if (this.OwningRow.IsSelected || this.OwningRow.IsEditing)
                     {
                         idealStateMappingIndex += 8;
                     }
+
                     if (this.OwningRow.IsEditing)
                     {
                         idealStateMappingIndex += 4;
                     }
+
                     if (this.OwningRow.IsMouseOver)
                     {
                         idealStateMappingIndex += 2;
@@ -461,10 +467,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             {
                 style = this.OwningRow.HeaderStyle;
             }
+
             if (style == null && this.OwningGrid != null)
             {
                 style = this.OwningGrid.RowHeaderStyle;
             }
+
             this.SetStyleWithType(style);
         }
 

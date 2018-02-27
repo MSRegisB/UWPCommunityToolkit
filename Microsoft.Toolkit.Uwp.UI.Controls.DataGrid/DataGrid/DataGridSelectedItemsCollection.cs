@@ -306,6 +306,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 this.OwningGrid.SelectionHasChanged = true;
             }
+
             DeleteSlot(slot);
             this._selectedItemsCache.Remove(item);
         }

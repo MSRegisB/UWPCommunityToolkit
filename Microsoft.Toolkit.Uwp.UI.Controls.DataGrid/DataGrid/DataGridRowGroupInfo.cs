@@ -21,24 +21,30 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
     internal class DataGridRowGroupInfo
     {
         public DataGridRowGroupInfo(
+#if FEATURE_COLLECTIONVIEWGROUP
             CollectionViewGroup collectionViewGroup,
+#endif
             Visibility visibility,
             int level,
             int slot,
             int lastSubItemSlot)
         {
+#if FEATURE_COLLECTIONVIEWGROUP
             this.CollectionViewGroup = collectionViewGroup;
+#endif
             this.Visibility = visibility;
             this.Level = level;
             this.Slot = slot;
             this.LastSubItemSlot = lastSubItemSlot;
         }
 
+#if FEATURE_COLLECTIONVIEWGROUP
         public CollectionViewGroup CollectionViewGroup
         {
             get;
             private set;
         }
+#endif
 
         public int LastSubItemSlot
         {

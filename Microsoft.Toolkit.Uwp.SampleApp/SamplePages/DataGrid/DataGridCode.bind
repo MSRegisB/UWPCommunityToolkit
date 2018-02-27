@@ -8,6 +8,6 @@
       <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
             VerticalAlignment="Center" HorizontalAlignment="Center">
           <controls:DataGrid x:Name="DataGrid"
-              BooleanProperty="@[BooleanProperty:Bool:False]"/>
+              IsReadOnly="@[IsReadOnly:Bool:False]"/>
       </Grid>
 </Page>

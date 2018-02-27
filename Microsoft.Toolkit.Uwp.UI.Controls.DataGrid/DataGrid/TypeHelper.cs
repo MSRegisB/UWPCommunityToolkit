@@ -305,14 +305,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 return indexer;
             }
 
-#if !WINDOWS_UWP
             if (typeof(System.Collections.IList).IsAssignableFrom(type))
             {
                 // If the object is of type IList, try to use its default indexer.
                 indexer = FindIndexerInMembers(typeof(System.Collections.IList).GetDefaultMembers(), stringIndex, out index);
             }
-            
-            // REGISB: Should internal IBindableVector also be handle instead of IList? 
+
+            // TODO - Added in WINDOWS_UWP. Is this correct?
+            else if (typeof(Windows.UI.Xaml.Interop.IBindableVectorView).IsAssignableFrom(type))
+            {
+                // If the object is of type IBindableVectorView, try to use its default indexer.
+                indexer = FindIndexerInMembers(typeof(Windows.UI.Xaml.Interop.IBindableVectorView).GetDefaultMembers(), stringIndex, out index);
+            }
+
+#if !WINDOWS_UWP
+            // TODO - Should internal IBindableVector also be handled instead of IList? 
             //#else
             //if (typeof(Windows.UI.Xaml.Interop.IBindableVector).IsAssignableFrom(type))
             //{
@@ -321,7 +328,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             //}
 #endif
 
-            return indexer;
+                return indexer;
         }
 
         internal static bool IsEnumerableType(this Type enumerableType)

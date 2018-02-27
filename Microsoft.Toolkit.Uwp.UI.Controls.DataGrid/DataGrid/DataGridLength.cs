@@ -10,12 +10,12 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using System;
+using System.Globalization;
+using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 #if !WINDOWS_UWP
 using System.ComponentModel;
 #endif
-using System.Globalization;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {

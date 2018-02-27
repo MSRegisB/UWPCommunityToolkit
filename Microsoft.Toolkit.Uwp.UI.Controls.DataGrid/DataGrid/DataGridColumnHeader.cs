@@ -15,6 +15,7 @@ using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 #if WINDOWS_UWP
 using Windows.Foundation;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -36,7 +37,7 @@ using System.Windows.Media;
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 {
     /// <summary>
-    /// Represents an individual <see cref="T:System.Windows.Controls.DataGrid"/> column header.
+    /// Represents an individual <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column header.
     /// </summary>
     [TemplateVisualState(Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StateMouseOver, GroupName = VisualStates.GroupCommon)]
@@ -59,6 +60,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private const double DATAGRIDCOLUMNHEADER_separatorThickness = 1;
 
 #if WINDOWS_UWP
+        private static CoreCursorType _originalCursor;
 #else
         private static Cursor _originalCursor;
 #endif
@@ -70,15 +72,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private static Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn _dragColumn;
         private static double _frozenColumnsWidth;
 
+#if WINDOWS_UWP
+        // TODO - use Window.Current.CoreWindow.PointerCursor = new CoreCursor(_cursor, 0); when the pointer enters this element.
+        private CoreCursorType _cursor;
+#endif
         private Visibility _desiredSeparatorVisibility;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Windows.Controls.Primitives.DataGridColumnHeader"/> class.
+        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeader"/> class.
         /// </summary>
         public DataGridColumnHeader()
         {
 #if WINDOWS_UWP
-            // TODO - listen to mouse and mouse button events
+    // TODO - listen to mouse and mouse button events
 #else
             this.LostMouseCapture += new MouseEventHandler(DataGridColumnHeader_LostMouseCapture);
             this.MouseLeftButtonDown += new MouseButtonEventHandler(DataGridColumnHeader_MouseLeftButtonDown);
@@ -88,7 +94,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.MouseLeave += new MouseEventHandler(DataGridColumnHeader_MouseLeave);
 #endif
 
-            DefaultStyleKey = typeof(DataGridColumnHeader);
+    DefaultStyleKey = typeof(DataGridColumnHeader);
         }
 
         /// <summary>
@@ -101,7 +107,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         }
 
         /// <summary>
-        /// Identifies the <see cref="P:System.Windows.Controls.Primitives.DataGridColumnHeader.SeparatorBrush"/> dependency property.
+        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeader.SeparatorBrush"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty SeparatorBrushProperty =
             DependencyProperty.Register(
@@ -120,14 +126,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         }
 
         /// <summary>
-        /// Identifies the <see cref="P:System.Windows.Controls.Primitives.DataGridColumnHeader.SeparatorVisibility"/> dependency property.
+        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeader.SeparatorVisibility"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty SeparatorVisibilityProperty =
             DependencyProperty.Register(
                 "SeparatorVisibility",
                 typeof(Visibility),
                 typeof(DataGridColumnHeader),
-                new PropertyMetadata(OnSeparatorVisibilityPropertyChanged));
+                new PropertyMetadata(Visibility.Visible, OnSeparatorVisibilityPropertyChanged));
 
         private static void OnSeparatorVisibilityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -160,11 +166,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             }
         }
 
+#if FEATURE_ICOLLECTIONVIEW_SORT
         internal ListSortDirection? CurrentSortingState
         {
             get;
             private set;
         }
+#endif
 
         internal Microsoft.Toolkit.Uwp.UI.Controls.DataGrid OwningGrid
         {
@@ -174,6 +182,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     return this.OwningColumn.OwningGrid;
                 }
+
                 return null;
             }
         }
@@ -234,7 +243,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <summary>
         /// Creates AutomationPeer (<see cref="UIElement.OnCreateAutomationPeer"/>)
         /// </summary>
-        /// <returns>An automation peer for this <see cref="T:System.Windows.Controls.Primitives.DataGridColumnHeader"/>.</returns>
+        /// <returns>An automation peer for this <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeader"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             if (this.OwningGrid != null && this.OwningColumn != this.OwningGrid.ColumnsInternal.FillerColumn)
@@ -249,11 +258,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         internal void ApplyState(bool useTransitions)
         {
             // Common States
-            if (this.IsPressed && DataGridColumnHeader._dragMode != DragMode.Resize)
+            if (this.IsPressed && _dragMode != DragMode.Resize)
             {
                 VisualStates.GoToState(this, useTransitions, VisualStates.StatePressed, VisualStates.StateMouseOver, VisualStates.StateNormal);
             }
-            else if (this.IsMouseOver && DataGridColumnHeader._dragMode != DragMode.Resize)
+            else if (this.IsMouseOver && _dragMode != DragMode.Resize)
             {
                 VisualStates.GoToState(this, useTransitions, VisualStates.StateMouseOver, VisualStates.StateNormal);
             }
@@ -263,11 +272,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             }
 
             // Sort States
+#if FEATURE_ICOLLECTIONVIEW_SORT
             this.CurrentSortingState = null;
+#endif
+
             if (this.OwningGrid != null
                 && this.OwningGrid.DataConnection != null
                 && this.OwningGrid.DataConnection.AllowSort)
             {
+#if FEATURE_ICOLLECTIONVIEW_SORT
                 SortDescription? sort = this.OwningColumn.GetSortDescription();
 
                 if (sort.HasValue)
@@ -283,6 +296,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     }
                 }
                 else
+#endif
                 {
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateUnsorted);
                 }
@@ -328,7 +342,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             if (this.OwningGrid.CommitEdit(DataGridEditingUnit.Row, true /*exitEditingMode*/))
             {
+#if WINDOWS_UWP
+                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { ProcessSort(); }).AsTask();
+#else
                 this.Dispatcher.BeginInvoke(new Action(ProcessSort));
+#endif
             }
         }
 
@@ -338,7 +356,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
             {
+#if WINDOWS_UWP
+                // TODO - UWP equivalent.
+#else
                 this.CaptureMouse();
+#endif
 
                 _dragMode = DragMode.MouseDown;
                 _frozenColumnsWidth = this.OwningGrid.ColumnsInternal.GetVisibleFrozenEdgedColumnsWidth();
@@ -414,7 +436,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 #else
                 ReleaseMouseCapture();
 #endif
-                DataGridColumnHeader._dragMode = DragMode.None;
+                _dragMode = DragMode.None;
                 handled = true;
             }
         }
@@ -476,111 +498,116 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 this.OwningColumn != this.OwningGrid.ColumnsInternal.FillerColumn &&
                 this.OwningGrid.DataConnection.AllowSort &&
                 this.OwningGrid.CanUserSortColumns &&
-                this.OwningColumn.CanUserSort &&
-                this.OwningGrid.DataConnection.SortDescriptions != null)
+                this.OwningColumn.CanUserSort)
             {
-                Microsoft.Toolkit.Uwp.UI.Controls.DataGrid owningGrid = this.OwningGrid;
-                ListSortDirection newSortDirection;
-                SortDescription newSort;
-
-                bool ctrl;
-                bool shift;
-
-                KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
-
-                SortDescription? sort = this.OwningColumn.GetSortDescription();
-                ICollectionView collectionView = owningGrid.DataConnection.CollectionView;
-                Debug.Assert(collectionView != null);
-                try
+#if FEATURE_ICOLLECTIONVIEW_SORT
+                if (this.OwningGrid.DataConnection.SortDescriptions != null)
                 {
-                    owningGrid.OnUserSorting();
-                    using (collectionView.DeferRefresh())
+                    Microsoft.Toolkit.Uwp.UI.Controls.DataGrid owningGrid = this.OwningGrid;
+                    ListSortDirection newSortDirection;
+                    SortDescription newSort;
+
+                    bool ctrl;
+                    bool shift;
+
+                    KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
+
+                    SortDescription? sort = this.OwningColumn.GetSortDescription();
+                    ICollectionView collectionView = owningGrid.DataConnection.CollectionView;
+                    Debug.Assert(collectionView != null);
+                    try
                     {
-                        // if shift is held down, we multi-sort, therefore if it isn't, we'll clear the sorts beforehand
-                        if (!shift || owningGrid.DataConnection.SortDescriptions.Count == 0)
+                        owningGrid.OnUserSorting();
+                        using (collectionView.DeferRefresh())
                         {
-                            if (collectionView.CanGroup && collectionView.GroupDescriptions != null)
+                            // if shift is held down, we multi-sort, therefore if it isn't, we'll clear the sorts beforehand
+                            if (!shift || owningGrid.DataConnection.SortDescriptions.Count == 0)
                             {
-                                // Make sure we sort by the GroupDescriptions first
-                                for (int i = 0; i < collectionView.GroupDescriptions.Count; i++)
+                                if (collectionView.CanGroup && collectionView.GroupDescriptions != null)
                                 {
-                                    PropertyGroupDescription groupDescription = collectionView.GroupDescriptions[i] as PropertyGroupDescription;
-                                    if (groupDescription != null && collectionView.SortDescriptions.Count <= i || collectionView.SortDescriptions[i].PropertyName != groupDescription.PropertyName)
+                                    // Make sure we sort by the GroupDescriptions first
+                                    for (int i = 0; i < collectionView.GroupDescriptions.Count; i++)
                                     {
-                                        collectionView.SortDescriptions.Insert(Math.Min(i, collectionView.SortDescriptions.Count), new SortDescription(groupDescription.PropertyName, ListSortDirection.Ascending));
+                                        PropertyGroupDescription groupDescription = collectionView.GroupDescriptions[i] as PropertyGroupDescription;
+                                        if (groupDescription != null && collectionView.SortDescriptions.Count <= i || collectionView.SortDescriptions[i].PropertyName != groupDescription.PropertyName)
+                                        {
+                                            collectionView.SortDescriptions.Insert(Math.Min(i, collectionView.SortDescriptions.Count), new SortDescription(groupDescription.PropertyName, ListSortDirection.Ascending));
+                                        }
+                                    }
+                                    while (collectionView.SortDescriptions.Count > collectionView.GroupDescriptions.Count)
+                                    {
+                                        collectionView.SortDescriptions.RemoveAt(collectionView.GroupDescriptions.Count);
                                     }
                                 }
-                                while (collectionView.SortDescriptions.Count > collectionView.GroupDescriptions.Count)
+                                else if (!shift)
                                 {
-                                    collectionView.SortDescriptions.RemoveAt(collectionView.GroupDescriptions.Count);
+                                    owningGrid.DataConnection.SortDescriptions.Clear();
                                 }
                             }
-                            else if (!shift)
-                            {
-                                owningGrid.DataConnection.SortDescriptions.Clear();
-                            }
-                        }
 
-                        if (sort.HasValue)
-                        {
-                            // swap direction
-                            switch (sort.Value.Direction)
+                            if (sort.HasValue)
                             {
-                                case ListSortDirection.Ascending:
-                                    newSortDirection = ListSortDirection.Descending;
-                                    break;
-                                default:
-                                    newSortDirection = ListSortDirection.Ascending;
-                                    break;
-                            }
+                                // swap direction
+                                switch (sort.Value.Direction)
+                                {
+                                    case ListSortDirection.Ascending:
+                                        newSortDirection = ListSortDirection.Descending;
+                                        break;
+                                    default:
+                                        newSortDirection = ListSortDirection.Ascending;
+                                        break;
+                                }
 
-                            newSort = new SortDescription(sort.Value.PropertyName, newSortDirection);
+                                newSort = new SortDescription(sort.Value.PropertyName, newSortDirection);
 
-                            // changing direction should not affect sort order, so we replace this column's
-                            // sort description instead of just adding it to the end of the collection
-                            int oldIndex = owningGrid.DataConnection.SortDescriptions.IndexOf(sort.Value);
-                            if (oldIndex >= 0)
-                            {
-                                owningGrid.DataConnection.SortDescriptions.Remove(sort.Value);
-                                owningGrid.DataConnection.SortDescriptions.Insert(oldIndex, newSort);
+                                // changing direction should not affect sort order, so we replace this column's
+                                // sort description instead of just adding it to the end of the collection
+                                int oldIndex = owningGrid.DataConnection.SortDescriptions.IndexOf(sort.Value);
+                                if (oldIndex >= 0)
+                                {
+                                    owningGrid.DataConnection.SortDescriptions.Remove(sort.Value);
+                                    owningGrid.DataConnection.SortDescriptions.Insert(oldIndex, newSort);
+                                }
+                                else
+                                {
+                                    owningGrid.DataConnection.SortDescriptions.Add(newSort);
+                                }
                             }
                             else
                             {
+                                // start new sort
+                                newSortDirection = ListSortDirection.Ascending;
+
+                                string propertyName = this.OwningColumn.GetSortPropertyName();
+
+                                // no-opt if we couldn't find a property to sort on
+                                if (string.IsNullOrEmpty(propertyName))
+                                {
+                                    return;
+                                }
+
+                                newSort = new SortDescription(propertyName, newSortDirection);
+
                                 owningGrid.DataConnection.SortDescriptions.Add(newSort);
                             }
                         }
-                        else
+                    }
+                    finally
+                    {
+                        owningGrid.OnUserSorted();
+                    }
+
+                    // We've completed the sort, so send the Invoked event for the column header's automation peer
+                    if (AutomationPeer.ListenerExists(AutomationEvents.InvokePatternOnInvoked))
+                    {
+                        AutomationPeer peer = FrameworkElementAutomationPeer.FromElement(this);
+                        if (peer != null)
                         {
-                            // start new sort
-                            newSortDirection = ListSortDirection.Ascending;
-
-                            string propertyName = this.OwningColumn.GetSortPropertyName();
-                            // no-opt if we couldn't find a property to sort on
-                            if (string.IsNullOrEmpty(propertyName))
-                            {
-                                return;
-                            }
-
-                            newSort = new SortDescription(propertyName, newSortDirection);
-
-                            owningGrid.DataConnection.SortDescriptions.Add(newSort);
+                            peer.RaiseAutomationEvent(AutomationEvents.InvokePatternOnInvoked);
                         }
                     }
                 }
-                finally
-                {
-                    owningGrid.OnUserSorted();
-                }
-
-                // We've completed the sort, so send the Invoked event for the column header's automation peer
-                if (AutomationPeer.ListenerExists(AutomationEvents.InvokePatternOnInvoked))
-                {
-                    AutomationPeer peer = FrameworkElementAutomationPeer.FromElement(this);
-                    if (peer != null)
-                    {
-                        peer.RaiseAutomationEvent(AutomationEvents.InvokePatternOnInvoked);
-                    }
-                }
+#endif
             }
         }
 
@@ -753,6 +780,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     scrollAmount = Math.Min(newVal, this.OwningGrid.HorizontalScrollBar.Value);
                     this.OwningGrid.UpdateHorizontalOffset(scrollAmount + this.OwningGrid.HorizontalScrollBar.Value);
                 }
+
                 mousePositionHeaders.X = leftEdge;
             }
             else if (mousePositionHeaders.X >= rightEdge)
@@ -766,6 +794,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     scrollAmount = Math.Min(newVal, this.OwningGrid.HorizontalScrollBar.Maximum - this.OwningGrid.HorizontalScrollBar.Value);
                     this.OwningGrid.UpdateHorizontalOffset(scrollAmount + this.OwningGrid.HorizontalScrollBar.Value);
                 }
+
                 mousePositionHeaders.X = rightEdge - 1;
             }
 
@@ -832,10 +861,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             // When we stop interacting with the column headers, we need to reset the drag mode
             // and close any popups if they are open.
-            if (DataGridColumnHeader._dragColumn != null && DataGridColumnHeader._dragColumn.HeaderCell != null)
+            if (_dragColumn != null && _dragColumn.HeaderCell != null)
             {
-                DataGridColumnHeader._dragColumn.HeaderCell.Cursor = DataGridColumnHeader._originalCursor;
+#if WINDOWS_UWP
+                _dragColumn.HeaderCell._cursor = _originalCursor;
+#else
+                _dragColumn.HeaderCell.Cursor = _originalCursor;
+#endif
             }
+
             _dragMode = DragMode.None;
             _dragColumn = null;
             _dragStart = null;
@@ -971,6 +1005,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     {
                         targetPosition = targetColumn.HeaderCell.Translate(this.OwningGrid.ColumnHeaders, targetPosition);
                     }
+
                     this.OwningGrid.ColumnHeaders.DropLocationIndicatorOffset = targetPosition.X - scrollAmount;
                 }
 
@@ -1021,15 +1056,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             if ((distanceFromRight <= DATAGRIDCOLUMNHEADER_resizeRegionWidth && currentColumn != null && CanResizeColumn(currentColumn)) ||
                 (distanceFromLeft <= DATAGRIDCOLUMNHEADER_resizeRegionWidth && previousColumn != null && CanResizeColumn(previousColumn)))
             {
+#if WINDOWS_UWP
+                if (_cursor != CoreCursorType.SizeWestEast)
+                {
+                    _originalCursor = _cursor;
+                    _cursor = CoreCursorType.SizeWestEast;
+                }
+#else
                 if (this.Cursor != Cursors.SizeWE)
                 {
-                    DataGridColumnHeader._originalCursor = this.Cursor;
+                    _originalCursor = this.Cursor;
                     this.Cursor = Cursors.SizeWE;
                 }
+#endif
             }
             else
             {
-                this.Cursor = DataGridColumnHeader._originalCursor;
+#if WINDOWS_UWP
+#else
+                this.Cursor = _originalCursor;
+#endif
             }
         }
     }

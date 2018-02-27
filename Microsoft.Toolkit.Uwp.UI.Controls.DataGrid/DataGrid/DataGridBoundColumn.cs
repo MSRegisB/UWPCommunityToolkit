@@ -70,10 +70,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                             this._binding.Converter = new DataGridValueConverter();
                         }
 
+#if !WINDOWS_UWP
                         // Setup the binding for validation
                         this._binding.ValidatesOnDataErrors = true;
                         this._binding.ValidatesOnExceptions = true;
                         this._binding.NotifyOnValidationError = true;
+#endif
                         this._binding.UpdateSourceTrigger = UpdateSourceTrigger.Explicit;
 
                         // Apply the new Binding to existing rows in the DataGrid
