@@ -1093,7 +1093,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets a value indicating whether data in the grid is valid. 
+        /// Gets a value indicating whether data in the grid is valid.
         /// </summary>
         public bool IsValid
         {
@@ -7426,7 +7426,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     bool isCellValid = true;
 
-                    Debug.Assert(cell.OwningColumn != null);
+                    Debug.Assert(cell.OwningColumn != null, "Expected cell has owning column.");
                     if (!cell.OwningColumn.IsReadOnly)
                     {
                         foreach (ValidationResult validationResult in this._validationResults)
@@ -7472,7 +7472,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 this.IsValid = true;
             }
-
         }
 
         private void UpdateVerticalScrollBar(bool needVertScrollbar, bool forceVertScrollbar, double totalVisibleHeight, double cellsHeight)

@@ -14,13 +14,14 @@ using System;
 using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 #if WINDOWS_UWP
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 #else
 using System.ComponentModel;
@@ -73,8 +74,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private static double _frozenColumnsWidth;
 
 #if WINDOWS_UWP
-        // TODO - use Window.Current.CoreWindow.PointerCursor = new CoreCursor(_cursor, 0); when the pointer enters this element.
         private CoreCursorType _cursor;
+        private Pointer _capturedPointer;
 #endif
         private Visibility _desiredSeparatorVisibility;
 
@@ -84,7 +85,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         public DataGridColumnHeader()
         {
 #if WINDOWS_UWP
-    // TODO - listen to mouse and mouse button events
+            this.PointerCaptureLost += new PointerEventHandler(DataGridColumnHeader_PointerCaptureLost);
+            this.PointerPressed += new PointerEventHandler(DataGridColumnHeader_PointerPressed);
+            this.PointerReleased += new PointerEventHandler(DataGridColumnHeader_PointerReleased);
+            this.PointerMoved += new PointerEventHandler(DataGridColumnHeader_PointerMoved);
+            this.PointerEntered += new PointerEventHandler(DataGridColumnHeader_PointerEntered);
+            this.PointerExited += new PointerEventHandler(DataGridColumnHeader_PointerExited);
 #else
             this.LostMouseCapture += new MouseEventHandler(DataGridColumnHeader_LostMouseCapture);
             this.MouseLeftButtonDown += new MouseButtonEventHandler(DataGridColumnHeader_MouseLeftButtonDown);
@@ -94,7 +100,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.MouseLeave += new MouseEventHandler(DataGridColumnHeader_MouseLeave);
 #endif
 
-    DefaultStyleKey = typeof(DataGridColumnHeader);
+            DefaultStyleKey = typeof(DataGridColumnHeader);
         }
 
         /// <summary>
@@ -271,16 +277,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 VisualStates.GoToState(this, useTransitions, VisualStates.StateNormal);
             }
 
-            // Sort States
 #if FEATURE_ICOLLECTIONVIEW_SORT
+            // Sort States
             this.CurrentSortingState = null;
-#endif
 
             if (this.OwningGrid != null
                 && this.OwningGrid.DataConnection != null
                 && this.OwningGrid.DataConnection.AllowSort)
             {
-#if FEATURE_ICOLLECTIONVIEW_SORT
                 SortDescription? sort = this.OwningColumn.GetSortDescription();
 
                 if (sort.HasValue)
@@ -296,11 +300,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     }
                 }
                 else
-#endif
                 {
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateUnsorted);
                 }
             }
+#endif
         }
 
         /// <summary>
@@ -331,6 +335,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.SetStyleWithType(style);
         }
 
+#if FEATURE_ICOLLECTIONVIEW_SORT
         internal void InvokeProcessSort()
         {
             Debug.Assert(this.OwningGrid != null, "Expected non-null owning DataGrid.");
@@ -349,15 +354,29 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 #endif
             }
         }
+#endif
 
+#if WINDOWS_UWP
+        internal void OnMouseLeftButtonDown(ref bool handled, PointerRoutedEventArgs e)
+#else
         internal void OnMouseLeftButtonDown(ref bool handled, Point mousePosition)
+#endif
         {
             this.IsPressed = true;
 
             if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
             {
 #if WINDOWS_UWP
-                // TODO - UWP equivalent.
+                Point mousePosition = e.GetCurrentPoint(this).Position;
+
+                if (this.CapturePointer(e.Pointer))
+                {
+                    _capturedPointer = e.Pointer;
+                }
+                else
+                {
+                    _capturedPointer = null;
+                }
 #else
                 this.CaptureMouse();
 #endif
@@ -401,31 +420,40 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
             {
-                if (_dragMode == DragMode.MouseDown)
+                switch (_dragMode)
                 {
-                   OnMouseLeftButtonUp_Click(ref handled);
-                }
-                else if (_dragMode == DragMode.Reorder)
-                {
-                    // Find header hovered over
-                    int targetIndex = this.GetReorderingTargetDisplayIndex(mousePositionHeaders);
-
-                    if ((!this.OwningColumn.IsFrozen && targetIndex >= this.OwningGrid.FrozenColumnCount) ||
-                        (this.OwningColumn.IsFrozen && targetIndex < this.OwningGrid.FrozenColumnCount))
+#if FEATURE_ICOLLECTIONVIEW_SORT
+                    case DragMode.MouseDown:
                     {
-                        this.OwningColumn.DisplayIndex = targetIndex;
+                        OnMouseLeftButtonUp_Click(ref handled);
+                        break;
+                    }
+#endif
+                    case DragMode.Reorder:
+                    {
+                        // Find header hovered over
+                        int targetIndex = this.GetReorderingTargetDisplayIndex(mousePositionHeaders);
 
-                        Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumnEventArgs ea = new Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumnEventArgs(this.OwningColumn);
-                        this.OwningGrid.OnColumnReordered(ea);
+                        if ((!this.OwningColumn.IsFrozen && targetIndex >= this.OwningGrid.FrozenColumnCount) ||
+                            (this.OwningColumn.IsFrozen && targetIndex < this.OwningGrid.FrozenColumnCount))
+                        {
+                            this.OwningColumn.DisplayIndex = targetIndex;
+
+                            Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumnEventArgs ea = new Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumnEventArgs(this.OwningColumn);
+                            this.OwningGrid.OnColumnReordered(ea);
+                        }
+
+                        DragCompletedEventArgs dragCompletedEventArgs = new DragCompletedEventArgs(mousePosition.X - _dragStart.Value.X, mousePosition.Y - _dragStart.Value.Y, false);
+                        this.OwningGrid.OnColumnHeaderDragCompleted(dragCompletedEventArgs);
+                        break;
                     }
 
-                    DragCompletedEventArgs dragCompletedEventArgs = new DragCompletedEventArgs(mousePosition.X - _dragStart.Value.X, mousePosition.Y - _dragStart.Value.Y, false);
-                    this.OwningGrid.OnColumnHeaderDragCompleted(dragCompletedEventArgs);
-                }
-                else if (_dragMode == DragMode.Drag)
-                {
-                    DragCompletedEventArgs dragCompletedEventArgs = new DragCompletedEventArgs(0, 0, false);
-                    this.OwningGrid.OnColumnHeaderDragCompleted(dragCompletedEventArgs);
+                    case DragMode.Drag:
+                    {
+                        DragCompletedEventArgs dragCompletedEventArgs = new DragCompletedEventArgs(0, 0, false);
+                        this.OwningGrid.OnColumnHeaderDragCompleted(dragCompletedEventArgs);
+                        break;
+                    }
                 }
 
                 SetDragCursor(mousePosition);
@@ -441,12 +469,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             }
         }
 
+#if FEATURE_ICOLLECTIONVIEW_SORT
+
         internal void OnMouseLeftButtonUp_Click(ref bool handled)
         {
             // completed a click without dragging, so we're sorting
             InvokeProcessSort();
             handled = true;
         }
+#endif
 
         internal void OnMouseMove(ref bool handled, Point mousePosition, Point mousePositionHeaders)
         {
@@ -483,6 +514,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             SetDragCursor(mousePosition);
         }
 
+#if FEATURE_ICOLLECTIONVIEW_SORT
         internal void ProcessSort()
         {
             // if we can sort:
@@ -500,7 +532,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 this.OwningGrid.CanUserSortColumns &&
                 this.OwningColumn.CanUserSort)
             {
-#if FEATURE_ICOLLECTIONVIEW_SORT
                 if (this.OwningGrid.DataConnection.SortDescriptions != null)
                 {
                     Microsoft.Toolkit.Uwp.UI.Controls.DataGrid owningGrid = this.OwningGrid;
@@ -607,9 +638,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                         }
                     }
                 }
-#endif
             }
         }
+#endif
 
         internal void UpdateSeparatorVisibility(Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn lastVisibleColumn)
         {
@@ -673,12 +704,33 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 ((column.CanUserReorderInternal.HasValue && column.CanUserReorderInternal.Value) || !column.CanUserReorderInternal.HasValue);
         }
 
-#if !WINDOWS_UWP
+#if WINDOWS_UWP
+        private void DataGridColumnHeader_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            {
+                OnLostMouseCapture();
+            }
+        }
+#else
         private void DataGridColumnHeader_LostMouseCapture(object sender, MouseEventArgs e)
         {
             this.OnLostMouseCapture();
         }
+#endif
 
+#if WINDOWS_UWP
+        private void DataGridColumnHeader_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (!this.IsEnabled || e.Pointer.PointerDeviceType != PointerDeviceType.Mouse)
+            {
+                return;
+            }
+
+            OnMouseEnter(e.GetCurrentPoint(this).Position);
+            ApplyState(true);
+        }
+#else
         private void DataGridColumnHeader_MouseEnter(object sender, MouseEventArgs e)
         {
             if (!this.IsEnabled)
@@ -690,7 +742,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.OnMouseEnter(mousePosition);
             ApplyState(true);
         }
+#endif
 
+#if WINDOWS_UWP
+        private void DataGridColumnHeader_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (!this.IsEnabled || e.Pointer.PointerDeviceType != PointerDeviceType.Mouse)
+            {
+                return;
+            }
+
+            OnMouseLeave();
+            ApplyState(true);
+        }
+#else
         private void DataGridColumnHeader_MouseLeave(object sender, MouseEventArgs e)
         {
             if (!this.IsEnabled)
@@ -701,7 +766,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.OnMouseLeave();
             ApplyState(true);
         }
+#endif
 
+#if WINDOWS_UWP
+        private void DataGridColumnHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            // TODO - Should Touch/Pen be supported too?
+            if (this.OwningColumn == null || e.Handled || !this.IsEnabled || e.Pointer.PointerDeviceType != PointerDeviceType.Mouse)
+            {
+                return;
+            }
+
+            bool handled = e.Handled;
+            OnMouseLeftButtonDown(ref handled, e);
+            e.Handled = handled;
+
+            ApplyState(true);
+        }
+#else
         private void DataGridColumnHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (this.OwningColumn == null || e.Handled || !this.IsEnabled)
@@ -716,7 +798,25 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             ApplyState(true);
         }
+#endif
 
+#if WINDOWS_UWP
+        private void DataGridColumnHeader_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (this.OwningColumn == null || e.Handled || !this.IsEnabled || e.Pointer.PointerDeviceType != PointerDeviceType.Mouse)
+            {
+                return;
+            }
+
+            Point mousePosition = e.GetCurrentPoint(this).Position;
+            Point mousePositionHeaders = e.GetCurrentPoint(this.OwningGrid.ColumnHeaders).Position;
+            bool handled = e.Handled;
+            OnMouseLeftButtonUp(ref handled, mousePosition, mousePositionHeaders);
+            e.Handled = handled;
+
+            ApplyState(true);
+        }
+#else
         private void DataGridColumnHeader_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (this.OwningColumn == null || e.Handled || !this.IsEnabled)
@@ -732,7 +832,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             ApplyState(true);
         }
+#endif
 
+#if WINDOWS_UWP
+        private void DataGridColumnHeader_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            if (this.OwningColumn == null || !this.IsEnabled || e.Pointer.PointerDeviceType != PointerDeviceType.Mouse)
+            {
+                return;
+            }
+
+            Point mousePosition = e.GetCurrentPoint(this).Position;
+            Point mousePositionHeaders = e.GetCurrentPoint(this.OwningGrid.ColumnHeaders).Position;
+            bool handled = false;
+            OnMouseMove(ref handled, mousePosition, mousePositionHeaders);
+        }
+#else
         private void DataGridColumnHeader_MouseMove(object sender, MouseEventArgs e)
         {
             if (this.OwningGrid == null || !this.IsEnabled)
@@ -834,26 +949,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             }
         }
 
-        /* TODO - Remove unused code
-        /// <summary>
-        /// Returns true if the mouse is
-        /// - to the left of the element, or within the left half of the element
-        /// and
-        /// - within the vertical range of the element, or ignoreVertical == true
-        /// </summary>
-        /// <param name="mousePosition"></param>
-        /// <param name="element"></param>
-        /// <param name="ignoreVertical"></param>
-        /// <returns></returns>
-        private bool IsReorderTargeted(Point mousePosition, FrameworkElement element, bool ignoreVertical)
-        {
-            Point position = this.Translate(element, mousePosition);
-
-            return (position.X < 0 || (position.X >= 0 && position.X <= element.ActualWidth / 2)) &&
-                   (ignoreVertical || (position.Y >= 0 && position.Y <= element.ActualHeight));
-        }
-        */
-
         /// <summary>
         /// Resets the static DataGridColumnHeader properties when a header loses mouse capture.
         /// </summary>
@@ -891,7 +986,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             // TODO - code removal correct?
             // this.IsMouseOver = true;
-            this.SetDragCursor(mousePosition);
+            SetDragCursor(mousePosition);
+#if WINDOWS_UWP
+            Window.Current.CoreWindow.PointerCursor = new CoreCursor(_cursor, 0);
+#endif
         }
 
         /// <summary>
@@ -901,6 +999,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             // TODO - code removal correct?
             // this.IsMouseOver = false;
+#if WINDOWS_UWP
+            Window.Current.CoreWindow.PointerCursor = new CoreCursor(_cursor, 0);
+#endif
         }
 
         private void OnMouseMove_BeginReorder(Point mousePosition)
@@ -1073,6 +1174,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             else
             {
 #if WINDOWS_UWP
+                _cursor = _originalCursor;
 #else
                 this.Cursor = _originalCursor;
 #endif

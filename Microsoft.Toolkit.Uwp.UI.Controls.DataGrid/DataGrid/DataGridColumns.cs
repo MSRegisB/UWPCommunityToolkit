@@ -1598,19 +1598,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             Debug.Assert(type != null, "Expected non-null type.");
             if (type == typeof(bool))
             {
-                // TODO - return new DataGridCheckBoxColumn();
-                return null;
+                return new DataGridCheckBoxColumn();
             }
             else if (type == typeof(bool?))
             {
-                // TODO - DataGridCheckBoxColumn column = new DataGridCheckBoxColumn();
-                // TODO - column.IsThreeState = true;
-                // TODO - return column;
-                return null;
+                DataGridCheckBoxColumn column = new DataGridCheckBoxColumn();
+                column.IsThreeState = true;
+                return column;
             }
 
-            // TODO - return new DataGridTextColumn();
-            return null;
+            return new DataGridTextColumn();
         }
 
         private double GetNegHorizontalOffsetFromHorizontalOffset(double horizontalOffset)

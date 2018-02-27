@@ -71,6 +71,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             }
         }
 
+#if FEATURE_ICOLLECTIONVIEW_SORT
         /// <summary>
         /// Gets a value indicating whether the collection view says it can sort.
         /// </summary>
@@ -90,13 +91,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 }
 #endif
 
-#if FEATURE_ICOLLECTIONVIEW_SORT
                 return this.CollectionView.CanSort;
-#else
-                return false;
-#endif
             }
         }
+#endif
 
         public bool CanCancelEdit
         {
