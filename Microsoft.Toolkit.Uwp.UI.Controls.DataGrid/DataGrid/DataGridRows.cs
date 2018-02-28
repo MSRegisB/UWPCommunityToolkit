@@ -12,10 +12,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+#if FEATURE_COLLECTIONVIEWGROUP
+using System.ComponentModel;
+#endif
 using System.Diagnostics;
 using System.Linq;
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+using System.Collections.Specialized;
 using Microsoft.Toolkit.Uwp.Helpers;
+#endif
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 #if WINDOWS_UWP
 using Windows.Foundation;
@@ -417,7 +422,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             object item = this.DataConnection.GetDataItem(rowIndex);
 
             // isCollapsed below is always false because we only use the method if we're not grouping
-            InsertElementAt(slot, rowIndex, item, null/*DataGridRowGroupInfo*/, false /*isCollapsed*/);
+            InsertElementAt(slot, rowIndex, item, null /*DataGridRowGroupInfo*/, false /*isCollapsed*/);
         }
 
         internal bool IsColumnDisplayed(int columnIndex)
@@ -545,7 +550,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     PopulateRowGroupHeadersTable();
                 }
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 RefreshRowGroupHeaders();
+#endif
 
                 // Update the CurrentSlot because it might have changed
                 if (recycleRows && this.DataConnection.CollectionView != null)
@@ -803,6 +810,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return rowIndex + this.RowGroupHeadersTable.GetIndexCountBeforeGap(0, rowIndex);
         }
 
+        private static void CorrectRowAfterDeletion(DataGridRow row, bool rowDeleted)
+        {
+            row.Slot--;
+            if (rowDeleted)
+            {
+                row.Index--;
+            }
+        }
+
+        private static void CorrectRowAfterInsertion(DataGridRow row, bool rowInserted)
+        {
+            row.Slot++;
+            if (rowInserted)
+            {
+                row.Index++;
+            }
+        }
+
         private void AddSlotElement(int slot, UIElement element)
         {
 #if DEBUG
@@ -914,6 +939,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 #endif
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (this._topLevelGroup != null)
             {
                 // The PagedCollectionView reuses the top level group so we need to detach any existing or else we'll get duplicate handers here
@@ -921,8 +947,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this._topLevelGroup = null;
             }
 
-            _groupsCollectionChangedListenersTable.Clear();
             _groupsPropertyChangedListenersTable.Clear();
+            _groupsCollectionChangedListenersTable.Clear();
+#endif
 
             this.RowGroupHeadersTable.Clear();
 
@@ -1035,6 +1062,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
         // This method is necessary for incrementing the LastSubItemSlot property of the group ancestors
         // because CorrectSlotsAfterInsertion only increments those that come after the specified group
         private void CorrectLastSubItemSlotsAfterInsertion(DataGridRowGroupInfo subGroupInfo)
@@ -1053,24 +1081,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
-
-        private static void CorrectRowAfterDeletion(DataGridRow row, bool rowDeleted)
-        {
-            row.Slot--;
-            if (rowDeleted)
-            {
-                row.Index--;
-            }
-        }
-
-        private static void CorrectRowAfterInsertion(DataGridRow row, bool rowInserted)
-        {
-            row.Slot++;
-            if (rowInserted)
-            {
-                row.Index++;
-            }
-        }
+#endif
 
         /// <summary>
         /// Adjusts the index of all displayed, loaded and edited rows after a row was deleted.
@@ -1078,7 +1089,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         private void CorrectSlotsAfterDeletion(int slotDeleted, bool wasRow)
         {
-            Debug.Assert(slotDeleted >= 0);
+            Debug.Assert(slotDeleted >= 0, "Expected positive slotDeleted.");
 
             // Take care of the non-visible loaded rows
             for (int index = 0; index < this._loadedRows.Count;)
@@ -1199,25 +1210,25 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
 
                 // We are purposefully checking GT and not GTE because the equality case is handled
-                // by the CorrectLastSubItemSlotsAfterInsertion method
+                // by the CorrectLastSubItemSlotsAfterInsertion method.
                 if (rowGroupInfo.LastSubItemSlot > slotInserted)
                 {
                     rowGroupInfo.LastSubItemSlot++;
                 }
             }
 
-            // Update which row we've calculated the RowHeightEstimate up to
+            // Update which row we've calculated the RowHeightEstimate up to.
             if (_lastEstimatedRow >= slotInserted)
             {
                 _lastEstimatedRow++;
             }
         }
 
+#if FEATURE_COLLECTIONVIEWGROUP
         private int CountAndPopulateGroupHeaders(object group, int rootSlot, int level)
         {
             int treeCount = 1;
 
-#if FEATURE_COLLECTIONVIEWGROUP
             CollectionViewGroup collectionViewGroup = group as CollectionViewGroup;
             if (collectionViewGroup != null)
             {
@@ -1240,9 +1251,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 this.RowGroupHeadersTable.AddValue(rootSlot, new DataGridRowGroupInfo(collectionViewGroup, Visibility.Visible, level, rootSlot, rootSlot + treeCount - 1));
             }
-#endif
             return treeCount;
         }
+#endif
 
 #if FEATURE_ICOLLECTIONVIEW_GROUP
         private void CollectionViewGroup_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -1266,7 +1277,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
-#endif
 
         private void CollectionViewGroup_CollectionChanged_Add(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -1277,16 +1287,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 // it since this lookup should be performant enough
                 int insertSlot = -1;
                 DataGridRowGroupInfo parentGroupInfo = GetParentGroupInfo(sender);
-#if FEATURE_COLLECTIONVIEWGROUP
                 CollectionViewGroup group = e.NewItems[0] as CollectionViewGroup;
-#endif
+
                 if (parentGroupInfo != null)
                 {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     if (group != null || parentGroupInfo.Level == -1)
-#else
-                    if (parentGroupInfo.Level == -1)
-#endif
                     {
                         insertSlot = parentGroupInfo.Slot + 1;
 
@@ -1331,7 +1336,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 if (insertSlot != -1)
                 {
                     bool isCollapsed = (parentGroupInfo != null) && ((parentGroupInfo.Visibility == Visibility.Collapsed) || _collapsedSlotsTable.Contains(parentGroupInfo.Slot));
-#if FEATURE_COLLECTIONVIEWGROUP
                     if (group != null)
                     {
                         if (group.Items != null)
@@ -1344,7 +1348,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         this.RowGroupHeadersTable.AddValue(insertSlot, newGroupInfo);
                     }
                     else
-#endif
                     {
                         // Assume we're adding a new row
                         int rowIndex = this.DataConnection.IndexOf(e.NewItems[0]);
@@ -1372,7 +1375,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             Debug.Assert(e.OldItems.Count == 1);
             if (e.OldItems != null && e.OldItems.Count > 0)
             {
-#if FEATURE_COLLECTIONVIEWGROUP
                 CollectionViewGroup removedGroup = e.OldItems[0] as CollectionViewGroup;
                 if (removedGroup != null)
                 {
@@ -1404,18 +1406,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     RemoveElementAt(groupInfo.Slot, null /*item*/, false /*isRow*/);
                 }
                 else
-#endif
                 {
                     // A single item was removed from a leaf group
                     DataGridRowGroupInfo parentGroupInfo = GetParentGroupInfo(sender);
                     if (parentGroupInfo != null)
                     {
                         int slot;
-#if FEATURE_COLLECTIONVIEWGROUP
                         if (parentGroupInfo.CollectionViewGroup == null && this.RowGroupHeadersTable.IndexCount > 0)
-#else
-                        if (this.RowGroupHeadersTable.IndexCount > 0)
-#endif
                         {
 #if FEATURE_IEDITABLECOLLECTIONVIEW
                             // In this case, we're removing from the root group.  If there are other groups, then this must
@@ -1463,6 +1460,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
+#endif
 
         private void EnsureRowDetailsVisibility(DataGridRow row, bool raiseNotification, bool animate)
         {
@@ -1741,6 +1739,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private DataGridRowGroupHeader GenerateRowGroupHeader(int slot, DataGridRowGroupInfo rowGroupInfo)
         {
+#if WINDOWS_UWP
+            // TODO - Can GenerateRowGroupHeader be commented out, as well as the entire DataGridRowGroupHeader class?
+#endif
             Debug.Assert(slot > -1);
             Debug.Assert(rowGroupInfo != null);
 
@@ -2386,9 +2387,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private void PopulateRowGroupHeadersTable()
         {
 #if FEATURE_ICOLLECTIONVIEW_GROUP
-            if (this.DataConnection.CollectionView != null
-                && this.DataConnection.CollectionView.CanGroup
-                && this.DataConnection.CollectionView.Groups != null)
+            if (this.DataConnection.CollectionView != null &&
+                this.DataConnection.CollectionView.CanGroup &&
+                this.DataConnection.CollectionView.Groups != null)
             {
                 int totalSlots = 0;
                 this._topLevelGroup = (INotifyCollectionChanged)this.DataConnection.CollectionView.Groups;
@@ -2424,7 +2425,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _groupsCollectionChangedListenersTable.Add(incc, weakCollectionChangedListener);
             }
         }
-#endif
 
         private void UnhookCollectionChangedListenerFromGroup(INotifyCollectionChanged incc, bool removeFromTable)
         {
@@ -2441,7 +2441,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void RefreshRowGroupHeaders()
         {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (this.DataConnection.CollectionView != null &&
                 this.DataConnection.CollectionView.CanGroup &&
                 this.DataConnection.CollectionView.Groups != null &&
@@ -2496,8 +2495,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 EnsureRowGroupSpacerColumnWidth(groupLevelCount);
             }
-#endif
         }
+#endif
 
         private void RemoveDisplayedElement(int slot, bool wasDeleted, bool updateSlotInformation)
         {

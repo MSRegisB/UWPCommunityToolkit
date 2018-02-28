@@ -182,13 +182,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private bool _temporarilyResetCurrentCell;
         private bool _isUserSorting; // True if we're currently in a user invoked sorting operation
         private ContentControl _topLeftCornerHeader;
-        private INotifyCollectionChanged _topLevelGroup;
         private ContentControl _topRightCornerHeader;
         private object _uneditedValue; // Represents the original current cell value at the time it enters editing mode.
         private string _updateSourcePath;
         private Dictionary<INotifyDataErrorInfo, string> _validationItems;
         private List<ValidationResult> _validationResults;
         private byte _verticalScrollChangesIgnored;
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+        private INotifyCollectionChanged _topLevelGroup;
+#endif
 #if FEATURE_VALIDATION_SUMMARY
         private ValidationSummaryItem _selectedValidationSummaryItem;
 #endif
@@ -199,9 +201,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         // set as the rows were scrolled off.
         private double _verticalOffset;
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
         // Cache event listeners for PropertyChanged and CollectionChanged events from CollectionViewGroups
         private Dictionary<INotifyPropertyChanged, WeakEventListener<DataGrid, object, PropertyChangedEventArgs>> _groupsPropertyChangedListenersTable = new Dictionary<INotifyPropertyChanged, WeakEventListener<DataGrid, object, PropertyChangedEventArgs>>();
         private Dictionary<INotifyCollectionChanged, WeakEventListener<DataGrid, object, NotifyCollectionChangedEventArgs>> _groupsCollectionChangedListenersTable = new Dictionary<INotifyCollectionChanged, WeakEventListener<DataGrid, object, NotifyCollectionChangedEventArgs>>();
+#endif
 
         /// <summary>
         /// Occurs one time for each public, non-static property in the bound data type when the
@@ -511,7 +515,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user can change 
+        /// Gets or sets a value indicating whether the user can change
         /// the column display order by dragging column headers with the mouse.
         /// </summary>
         public bool CanUserReorderColumns
@@ -2350,7 +2354,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         if (IsSlotVisible(newSlot))
                         {
                             DataGridRow newMouseOverRow = this.DisplayData.GetDisplayedElement(newSlot) as DataGridRow;
-                            Debug.Assert(newMouseOverRow != null);
+                            Debug.Assert(newMouseOverRow != null, "Expected non-null newMouseOverRow.");
                             if (newMouseOverRow != null)
                             {
                                 newMouseOverRow.ApplyState(true /*animate*/);
@@ -2766,7 +2770,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     else
                     {
                         rowGroupInfo = this.RowGroupHeadersTable.GetValueAt(this.RowGroupHeadersTable.GetPreviousIndex(slot));
-                        Debug.Assert(rowGroupInfo != null);
+                        Debug.Assert(rowGroupInfo != null, "Expected non-null rowGroupInfo.");
                         if (rowGroupInfo != null)
                         {
                             ExpandRowGroupParentChain(rowGroupInfo.Level, rowGroupInfo.Slot);
@@ -3162,39 +3166,30 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if !WINDOWS_UWP
+#if WINDOWS_UWP
+        /// <summary>
+        /// Scrolls the DataGrid according to the direction of the delta.
+        /// </summary>
+        /// <param name="e">PointerRoutedEventArgs</param>
+        protected override void OnPointerWheelChanged(PointerRoutedEventArgs e)
+        {
+            base.OnPointerWheelChanged(e);
+            if (!e.Handled)
+            {
+                // TODO - provide e.GetCurrentPoint(this).Properties.IsHorizontalMouseWheel as a param to ProcessMouseWheelScroll to scroll horizontally.
+                e.Handled = ProcessMouseWheelScroll(e.GetCurrentPoint(this).Properties.MouseWheelDelta);
+            }
+        }
+#else
         /// <summary>
         /// Scrolls the DataGrid according to the direction of the delta.
         /// </summary>
         /// <param name="e">MouseWheelEventArgs</param>
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
-            if (this.IsEnabled && !e.Handled && this.DisplayData.NumDisplayedScrollingElements > 0)
+            if (!e.Handled)
             {
-                double scrollHeight = 0;
-                if (e.Delta > 0)
-                {
-                    scrollHeight = Math.Max(-_verticalOffset, -DATAGRID_mouseWheelDelta);
-                }
-                else if (e.Delta < 0)
-                {
-                    if (_vScrollBar != null && this.VerticalScrollBarVisibility == ScrollBarVisibility.Visible)
-                    {
-                        scrollHeight = Math.Min(Math.Max(0, _vScrollBar.Maximum - _verticalOffset), DATAGRID_mouseWheelDelta);
-                    }
-                    else
-                    {
-                        double maximum = this.EdgedRowsHeightCalculated - this.CellsHeight;
-                        scrollHeight = Math.Min(Math.Max(0, maximum - _verticalOffset), DATAGRID_mouseWheelDelta);
-                    }
-                }
-
-                if (scrollHeight != 0)
-                {
-                    this.DisplayData.PendingVerticalScrollHeight = scrollHeight;
-                    InvalidateRowsMeasure(false /*invalidateIndividualRows*/);
-                    e.Handled = true;
-                }
+                e.Handled = ProcessMouseWheelScroll(e.Delta);
             }
         }
 #endif
@@ -4030,14 +4025,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if !WINDOWS_UWP
+#if WINDOWS_UWP
+        internal bool UpdateStateOnMouseLeftButtonDown(PointerRoutedEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit)
+#else
         internal bool UpdateStateOnMouseLeftButtonDown(MouseButtonEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit)
+#endif
         {
             bool ctrl, shift;
             KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
             return this.UpdateStateOnMouseLeftButtonDown(mouseButtonEventArgs, columnIndex, slot, allowEdit, shift, ctrl);
         }
-#endif
 
         internal void UpdateVerticalScrollBar()
         {
@@ -4803,11 +4800,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             int previousHeaderSlot = this.RowGroupHeadersTable.GetPreviousIndex(slot + 1);
-            DataGridRowGroupInfo rowGroupInfo = null;
             while (previousHeaderSlot >= 0)
             {
-                rowGroupInfo = this.RowGroupHeadersTable.GetValueAt(previousHeaderSlot);
-                Debug.Assert(rowGroupInfo != null);
+                DataGridRowGroupInfo rowGroupInfo = this.RowGroupHeadersTable.GetValueAt(previousHeaderSlot);
+                Debug.Assert(rowGroupInfo != null, "Expected non-null rowGroupInfo.");
                 if (level == rowGroupInfo.Level)
                 {
                     if (_collapsedSlotsTable.Contains(rowGroupInfo.Slot))
@@ -5413,6 +5409,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 return;
             }
+
             if (this.SelectionHasChanged)
             {
                 // selection is changing, don't raise CurrentCellChanged until it's done
@@ -5426,7 +5423,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (this._collapsedSlotsTable.Contains(this.CurrentSlot) && this.CurrentSlot != this.SlotFromRowIndex(this.DataConnection.NewItemPlaceholderIndex))
             {
                 DataGridRowGroupInfo rowGroupInfo = this.RowGroupHeadersTable.GetValueAt(this.RowGroupHeadersTable.GetPreviousIndex(this.CurrentSlot));
-                Debug.Assert(rowGroupInfo != null);
+                Debug.Assert(rowGroupInfo != null, "Expected non-null rowGroupInfo.");
                 if (rowGroupInfo != null)
                 {
                     this.ExpandRowGroupParentChain(rowGroupInfo.Level, rowGroupInfo.Slot);
@@ -6310,6 +6307,39 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return this._successfullyUpdatedSelection;
         }
 
+        private bool ProcessMouseWheelScroll(int delta)
+        {
+            if (this.IsEnabled && this.DisplayData.NumDisplayedScrollingElements > 0)
+            {
+                double scrollHeight = 0;
+                if (delta > 0)
+                {
+                    scrollHeight = Math.Max(-_verticalOffset, -DATAGRID_mouseWheelDelta);
+                }
+                else if (delta < 0)
+                {
+                    if (_vScrollBar != null && this.VerticalScrollBarVisibility == ScrollBarVisibility.Visible)
+                    {
+                        scrollHeight = Math.Min(Math.Max(0, _vScrollBar.Maximum - _verticalOffset), DATAGRID_mouseWheelDelta);
+                    }
+                    else
+                    {
+                        double maximum = this.EdgedRowsHeightCalculated - this.CellsHeight;
+                        scrollHeight = Math.Min(Math.Max(0, maximum - _verticalOffset), DATAGRID_mouseWheelDelta);
+                    }
+                }
+
+                if (scrollHeight != 0)
+                {
+                    this.DisplayData.PendingVerticalScrollHeight = scrollHeight;
+                    InvalidateRowsMeasure(false /*invalidateIndividualRows*/);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private bool ProcessNextKey(bool shift, bool ctrl)
         {
             DataGridColumn dataGridColumn = this.ColumnsInternal.FirstVisibleNonFillerColumn;
@@ -6695,6 +6725,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         return true;
                     }
+
                     if (shift)
                     {
                         // Shift without Ctrl
@@ -6960,7 +6991,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             this.CurrentColumnIndex = columnIndex;
             this.CurrentSlot = slot;
-
 
             if (this._temporarilyResetCurrentCell)
             {
@@ -7238,17 +7268,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if !WINDOWS_UWP
+#if WINDOWS_UWP
+        private bool UpdateStateOnMouseLeftButtonDown(PointerRoutedEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
+#else
         private bool UpdateStateOnMouseLeftButtonDown(MouseButtonEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
+#endif
         {
             bool beginEdit;
 
-            Debug.Assert(slot >= 0);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
 
             // Before changing selection, check if the current cell needs to be committed, and
-            // check if the current row needs to be committed. If any of those two operations are required and fail, 
+            // check if the current row needs to be committed. If any of those two operations are required and fail,
             // do not change selection, and do not change current cell.
-
             bool wasInEdit = this.EditingColumnIndex != -1;
 
             if (IsSlotOutOfBounds(slot))
@@ -7275,14 +7307,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 DataGridSelectionAction action;
                 if (this.SelectionMode == DataGridSelectionMode.Extended && shift)
                 {
-                    // Shift select multiple rows
+                    // Shift select multiple rows.
                     action = DataGridSelectionAction.SelectFromAnchorToCurrent;
                 }
-                else if (GetRowSelection(slot))  // Unselecting single row or Selecting a previously multi-selected row
+                else if (GetRowSelection(slot))
                 {
+                    // Unselecting single row or Selecting a previously multi-selected row.
                     if (!ctrl && this.SelectionMode == DataGridSelectionMode.Extended && _selectedItems.Count != 0)
                     {
-                        // Unselect everything except the row that was clicked on
+                        // Unselect everything except the row that was clicked on.
                         action = DataGridSelectionAction.SelectCurrent;
                     }
                     else if (ctrl && this.EditingRow == null)
@@ -7294,11 +7327,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         action = DataGridSelectionAction.None;
                     }
                 }
-                else // Selecting a single row or multi-selecting with Ctrl
+                else
                 {
+                    // Selecting a single row or multi-selecting with Ctrl.
                     if (this.SelectionMode == DataGridSelectionMode.Single || !ctrl)
                     {
-                        // Unselect the currectly selected rows except the new selected row
+                        // Unselect the currectly selected rows except the new selected row.
                         action = DataGridSelectionAction.SelectCurrent;
                     }
                     else
@@ -7306,6 +7340,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         action = DataGridSelectionAction.AddCurrentToSelection;
                     }
                 }
+
                 UpdateSelectionAndCurrency(columnIndex, slot, action, false /*scrollIntoView*/);
             }
             finally
@@ -7320,7 +7355,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             return true;
         }
-#endif
 
         /// <summary>
         /// Updates the DataGrid's validation results, modifies the ValidationSummary's items,
@@ -7331,7 +7365,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private void UpdateValidationResults(List<ValidationResult> newValidationResults, bool scrollIntoView)
         {
             bool validationResultsChanged = false;
-            Debug.Assert(this.EditingRow != null);
+            Debug.Assert(this.EditingRow != null, "Expected non-null EditingRow.");
 
             // Remove the validation results that have been fixed
             List<ValidationResult> removedValidationResults = new List<ValidationResult>();

@@ -18,6 +18,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 #else
 using System.Windows;
@@ -215,7 +216,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         public DataGridRowHeader()
         {
 #if WINDOWS_UWP
-            // TODO - listen to mouse button down, PointerEnter and PointerLeave.
+            this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRowHeader_PointerPressed), true /*handledEventsToo*/);
 #else
             this.AddHandler(FrameworkElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(DataGridRowHeader_MouseLeftButtonDown), true /*handledEventsToo*/);
             this.MouseEnter += new MouseEventHandler(DataGridRowHeader_MouseEnter);
@@ -492,14 +493,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 this.OwningRow.IsMouseOver = false;
             }
         }
+#endif
 
+#if WINDOWS_UWP
+        private void DataGridRowHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            // TODO - Should Touch/Pen be supported too?
+            if (this.OwningGrid != null && e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+#else
         private void DataGridRowHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (this.OwningGrid != null)
+#endif
             {
                 if (!e.Handled && this.OwningGrid.IsTabStop)
                 {
+#if WINDOWS_UWP
+                    bool success = this.OwningGrid.Focus(FocusState.Programmatic);
+#else
                     bool success = this.OwningGrid.Focus();
+#endif
                     Debug.Assert(success, "Expected successful focus change.");
                 }
 
@@ -513,6 +526,5 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 }
             }
         }
-#endif
     }
 }

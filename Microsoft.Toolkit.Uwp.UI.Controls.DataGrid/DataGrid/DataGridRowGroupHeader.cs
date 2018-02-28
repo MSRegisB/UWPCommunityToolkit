@@ -16,11 +16,13 @@ using System.Globalization;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 #if WINDOWS_UWP
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 #else
 using System.Windows;
@@ -67,7 +69,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DefaultStyleKey = typeof(DataGridRowGroupHeader);
 
 #if WINDOWS_UWP
-            // TODO - listen to mouse button down.
+            this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRowGroupHeader_PointerPressed), true /*handledEventsToo*/);
 #else
             this.AddHandler(FrameworkElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(DataGridRowGroupHeader_MouseLeftButtonDown), true /*handledEventsToo*/);
 #endif
@@ -379,10 +381,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if !WINDOWS_UWP
+#if WINDOWS_UWP
+        private void DataGridRowGroupHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            // TODO - Should Touch/Pen be supported too?
+            if (this.OwningGrid != null && e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+#else
         private void DataGridRowGroupHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (this.OwningGrid != null)
+#endif
             {
                 if (this.OwningGrid.IsDoubleClickRecordsClickOnCall(this) && !e.Handled)
                 {
@@ -393,14 +401,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     if (!e.Handled && this.OwningGrid.IsTabStop)
                     {
+#if WINDOWS_UWP
+                        bool success = this.OwningGrid.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+#else
                         bool success = this.OwningGrid.Focus();
-                        Debug.Assert(success);
+#endif
+                        Debug.Assert(success, "Expected successful focus change.");
                     }
+
                     e.Handled = this.OwningGrid.UpdateStateOnMouseLeftButtonDown(e, this.OwningGrid.CurrentColumnIndex, this.RowGroupInfo.Slot, false /*allowEdit*/);
                 }
             }
         }
-#endif
 
         private void EnsureChildClip(UIElement child, double frozenLeftEdge)
         {

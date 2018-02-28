@@ -460,7 +460,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
                 // Variables that track drag mode states get reset in DataGridColumnHeader_LostMouseCapture
 #if WINDOWS_UWP
-                // TODO - insert equivalent UWP code.
+                if (_capturedPointer != null)
+                {
+                    ReleasePointerCapture(_capturedPointer);
+                    _capturedPointer = null;
+                }
 #else
                 ReleaseMouseCapture();
 #endif
@@ -965,6 +969,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 #endif
             }
 
+#if WINDOWS_UWP
+            _capturedPointer = null;
+#endif
             _dragMode = DragMode.None;
             _dragColumn = null;
             _dragStart = null;

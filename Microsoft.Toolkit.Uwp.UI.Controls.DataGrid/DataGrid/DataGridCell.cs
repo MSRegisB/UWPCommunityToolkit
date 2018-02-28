@@ -12,10 +12,12 @@
 
 using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
+using Windows.Devices.Input;
 #if WINDOWS_UWP
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Shapes;
 #else
 using System.Windows;
@@ -56,7 +58,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         public DataGridCell()
         {
 #if WINDOWS_UWP
-            // TODO - listen to mouse button down, PointerEnter and PointerLeave.
+            this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridCell_PointerPressed), true /*handledEventsToo*/);
 #else
             this.AddHandler(FrameworkElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(DataGridCell_MouseLeftButtonDown), true);
             this.MouseEnter += new MouseEventHandler(DataGridCell_MouseEnter);
@@ -402,15 +404,29 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+#endif
+
+#if WINDOWS_UWP
+        private void DataGridCell_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            // TODO - Should Touch/Pen be supported too?
+            // OwningGrid is null for TopLeftHeaderCell and TopRightHeaderCell because they have no OwningRow
+            if (this.OwningGrid != null && e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+#else
         private void DataGridCell_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // OwningGrid is null for TopLeftHeaderCell and TopRightHeaderCell because they have no OwningRow
             if (this.OwningGrid != null)
+#endif
             {
                 if (!e.Handled && this.OwningGrid.IsTabStop)
                 {
+#if WINDOWS_UWP
+                    bool success = this.OwningGrid.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+#else
                     bool success = this.OwningGrid.Focus();
-                    Debug.Assert(success);
+#endif
+                    Debug.Assert(success, "Expected successful focus change.");
                 }
 
                 if (this.OwningRow != null)
@@ -422,6 +438,5 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
-#endif
     }
 }

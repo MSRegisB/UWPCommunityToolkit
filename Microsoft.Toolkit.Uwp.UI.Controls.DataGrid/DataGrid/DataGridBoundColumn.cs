@@ -60,7 +60,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     if (this._binding != null)
                     {
                         // Force the TwoWay binding mode if there is a Path present.  TwoWay binding requires a Path.
-                        if (!string.IsNullOrEmpty(this._binding.Path.Path))
+                        if (this._binding.Path != null && !string.IsNullOrEmpty(this._binding.Path.Path))
                         {
                             this._binding.Mode = BindingMode.TwoWay;
                         }

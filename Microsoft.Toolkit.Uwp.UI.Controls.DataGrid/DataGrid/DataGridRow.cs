@@ -16,10 +16,12 @@ using System.Reflection;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 #if WINDOWS_UWP
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
@@ -221,7 +223,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.Cells.CellRemoved += new EventHandler<DataGridCellEventArgs>(DataGridCellCollection_CellRemoved);
 
 #if WINDOWS_UWP
-// TODO - listen to mouse button down, PointerEnter and PointerLeave.
+            this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRow_PointerPressed), true /*handledEventsToo*/);
 #else
             this.AddHandler(FrameworkElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(DataGridRow_MouseLeftButtonDown), true);
             this.MouseEnter += new MouseEventHandler(DataGridRow_MouseEnter);
@@ -1357,10 +1359,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             this.IsMouseOver = false;
         }
+#endif
 
+#if WINDOWS_UWP
+        private void DataGridRow_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            // TODO - Should Touch/Pen be supported too?
+            if (this.OwningGrid != null && e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+#else
         private void DataGridRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (this.OwningGrid != null)
+#endif
             {
                 this.OwningGrid.IsDoubleClickRecordsClickOnCall(this);
                 if (this.OwningGrid.UpdatedStateOnMouseLeftButtonDown)
@@ -1373,7 +1383,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
-#endif
 
         private void DetailsContent_SizeChanged(object sender, SizeChangedEventArgs e)
         {
