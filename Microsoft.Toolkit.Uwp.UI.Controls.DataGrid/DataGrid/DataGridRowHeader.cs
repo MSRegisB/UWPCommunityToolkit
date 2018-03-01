@@ -11,6 +11,7 @@
 // ******************************************************************
 
 using System.Diagnostics;
+using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 #if WINDOWS_UWP
 using Windows.Devices.Input;
@@ -374,8 +375,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <returns>An automation peer for this <see cref="T:System.Windows.Controls.Primitives.DataGridRowHeader"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
-            // TODO - return new DataGridRowHeaderAutomationPeer(this);
-            return null;
+            return new DataGridRowHeaderAutomationPeer(this);
         }
 
         internal void ApplyOwnerStatus(bool animate)

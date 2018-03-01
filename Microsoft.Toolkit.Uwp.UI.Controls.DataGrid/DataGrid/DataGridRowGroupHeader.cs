@@ -13,6 +13,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 #if WINDOWS_UWP
@@ -532,8 +533,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <returns>An automation peer for this <see cref="T:System.Windows.Controls.Primitives.DataGridRowGroupHeader"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
-            // TODO - return new DataGridRowGroupHeaderAutomationPeer(this);
-            return null;
+            return new DataGridRowGroupHeaderAutomationPeer(this);
         }
 
 #if !WINDOWS_UWP

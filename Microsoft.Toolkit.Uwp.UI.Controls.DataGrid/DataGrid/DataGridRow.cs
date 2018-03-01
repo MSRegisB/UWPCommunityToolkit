@@ -13,6 +13,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 #if WINDOWS_UWP
@@ -868,7 +869,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_IEDITABLECOLLECTIONVIEW
             currentAddItemIsDataContext = this.OwningGrid.DataConnection.EditableCollectionView.CurrentAddItem == this.DataContext;
 #endif
-            Size desiredSize = base.MeasureOverride(availableSize);
+            Size desiredSize;
+            try
+            {
+                desiredSize = base.MeasureOverride(availableSize);
+            }
+            catch
+            {
+            }
+
             desiredSize.Width = Math.Max(desiredSize.Width, this.OwningGrid.CellsWidth);
             if (double.IsNaN(this.Height) && DoubleUtil.IsZero(this.MinHeight) &&
                 (this.Index == this.OwningGrid.DataConnection.NewItemPlaceholderIndex ||
@@ -957,8 +966,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <returns>An automation peer for this <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRow"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
-            // TODO - return new DataGridRowAutomationPeer(this);
-            return null;
+            return new DataGridRowAutomationPeer(this);
         }
 
         internal void ApplyCellsState(bool animate)

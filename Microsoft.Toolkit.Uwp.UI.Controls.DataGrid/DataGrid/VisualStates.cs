@@ -221,8 +221,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// </summary>
         public const string GroupValidation = "ValidationStates";
 
+#if FEATURE_VALIDATION
         // RuntimeValidationStates
         public const string StateInvalidUnfocused = "InvalidUnfocused";
+#endif
 
         /// <summary>
         /// Use VisualStateManager to change the visual state of the control.

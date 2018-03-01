@@ -11,6 +11,7 @@
 // ******************************************************************
 
 using System;
+using Microsoft.Toolkit.Uwp.Automation.Peers;
 #if WINDOWS_UWP
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -179,8 +180,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <returns>An automation peer for this <see cref="T:System.Windows.Controls.Primitives.DataGridDetailsPresenter"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
-            // TODO - return new DataGridDetailsPresenterAutomationPeer(this);
-            return null;
+            return new DataGridDetailsPresenterAutomationPeer(this);
         }
     }
 }

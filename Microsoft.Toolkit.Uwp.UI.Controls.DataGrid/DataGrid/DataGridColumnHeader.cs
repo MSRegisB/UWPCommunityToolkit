@@ -12,6 +12,7 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 #if WINDOWS_UWP
 using Windows.Devices.Input;
@@ -254,8 +255,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             if (this.OwningGrid != null && this.OwningColumn != this.OwningGrid.ColumnsInternal.FillerColumn)
             {
-                // TODO - return new DataGridColumnHeaderAutomationPeer(this);
-                return null;
+                return new DataGridColumnHeaderAutomationPeer(this);
             }
 
             return base.OnCreateAutomationPeer();

@@ -20,6 +20,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Security;
 using System.Text;
+using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 #if WINDOWS_UWP
@@ -796,7 +797,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.DropLocationIndicatorStyle"/> 
+        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.DropLocationIndicatorStyle"/>
         /// dependency property.
         /// </summary>
         public static readonly DependencyProperty DropLocationIndicatorStyleProperty =
@@ -1118,7 +1119,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         VisualStates.GoToState(this, true, VisualStates.StateInvalid, VisualStates.StateValid);
                     }
-
                     this.SetValueNoCallback(IsValidProperty, value);
                 }
             }
@@ -1510,6 +1510,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     dataGrid.SetValueNoCallback(e.Property, e.OldValue);
                     throw DataGridError.DataGrid.ValueMustBeGreaterThanOrEqualTo("value", "RowHeight", 0);
                 }
+
                 if (value > DataGridRow.DATAGRIDROW_maximumHeight)
                 {
                     dataGrid.SetValueNoCallback(e.Property, e.OldValue);
@@ -1908,7 +1909,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         /// <summary>
         /// Gets a collection that contains all the columns in the control.
-        /// </summary>      
+        /// </summary>
         public ObservableCollection<DataGridColumn> Columns
         {
             get
@@ -1942,6 +1943,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     throw DataGridError.DataGrid.ValueCannotBeSetToNull("value", "CurrentColumn");
                 }
+
                 if (this.CurrentColumn != dataGridColumn)
                 {
                     if (dataGridColumn.OwningGrid != this)
@@ -2016,6 +2018,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return null;
                 }
+
                 return this.DataConnection.GetDataItem(RowIndexFromSlot(this.CurrentSlot));
             }
         }
@@ -2380,7 +2383,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             set
             {
-                Debug.Assert(value >= 0);
+                Debug.Assert(value >= 0, "Expected positive NoCurrentCellChangeCount.");
                 this._noCurrentCellChangeCount = value;
                 if (value == 0)
                 {
@@ -2469,7 +2472,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     //     |           |           |             |            |       |
                     //     |  column0  |  column1  |   column2   |  column3   |<----->|
                     //     |           |           |             |            |  adj. |
-                    //
                     double adjustment = (this._horizontalOffset + value.Value.Width) - this.ColumnsInternal.VisibleEdgedColumnsWidth;
                     this.HorizontalAdjustment = Math.Min(this.HorizontalOffset, Math.Max(0, adjustment));
                 }
@@ -2503,7 +2505,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Indicates whether or not to use star-sizing logic.  If the DataGrid has infinite available space,
+        /// Gets a value indicating whether or not to use star-sizing logic.  If the DataGrid has infinite available space,
         /// then star sizing doesn't make sense.  In this case, all star columns grow to a predefined size of
         /// 10,000 pixels in order to show the developer that star columns shouldn't be used.
         /// </summary>
@@ -2585,7 +2587,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             set
             {
-                Debug.Assert(value >= 0);
+                Debug.Assert(value >= 0, "Expected positive NoSelectionChangeCount.");
                 this._noSelectionChangeCount = value;
                 if (value == 0)
                 {
@@ -2817,19 +2819,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         /// <summary>
         /// Measures the children of a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/> to prepare for
-        /// arranging them during the 
+        /// arranging them during the
         /// <see cref="M:System.Windows.Controls.DataGridRow.ArrangeOverride(System.Windows.Size)"/> pass.
         /// </summary>
         /// <returns>
         /// The size that the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/> determines it needs during layout, based on its calculations of child object allocated sizes.
         /// </returns>
         /// <param name="availableSize">
-        /// The available size that this element can give to child elements. Indicates an upper limit that 
+        /// The available size that this element can give to child elements. Indicates an upper limit that
         /// child elements should not exceed.
         /// </param>
         protected override Size MeasureOverride(Size availableSize)
         {
-            // Delay layout until after the initial measure to avoid invalid calculations when the 
+            // Delay layout until after the initial measure to avoid invalid calculations when the
             // DataGrid is not part of the visual tree
             if (!_measured)
             {
@@ -2887,7 +2889,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         public class DisplayIndexComparer : IComparer<DataGridColumn>
         {
-            // Calls CaseInsensitiveComparer.Compare with the parameters reversed. 
+            // Calls CaseInsensitiveComparer.Compare with the parameters reversed.
             int IComparer<DataGridColumn>.Compare(DataGridColumn x, DataGridColumn y)
             {
                 return (x.DisplayIndexWithFiller < y.DisplayIndexWithFiller) ? -1 : 1;
@@ -2920,9 +2922,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     this.ColumnsInternal.FillerColumn.IsRepresented = false;
                 }
-                _columnHeadersPresenter.OwningGrid = this;
-                // Columns were added before before our Template was applied, add the ColumnHeaders now
 
+                _columnHeadersPresenter.OwningGrid = this;
+
+                // Columns were added before before our Template was applied, add the ColumnHeaders now
                 List<DataGridColumn> sortedInternal = new List<DataGridColumn>(this.ColumnsItemsInternal);
                 sortedInternal.Sort(new DisplayIndexComparer());
                 foreach (DataGridColumn column in sortedInternal)
@@ -3092,8 +3095,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <returns>An automation peer for this <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGrid"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
-            // TODO - return new DataGridAutomationPeer(this);
-            return null;
+            return new DataGridAutomationPeer(this);
         }
 
         /// <summary>
@@ -3372,7 +3374,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal static DataGridCell GetOwningCell(FrameworkElement element)
         {
-            Debug.Assert(element != null);
+            Debug.Assert(element != null, "Expected non-null element.");
             DataGridCell cell = element as DataGridCell;
             while (element != null && cell == null)
             {
@@ -4054,7 +4056,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// If the editing element has focus, this method will set focus to the DataGrid itself
         /// in order to force the element to lose focus.  It will then wait for the editing element's
         /// LostFocus event, at which point it will perform the specified action.
-        /// 
         /// NOTE: It is important to understand that the specified action will be performed when the editing
         /// element loses focus only if this method returns true.  If it returns false, then the action
         /// will not be performed later on, and should instead be performed by the caller, if necessary.
@@ -4069,7 +4070,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 FrameworkElement editingElement = editingColumn.GetCellContent(this.EditingRow);
                 if (editingElement != null && editingElement.ContainsChild(_focusedObject))
                 {
-                    Debug.Assert(_lostFocusActions != null);
+                    Debug.Assert(_lostFocusActions != null, "Expected non-null _lostFocusActions.");
                     _lostFocusActions.Enqueue(action);
                     editingElement.LostFocus += new RoutedEventHandler(EditingElement_LostFocus);
                     this.IsTabStop = true;
@@ -4118,6 +4119,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 newCell.OwningColumn = column;
                 newCell.Visibility = column.Visibility;
             }
+
             newCell.EnsureStyle(null);
             row.Cells.Insert(column.Index, newCell);
         }
@@ -4173,7 +4175,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
-            Debug.Assert(dataGridRow != null);
+            Debug.Assert(dataGridRow != null, "Expected non-null dataGridRow.");
 
             // Cache these to see if they change later
             int currentRowIndex = this.CurrentSlot;
@@ -4244,6 +4246,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 return true;
             }
+
             Debug.Assert(this.EditingRow != null && this.EditingRow.Index >= -1);
             Debug.Assert(this.EditingRow.Slot < this.SlotCount);
             Debug.Assert(this.CurrentColumn != null);
@@ -4253,6 +4256,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 return false;
             }
+
             foreach (DataGridColumn column in this.Columns)
             {
                 if (!exitEditingMode && column.Index == this._editingColumnIndex && column is DataGridBoundColumn)
@@ -4335,7 +4339,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void CompleteCellsCollection(DataGridRow dataGridRow)
         {
-            Debug.Assert(dataGridRow != null);
+            Debug.Assert(dataGridRow != null, "Expected non-null dataGridRow.");
             int cellsInCollection = dataGridRow.Cells.Count;
             if (this.ColumnsItemsInternal.Count > cellsInCollection)
             {
@@ -4420,7 +4424,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     double oldDataHeight = cellsHeight;
                     cellsHeight -= horizScrollBarHeight;
-                    Debug.Assert(cellsHeight >= 0);
+                    Debug.Assert(cellsHeight >= 0, "Expected positive cellsHeight.");
                     needHorizScrollbarWithoutVertScrollbar = needHorizScrollbar = true;
                     if (allowVertScrollbar && (DoubleUtil.LessThanOrClose(totalVisibleWidth - cellsWidth, vertScrollBarWidth) ||
                         DoubleUtil.LessThanOrClose(cellsWidth - totalVisibleFrozenWidth, vertScrollBarWidth)))
@@ -4452,7 +4456,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount)
                 {
                     cellsWidth -= vertScrollBarWidth;
-                    Debug.Assert(cellsWidth >= 0);
+                    Debug.Assert(cellsWidth >= 0, "Expected positive cellsWidth.");
                     needVertScrollbar = true;
                 }
 
@@ -4469,7 +4473,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     cellsWidth += vertScrollBarWidth;
                     cellsHeight -= horizScrollBarHeight;
-                    Debug.Assert(cellsHeight >= 0);
+                    Debug.Assert(cellsHeight >= 0, "Expected positive cellsHeight.");
                     needVertScrollbar = false;
 
                     UpdateDisplayedRows(firstScrollingSlot, cellsHeight);
@@ -4478,7 +4482,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount)
                     {
                         cellsWidth -= vertScrollBarWidth;
-                        Debug.Assert(cellsWidth >= 0);
+                        Debug.Assert(cellsWidth >= 0, "Expected positive cellsWidth.");
                         needVertScrollbar = true;
                     }
 
@@ -4501,7 +4505,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount)
                     {
                         cellsWidth -= vertScrollBarWidth;
-                        Debug.Assert(cellsWidth >= 0);
+                        Debug.Assert(cellsWidth >= 0, "Expected positive cellsWidth.");
                         needVertScrollbar = true;
                     }
 
@@ -4521,7 +4525,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         DoubleUtil.LessThan(totalVisibleFrozenWidth, cellsWidth))
                     {
                         cellsHeight -= horizScrollBarHeight;
-                        Debug.Assert(cellsHeight >= 0);
+                        Debug.Assert(cellsHeight >= 0, "Expected positive cellsHeight.");
                         needHorizScrollbar = true;
                         UpdateDisplayedRows(this.DisplayData.FirstScrollingSlot, cellsHeight);
                     }
@@ -4622,7 +4626,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     this.FocusEditingCell(true);
                 }
 
-                Debug.Assert(_lostFocusActions != null);
+                Debug.Assert(_lostFocusActions != null, "Expected non-null _lostFocusActions.");
                 try
                 {
                     _executingLostFocusActions = true;
@@ -5060,7 +5064,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if !WINDOWS_UWP
+#if FEATURE_VALIDATION
         private void EditingElement_BindingValidationError(object sender, ValidationErrorEventArgs e)
         {
             if (e.Action == ValidationErrorEventAction.Added && e.Error.Exception != null && e.Error.ErrorContent != null)
@@ -5161,11 +5165,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     Debug.Assert(bindingData.BindingExpression.ParentBinding != null);
                     this._updateSourcePath = bindingData.BindingExpression.ParentBinding.Path != null ? bindingData.BindingExpression.ParentBinding.Path.Path : null;
-#if !WINDOWS_UWP
+#if FEATURE_VALIDATION
                     bindingData.Element.BindingValidationError += new EventHandler<ValidationErrorEventArgs>(EditingElement_BindingValidationError);
 #endif
                     bindingData.BindingExpression.UpdateSource();
-#if !WINDOWS_UWP
+#if FEATURE_VALIDATION
                     bindingData.Element.BindingValidationError -= new EventHandler<ValidationErrorEventArgs>(EditingElement_BindingValidationError);
 #endif
                 }
@@ -5249,6 +5253,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return false;
                 }
+
                 if (editingRow != this.EditingRow)
                 {
                     return true;
@@ -5358,13 +5363,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (this.EditingRow == null || this.DataConnection.EndingEdit)
             {
-                Debug.Assert(this._editingColumnIndex == -1);
+                Debug.Assert(this._editingColumnIndex == -1, "Expected _editingColumnIndex equal to -1.");
                 return;
             }
 
             if (this._editingColumnIndex != -1)
             {
-                Debug.Assert(this._editingColumnIndex >= 0);
+                Debug.Assert(this._editingColumnIndex >= 0, "Expected positive _editingColumnIndex.");
                 Debug.Assert(this._editingColumnIndex < this.ColumnsItemsInternal.Count);
                 Debug.Assert(this._editingColumnIndex == this.CurrentColumnIndex);
                 Debug.Assert(this.EditingRow != null && this.EditingRow.Slot == this.CurrentSlot);
@@ -5539,6 +5544,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     text.Append(cellContent.Content);
                 }
+
                 if (cellIndex < e.ClipboardRowContent.Count - 1)
                 {
                     text.Append('\t');
@@ -5713,9 +5719,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridRow dataGridRow,
             DataGridCell dataGridCell)
         {
-            Debug.Assert(dataGridColumn != null);
-            Debug.Assert(dataGridRow != null);
-            Debug.Assert(dataGridCell != null);
+            Debug.Assert(dataGridColumn != null, "Expected non-null dataGridColumn.");
+            Debug.Assert(dataGridRow != null, "Expected non-null dataGridRow.");
+            Debug.Assert(dataGridCell != null, "Expected non-null dataGridCell.");
 
             FrameworkElement element = null;
             DataGridBoundColumn dataGridBoundColumn = dataGridColumn as DataGridBoundColumn;
@@ -5746,7 +5752,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
                 }
 
-#if !WINDOWS_UWP
+#if FEATURE_VALIDATION
                 // If we are replacing the editingElement on the cell with the displayElement, and there
                 // were validation errors present on the editingElement, we need to manually force the
                 // control to go to the InvalidUnfocused state to support Implicit Styles.  The reason
@@ -7610,7 +7616,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (this.EditingRow != null)
             {
                 object dataItem = this.EditingRow.DataContext;
-                Debug.Assert(dataItem != null);
+                Debug.Assert(dataItem != null, "Expected non-null dataItem.");
 
                 if (!this._initializingNewItem)
                 {
@@ -7806,7 +7812,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             INotifyDataErrorInfo indei = sender as INotifyDataErrorInfo;
             if (this._validationItems.ContainsKey(indei))
             {
-                Debug.Assert(this.EditingRow != null);
+                Debug.Assert(this.EditingRow != null, "Expected non-null EditingRow.");
 
                 // Determine the binding path.
                 string bindingPath = this._validationItems[indei];

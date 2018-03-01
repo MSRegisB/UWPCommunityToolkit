@@ -23,7 +23,7 @@
 
     <Style TargetType="local:DataGrid">
         <!--Remove UseSystemFocusVisuals in WPF-->
-        <Setter Property="UseSystemFocusVisuals" Value="True"/>
+        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/> TODO - Add this?-->
         <Setter Property="RowBackground" Value="#AAEAEFF4"/>
         <Setter Property="AlternatingRowBackground" Value="#00FFFFFF"/>
         <Setter Property="Background" Value="#FFFFFFFF"/>
@@ -68,7 +68,8 @@
                                             <VisualState x:Name="SortDescending">
                                                 <Storyboard>
                                                     <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1.0"/>
-                                                    <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(RenderTransform).ScaleY" Duration="0" To="-.9"/>
+                                                    <!-- SL5 <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(RenderTransform).ScaleY" Duration="0" To="-.9"/>-->
+                                                    <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(Path.RenderTransform).(ScaleTransform.ScaleY)" Duration="0" To="-.9"/>
                                                 </Storyboard>
                                             </VisualState>
                                         </VisualStateGroup>
@@ -76,7 +77,7 @@
 
                                     <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="#66808080" Grid.ColumnSpan="2"/>
 
-                                    <Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" Opacity="0" >
+                                    <!--<Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" Opacity="0" >
                                         <Rectangle.Fill>
                                             <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
                                                 <GradientStop Color="#FFFFFFFF" Offset="0.015"/>
@@ -85,11 +86,11 @@
                                                 <GradientStop Color="#C6FFFFFF" Offset="1"/>
                                             </LinearGradientBrush>
                                         </Rectangle.Fill>
-                                    </Rectangle>
+                                    </Rectangle>-->
 
                                     <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
@@ -110,12 +111,14 @@
         </Setter>
         <Setter Property="DropLocationIndicatorStyle">
             <Setter.Value>
-                <Style TargetType="ContentControl">
+                <!-- SL5 <Style TargetType="ContentControl">-->
+                <Style TargetType="Control">
                     <Setter Property="Background" Value="#FF3F4346"/>
                     <Setter Property="Width" Value="2"/>
                     <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate TargetType="ContentControl">
+                            <!-- SL5 <ControlTemplate TargetType="ContentControl">-->
+                            <ControlTemplate TargetType="Control">
                                 <Rectangle Fill="{TemplateBinding Background}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"/>
                             </ControlTemplate>
                         </Setter.Value>
@@ -148,8 +151,8 @@
                                     <ControlTemplate x:Key="TopLeftHeaderTemplate" TargetType="localprimitives:DataGridColumnHeader">
                                         <Grid Name="Root">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
                                             <Border BorderThickness="0,0,1,0" BorderBrush="#FFC9CACA" Background="#FF1F3B53" Grid.RowSpan="2">
@@ -173,8 +176,8 @@
                                     <ControlTemplate x:Key="TopRightHeaderTemplate" TargetType="localprimitives:DataGridColumnHeader">
                                         <Grid Name="RootElement">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
                                             <Border BorderThickness="1,0,0,0" BorderBrush="#FFC9CACA" Background="#FF1F3B53" Grid.RowSpan="2">
@@ -196,13 +199,13 @@
 
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
+                                    <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
+                                    <!--<RowDefinition Height="Auto"/>-->
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
@@ -219,7 +222,7 @@
                                 <Grid Grid.Column="1" Grid.Row="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Rectangle Name="FrozenColumnScrollBarSpacer"/>
                                     <ScrollBar Name="HorizontalScrollbar" Grid.Column="1" Orientation="Horizontal" Height="18" Margin="-1,0,-1,-1"/>
@@ -257,14 +260,15 @@
                                 <VisualState x:Name="Invalid">
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="InvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
-                                        <ColorAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFFFFFFF"/>
+                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFFFFFFF"/>-->
+                                        <ColorAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FFFFFFFF"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
@@ -303,19 +307,28 @@
                                 <VisualState x:Name="Normal"/>
                                 <VisualState x:Name="MouseOver">
                                     <Storyboard>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FF448DCA"/>
+                                        <!-- SL5 <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FF448DCA"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[3].Color" To="#7FFFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" To="#CCFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" To="#F2FFFFFF"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" To="#F2FFFFFF"/>-->
+                                        <!--<ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#FF448DCA"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#7FFFFFFF"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#CCFFFFFF"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#F2FFFFFF"/>-->
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FF448DCA"/>
+                                        <!-- SL5 <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FF448DCA"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[0].Color" To="#D8FFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" To="#C6FFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" To="#8CFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[3].Color" To="#3FFFFFFF"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[3].Color" To="#3FFFFFFF"/>-->
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#FF448DCA"/>
+                                        <!--<ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" To="#D8FFFFFF"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#C6FFFFFF"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#8CFFFFFF"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#3FFFFFFF"/>-->
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -329,20 +342,21 @@
                                 <VisualState x:Name="SortDescending">
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1.0"/>
-                                        <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(RenderTransform).ScaleY" Duration="0" To="-.9"/>
+                                        <!-- SL5 <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(RenderTransform).ScaleY" Duration="0" To="-.9"/>-->
+                                        <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(Path.RenderTransform).(ScaleTransform.ScaleY)" Duration="0" To="-.9"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
                         <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="#FF1F3B53" Grid.ColumnSpan="2"/>
 
-                        <Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" >
+                        <!--<Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" >
                             <Rectangle.Fill>
                                 <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
                                     <GradientStop Color="#FCFFFFFF" Offset="0.015"/>
@@ -351,11 +365,11 @@
                                     <GradientStop Color="#D1FFFFFF" Offset="1"/>
                                 </LinearGradientBrush>
                             </Rectangle.Fill>
-                        </Rectangle>
+                        </Rectangle>-->
 
                         <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
@@ -408,7 +422,8 @@
                                 <VisualState x:Name="UnfocusedSelected">
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FFE1E7EC"/>
+                                        <!-- SL5 <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FFE1E7EC"/>-->
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#FFE1E7EC"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -425,13 +440,13 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
                         <Grid.Resources>
@@ -480,14 +495,18 @@
                                             <VisualState x:Name="Normal"/>
                                             <VisualState x:Name="MouseOver">
                                                 <Storyboard>
-                                                    <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Stroke).Color" Duration="0" To="#FF6DBDD1"/>
-                                                    <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FF6DBDD1"/>
+                                                    <!-- SL5 <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Stroke).Color" Duration="0" To="#FF6DBDD1"/>-->
+                                                    <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="#FF6DBDD1"/>
+                                                    <!-- SL5 <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FF6DBDD1"/>-->
+                                                    <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FF6DBDD1"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="Pressed">
                                                 <Storyboard>
-                                                    <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Stroke).Color" Duration="0" To="#FF6DBDD1"/>
-                                                    <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FF6DBDD1"/>
+                                                    <!-- SL5 <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Stroke).Color" Duration="0" To="#FF6DBDD1"/>-->
+                                                    <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="#FF6DBDD1"/>
+                                                    <!-- SL5 <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FF6DBDD1"/>-->
+                                                    <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FF6DBDD1"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="Disabled">
@@ -523,11 +542,11 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
@@ -566,14 +585,16 @@
                                 <VisualState x:Name="Normal"/>
                                 <VisualState x:Name="MouseOver">
                                     <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#99D5EAF1"/>
+                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#99D5EAF1"/>-->
+                                        <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#99D5EAF1"/>
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="MouseOverCurrentRowSelected">
                                     <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>
+                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>-->
+                                        <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FFD5EAF1"/>
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                     </Storyboard>
@@ -586,14 +607,16 @@
                                 </VisualState>
                                 <VisualState x:Name="NormalSelected">
                                     <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>
+                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>-->
+                                        <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FFD5EAF1"/>
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="NormalEditingRow">
                                     <Storyboard>
-                                        <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>
+                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>-->
+                                        <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FFD5EAF1"/>
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                     </Storyboard>
@@ -605,26 +628,32 @@
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                         <DoubleAnimation Storyboard.TargetName="RowInvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
-                                        <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[0].Color" Duration="0" To="#FFDC000C"/>
+                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[0].Color" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[0].Color" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" Duration="0" To="#FFDC000C"/>
-                                        <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" Duration="0" To="#FFDC000C"/>
+                                        <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" Duration="0" To="#FFDC000C"/>-->
+                                        <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
+                                        <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
+                                        <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
+                                        <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
+                                        <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
+                                        <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
                         <Border BorderBrush="#FFFFFFFF" BorderThickness="1,0,1,0" Grid.RowSpan="3" Grid.ColumnSpan="2">
