@@ -64,7 +64,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [StyleTypedProperty(Property = "CellStyle", StyleTargetType = typeof(DataGridCell))]
     [StyleTypedProperty(Property = "ColumnHeaderStyle", StyleTargetType = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeader))]
     [StyleTypedProperty(Property = "DragIndicatorStyle", StyleTargetType = typeof(ContentControl))]
-    [StyleTypedProperty(Property = "DropLocationIndicatorStyle", StyleTargetType = typeof(ContentControl))]
+    [StyleTypedProperty(Property = "DropLocationIndicatorStyle", StyleTargetType = typeof(Control))]
     [StyleTypedProperty(Property = "RowHeaderStyle", StyleTargetType = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
     [StyleTypedProperty(Property = "RowStyle", StyleTargetType = typeof(DataGridRow))]
     public partial class DataGrid : Control
@@ -930,6 +930,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     dataGrid.EnsureColumnHeadersVisibility();
                     if (!newValueCols)
                     {
+                        // TODO - is Size.Empty correct or should it be new Size(0.0, 0.0)?
                         dataGrid._columnHeadersPresenter.Measure(Size.Empty);
                     }
                     else
@@ -980,6 +981,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 dataGrid._topLeftCornerHeader.Visibility = newValueRows && newValueCols ? Visibility.Visible : Visibility.Collapsed;
                 if (dataGrid._topLeftCornerHeader.Visibility == Visibility.Collapsed)
                 {
+                    // TODO - is Size.Empty correct or should it be new Size(0.0, 0.0)?
                     dataGrid._topLeftCornerHeader.Measure(Size.Empty);
                 }
             }

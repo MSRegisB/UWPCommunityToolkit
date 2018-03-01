@@ -77,7 +77,7 @@
 
                                     <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="#66808080" Grid.ColumnSpan="2"/>
 
-                                    <!--<Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" Opacity="0" >
+                                    <Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" Opacity="0" >
                                         <Rectangle.Fill>
                                             <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
                                                 <GradientStop Color="#FFFFFFFF" Offset="0.015"/>
@@ -86,7 +86,7 @@
                                                 <GradientStop Color="#C6FFFFFF" Offset="1"/>
                                             </LinearGradientBrush>
                                         </Rectangle.Fill>
-                                    </Rectangle>-->
+                                    </Rectangle>
 
                                     <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
                                         <Grid.ColumnDefinitions>
@@ -111,13 +111,11 @@
         </Setter>
         <Setter Property="DropLocationIndicatorStyle">
             <Setter.Value>
-                <!-- SL5 <Style TargetType="ContentControl">-->
                 <Style TargetType="Control">
                     <Setter Property="Background" Value="#FF3F4346"/>
                     <Setter Property="Width" Value="2"/>
                     <Setter Property="Template">
                         <Setter.Value>
-                            <!-- SL5 <ControlTemplate TargetType="ContentControl">-->
                             <ControlTemplate TargetType="Control">
                                 <Rectangle Fill="{TemplateBinding Background}" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"/>
                             </ControlTemplate>
@@ -311,10 +309,10 @@
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[3].Color" To="#7FFFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" To="#CCFFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" To="#F2FFFFFF"/>-->
-                                        <!--<ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#FF448DCA"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#FF448DCA"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#7FFFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#CCFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#F2FFFFFF"/>-->
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#F2FFFFFF"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
@@ -325,10 +323,10 @@
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" To="#8CFFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[3].Color" To="#3FFFFFFF"/>-->
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#FF448DCA"/>
-                                        <!--<ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" To="#D8FFFFFF"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" To="#D8FFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#C6FFFFFF"/>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#8CFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#3FFFFFFF"/>-->
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#3FFFFFFF"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -356,7 +354,7 @@
 
                         <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="#FF1F3B53" Grid.ColumnSpan="2"/>
 
-                        <!--<Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" >
+                        <Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" >
                             <Rectangle.Fill>
                                 <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
                                     <GradientStop Color="#FCFFFFFF" Offset="0.015"/>
@@ -365,7 +363,7 @@
                                     <GradientStop Color="#D1FFFFFF" Offset="1"/>
                                 </LinearGradientBrush>
                             </Rectangle.Fill>
-                        </Rectangle>-->
+                        </Rectangle>
 
                         <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
@@ -395,7 +393,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:DataGridRow">
-                    <localprimitives:DataGridFrozenGrid Name="Root">
+                    <localprimitives:DataGridFrozenGrid Name="RowRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
@@ -476,7 +474,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:DataGridRowGroupHeader">
-                    <localprimitives:DataGridFrozenGrid Name="Root" Background="{TemplateBinding Background}">
+                    <localprimitives:DataGridFrozenGrid Name="RowGroupHeaderRoot" Background="{TemplateBinding Background}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CurrentStates">
                                 <VisualState x:Name="Regular"/>
@@ -579,7 +577,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="localprimitives:DataGridRowHeader">
-                    <Grid Name="Root">
+                    <Grid Name="RowHeaderRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
@@ -658,8 +656,8 @@
 
                         <Border BorderBrush="#FFFFFFFF" BorderThickness="1,0,1,0" Grid.RowSpan="3" Grid.ColumnSpan="2">
                             <Grid Background="{TemplateBinding Background}">
-                                <Rectangle x:Name="RowInvalidVisualElement" Stretch="Fill" Grid.RowSpan="3" Grid.ColumnSpan="2" Fill="#FFF7D8DB" Opacity="0"/>
-                                <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Grid.RowSpan="3" Grid.ColumnSpan="2" Fill="Transparent"/>
+                                <Rectangle x:Name="RowInvalidVisualElement" Stretch="Fill" Fill="#FFF7D8DB" Opacity="0"/>
+                                <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="Transparent"/>
                             </Grid>
                         </Border>
                         <Rectangle Name="HorizontalSeparator" Grid.ColumnSpan="2" Grid.Row="2" Height="1" Margin="1,0,1,0" HorizontalAlignment="Stretch" Fill="{TemplateBinding SeparatorBrush}" Visibility="{TemplateBinding SeparatorVisibility}"/>
@@ -685,7 +683,6 @@
                                 </LinearGradientBrush>
                             </Path.Fill>
                         </Path>
-
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

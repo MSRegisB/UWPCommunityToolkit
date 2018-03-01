@@ -59,7 +59,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
     [TemplateVisualState(Name = VisualStates.StateRowValid, GroupName = VisualStates.GroupValidation)]
     public partial class DataGridRowHeader : ContentControl
     {
-        private const string DATAGRIDROWHEADER_elementRootName = "Root";
+        private const string DATAGRIDROWHEADER_elementRootName = "RowHeaderRoot";
         private const double DATAGRIDROWHEADER_separatorThickness = 1;
 
         private const string DATAGRIDROWHEADER_stateMouseOver = "MouseOver";

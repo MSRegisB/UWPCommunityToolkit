@@ -76,7 +76,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const string DATAGRIDROW_elementBottomGridLine = "BottomGridLine";
         private const string DATAGRIDROW_elementCells = "CellsPresenter";
         private const string DATAGRIDROW_elementDetails = "DetailsPresenter";
-        internal const string DATAGRIDROW_elementRoot = "Root";
+        internal const string DATAGRIDROW_elementRoot = "RowRoot";
         internal const string DATAGRIDROW_elementRowHeader = "RowHeader";
 
         private const string DATAGRIDROW_stateAlternate = "NormalAlternatingRow";

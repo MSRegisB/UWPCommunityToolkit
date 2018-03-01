@@ -155,7 +155,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             if (this.OwningGrid == null || this.Children.Count == 0)
             {
-                return Size.Empty;
+                return new Size(0.0, 0.0);
             }
 
             double desiredWidth = this.OwningGrid.AreRowDetailsFrozen ?

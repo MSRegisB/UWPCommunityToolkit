@@ -307,7 +307,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             if (!this.OwningGrid.AreColumnHeadersVisible)
             {
-                return Size.Empty;
+                return new Size(0.0, 0.0);
             }
 
             double height = this.OwningGrid.ColumnHeaderHeight;
