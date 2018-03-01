@@ -22,8 +22,6 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="local:DataGrid">
-        <!--Remove UseSystemFocusVisuals in WPF-->
-        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/> TODO - Add this?-->
         <Setter Property="RowBackground" Value="#AAEAEFF4"/>
         <Setter Property="AlternatingRowBackground" Value="#00FFFFFF"/>
         <Setter Property="Background" Value="#FFFFFFFF"/>
@@ -126,6 +124,8 @@
         </Setter>
         <Setter Property="GridLinesVisibility" Value="Vertical"/>
         <Setter Property="HorizontalGridLinesBrush" Value="#FFC9CACA"/>
+        <!--Remove UseSystemFocusVisuals in WPF-->
+        <Setter Property="UseSystemFocusVisuals" Value="True"/>
         <Setter Property="IsTabStop" Value="True"/>
         <Setter Property="VerticalGridLinesBrush" Value="#FFC9CACA"/>
         <Setter Property="Template">
@@ -239,6 +239,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -293,6 +294,7 @@
         <Setter Property="Foreground" Value="#FF000000"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SeparatorBrush" Value="#FFC9CACA"/>
         <Setter Property="Padding" Value="4"/>
@@ -389,6 +391,7 @@
     </Style>
 
     <Style TargetType="local:DataGridRow">
+        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -468,6 +471,7 @@
 
     <Style TargetType="local:DataGridRowGroupHeader">
         <!--<Setter Property="Cursor" Value="Arrow"/> Cursor does not exist in UWP-->
+        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Background" Value="#FFE4E8EA"/>
         <Setter Property="Height" Value="20"/>
@@ -571,6 +575,7 @@
 
     <Style TargetType="localprimitives:DataGridRowHeader">
         <Setter Property="Background" Value="#99E9EEF4"/>
+        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SeparatorBrush" Value="#FFFFFFFF"/>
         <Setter Property="SeparatorVisibility" Value="Collapsed"/>

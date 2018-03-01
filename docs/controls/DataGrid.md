@@ -17,8 +17,21 @@ The DataGrid supports ...
 ## Syntax
 
 ```xaml
-<controls:DataGrid x:Name="DataGridControl"
-	Column="1">
+<controls:DataGrid
+    x:Name="dgNames"
+    AutoGenerateColumns="False"
+    HeadersVisibility="All"
+    IsReadOnly="True"
+    CanUserSortColumns="True"                
+    CanUserReorderColumns="True"
+    CanUserResizeColumns="True"
+    HorizontalScrollBarVisibility="Visible"
+    VerticalScrollBarVisibility="Visible"              
+    ItemsSource="{Binding Source={StaticResource cvsNames}}">
+    <controls:DataGrid.Columns>
+        <controls:DataGridTextColumn Header="First Name" Binding="{Binding FirstName}"/>
+        <controls:DataGridTextColumn Header="Last Name" Binding="{Binding LastName}"/>
+    </controls:DataGrid.Columns>
 </controls:DataGrid>
 ```
 

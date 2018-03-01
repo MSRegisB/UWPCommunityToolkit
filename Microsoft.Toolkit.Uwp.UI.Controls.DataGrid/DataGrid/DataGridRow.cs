@@ -80,25 +80,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         internal const string DATAGRIDROW_elementRowHeader = "RowHeader";
 
         private const string DATAGRIDROW_stateAlternate = "NormalAlternatingRow";
-        private const string DATAGRIDROW_stateAlternateLegacy = "Normal AlternatingRow";
         private const string DATAGRIDROW_stateMouseOver = "MouseOver";
         private const string DATAGRIDROW_stateMouseOverEditing = "MouseOverUnfocusedEditing";
-        private const string DATAGRIDROW_stateMouseOverEditingLegacy = "MouseOver Unfocused Editing";
         private const string DATAGRIDROW_stateMouseOverEditingFocused = "MouseOverEditing";
-        private const string DATAGRIDROW_stateMouseOverEditingFocusedLegacy = "MouseOver Editing";
         private const string DATAGRIDROW_stateMouseOverSelected = "MouseOverUnfocusedSelected";
-        private const string DATAGRIDROW_stateMouseOverSelectedLegacy = "MouseOver Unfocused Selected";
         private const string DATAGRIDROW_stateMouseOverSelectedFocused = "MouseOverSelected";
-        private const string DATAGRIDROW_stateMouseOverSelectedFocusedLegacy = "MouseOver Selected";
         private const string DATAGRIDROW_stateNormal = "Normal";
         private const string DATAGRIDROW_stateNormalEditing = "UnfocusedEditing";
-        private const string DATAGRIDROW_stateNormalEditingLegacy = "Unfocused Editing";
         private const string DATAGRIDROW_stateNormalEditingFocused = "NormalEditing";
-        private const string DATAGRIDROW_stateNormalEditingFocusedLegacy = "Normal Editing";
         private const string DATAGRIDROW_stateSelected = "UnfocusedSelected";
-        private const string DATAGRIDROW_stateSelectedLegacy = "Unfocused Selected";
         private const string DATAGRIDROW_stateSelectedFocused = "NormalSelected";
-        private const string DATAGRIDROW_stateSelectedFocusedLegacy = "Normal Selected";
 
         private const byte DATAGRIDROW_stateMouseOverCode = 0;
         private const byte DATAGRIDROW_stateMouseOverEditingCode = 1;
@@ -145,23 +136,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DATAGRIDROW_stateSelectedFocusedCode, // DATAGRIDROW_stateNormalEditingFocusedCode's fallback
             DATAGRIDROW_stateSelectedFocusedCode, // DATAGRIDROW_stateSelectedCode's fallback
             DATAGRIDROW_stateNormalCode // DATAGRIDROW_stateSelectedFocusedCode's fallback
-        };
-
-        // TODO - get rid of legacy states.
-        // In SL 2, our state names had spaces.  Going forward, we are removing the spaces but still
-        // supporting the legacy state names
-        private static string[] _legacyStateNames = new string[]
-        {
-            DATAGRIDROW_stateMouseOver,
-            DATAGRIDROW_stateMouseOverEditingLegacy,
-            DATAGRIDROW_stateMouseOverEditingFocusedLegacy,
-            DATAGRIDROW_stateMouseOverSelectedLegacy,
-            DATAGRIDROW_stateMouseOverSelectedFocusedLegacy,
-            DATAGRIDROW_stateNormal,
-            DATAGRIDROW_stateNormalEditingLegacy,
-            DATAGRIDROW_stateNormalEditingFocusedLegacy,
-            DATAGRIDROW_stateSelectedLegacy,
-            DATAGRIDROW_stateSelectedFocusedLegacy
         };
 
         private static string[] _stateNames = new string[]
@@ -1068,7 +1042,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 Debug.Assert(stateCode != DATAGRIDROW_stateNullCode, "stateCode other than DATAGRIDROW_stateNullCode.");
 
                 string storyboardName;
-                string legacyStoryboardName;
                 while (stateCode != DATAGRIDROW_stateNullCode)
                 {
                     if (stateCode == DATAGRIDROW_stateNormalCode)
@@ -1076,27 +1049,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         if (this.Index % 2 == 1)
                         {
                             storyboardName = DATAGRIDROW_stateAlternate;
-                            legacyStoryboardName = DATAGRIDROW_stateAlternateLegacy;
                         }
                         else
                         {
                             storyboardName = DATAGRIDROW_stateNormal;
-                            legacyStoryboardName = DATAGRIDROW_stateNormal;
                         }
                     }
                     else
                     {
                         storyboardName = _stateNames[stateCode];
-                        legacyStoryboardName = _legacyStateNames[stateCode];
                     }
 
-                    if (VisualStateManager.GoToState(this, storyboardName, animate) || VisualStateManager.GoToState(this, legacyStoryboardName, animate))
+                    if (VisualStateManager.GoToState(this, storyboardName, animate))
                     {
                         break;
                     }
                     else
                     {
-                        // The state wasn't implemented so fall back to the next one
+                        // The state wasn't implemented so fall back to the next one.
                         stateCode = _fallbackStateMapping[stateCode];
                     }
                 }

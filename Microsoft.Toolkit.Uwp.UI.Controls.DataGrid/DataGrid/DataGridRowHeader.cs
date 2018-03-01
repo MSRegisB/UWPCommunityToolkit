@@ -64,34 +64,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private const string DATAGRIDROWHEADER_stateMouseOver = "MouseOver";
         private const string DATAGRIDROWHEADER_stateMouseOverCurrentRow = "MouseOverCurrentRow";
-        private const string DATAGRIDROWHEADER_stateMouseOverCurrentRowLegacy = "MouseOver CurrentRow";
         private const string DATAGRIDROWHEADER_stateMouseOverEditingRow = "MouseOverUnfocusedEditingRow";
-        private const string DATAGRIDROWHEADER_stateMouseOverEditingRowLegacy = "MouseOver Unfocused EditingRow";
         private const string DATAGRIDROWHEADER_stateMouseOverEditingRowFocused = "MouseOverEditingRow";
-        private const string DATAGRIDROWHEADER_stateMouseOverEditingRowFocusedLegacy = "MouseOver EditingRow";
         private const string DATAGRIDROWHEADER_stateMouseOverSelected = "MouseOverUnfocusedSelected";
-        private const string DATAGRIDROWHEADER_stateMouseOverSelectedLegacy = "MouseOver Unfocused Selected";
         private const string DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRow = "MouseOverUnfocusedCurrentRowSelected";
-        private const string DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowLegacy = "MouseOver Unfocused CurrentRow Selected";
         private const string DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocused = "MouseOverCurrentRowSelected";
-        private const string DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocusedLegacy = "MouseOver CurrentRow Selected";
         private const string DATAGRIDROWHEADER_stateMouseOverSelectedFocused = "MouseOverSelected";
-        private const string DATAGRIDROWHEADER_stateMouseOverSelectedFocusedLegacy = "MouseOver Selected";
         private const string DATAGRIDROWHEADER_stateNormal = "Normal";
         private const string DATAGRIDROWHEADER_stateNormalCurrentRow = "NormalCurrentRow";
-        private const string DATAGRIDROWHEADER_stateNormalCurrentRowLegacy = "Normal CurrentRow";
         private const string DATAGRIDROWHEADER_stateNormalEditingRow = "UnfocusedEditingRow";
-        private const string DATAGRIDROWHEADER_stateNormalEditingRowLegacy = "Unfocused EditingRow";
-        private const string DATAGRIDROWHEADER_stateNormalEditingRowFocusedLegacy = "NormalEditingRow";
         private const string DATAGRIDROWHEADER_stateNormalEditingRowFocused = "Normal EditingRow";
         private const string DATAGRIDROWHEADER_stateSelected = "UnfocusedSelected";
-        private const string DATAGRIDROWHEADER_stateSelectedLegacy = "Unfocused Selected";
         private const string DATAGRIDROWHEADER_stateSelectedCurrentRow = "UnfocusedCurrentRowSelected";
-        private const string DATAGRIDROWHEADER_stateSelectedCurrentRowLegacy = "Unfocused CurrentRow Selected";
         private const string DATAGRIDROWHEADER_stateSelectedCurrentRowFocused = "NormalCurrentRowSelected";
-        private const string DATAGRIDROWHEADER_stateSelectedCurrentRowFocusedLegacy = "Normal CurrentRow Selected";
         private const string DATAGRIDROWHEADER_stateSelectedFocused = "NormalSelected";
-        private const string DATAGRIDROWHEADER_stateSelectedFocusedLegacy = "Normal Selected";
 
         private const byte DATAGRIDROWHEADER_stateMouseOverCode = 0;
         private const byte DATAGRIDROWHEADER_stateMouseOverCurrentRowCode = 1;
@@ -165,28 +151,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             DATAGRIDROWHEADER_stateNormalEditingRowFocusedCode,
             DATAGRIDROWHEADER_stateMouseOverEditingRowCode,
             DATAGRIDROWHEADER_stateMouseOverEditingRowFocusedCode
-        };
-
-        // TODO - Delete use of legacy state names
-        // In SL 2, our state names had spaces.  Going forward, we are removing the spaces but still supporting the legacy state names
-        private static string[] _legacyStateNames = new string[]
-        {
-            DATAGRIDROWHEADER_stateMouseOver,
-            DATAGRIDROWHEADER_stateMouseOverCurrentRowLegacy,
-            DATAGRIDROWHEADER_stateMouseOverEditingRowLegacy,
-            DATAGRIDROWHEADER_stateMouseOverEditingRowFocusedLegacy,
-            DATAGRIDROWHEADER_stateMouseOverSelectedLegacy,
-            DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowLegacy,
-            DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocusedLegacy,
-            DATAGRIDROWHEADER_stateMouseOverSelectedFocusedLegacy,
-            DATAGRIDROWHEADER_stateNormal,
-            DATAGRIDROWHEADER_stateNormalCurrentRowLegacy,
-            DATAGRIDROWHEADER_stateNormalEditingRowLegacy,
-            DATAGRIDROWHEADER_stateNormalEditingRowFocusedLegacy,
-            DATAGRIDROWHEADER_stateSelectedLegacy,
-            DATAGRIDROWHEADER_stateSelectedCurrentRowLegacy,
-            DATAGRIDROWHEADER_stateSelectedCurrentRowFocusedLegacy,
-            DATAGRIDROWHEADER_stateSelectedFocusedLegacy
         };
 
         private static string[] _stateNames = new string[]
@@ -435,7 +399,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 while (stateCode != DATAGRIDROWHEADER_stateNullCode)
                 {
                     storyboardName = _stateNames[stateCode];
-                    if (VisualStateManager.GoToState(this, storyboardName, animate) || VisualStateManager.GoToState(this, _legacyStateNames[stateCode], animate))
+                    if (VisualStateManager.GoToState(this, storyboardName, animate))
                     {
                         break;
                     }

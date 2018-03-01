@@ -62,7 +62,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private const double DATAGRIDCOLUMNHEADER_separatorThickness = 1;
 
 #if WINDOWS_UWP
-        private static CoreCursorType _originalCursor;
+        private static CoreCursor _originalCursor;
 #else
         private static Cursor _originalCursor;
 #endif
@@ -75,7 +75,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private static double _frozenColumnsWidth;
 
 #if WINDOWS_UWP
-        private CoreCursorType _cursor;
         private Pointer _capturedPointer;
 #endif
         private Visibility _desiredSeparatorVisibility;
@@ -362,6 +361,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         internal void OnMouseLeftButtonDown(ref bool handled, Point mousePosition)
 #endif
         {
+            Debug.WriteLine("DGColumnHeader.OnLeftMouseButtonDown");
+
             this.IsPressed = true;
 
             if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
@@ -394,7 +395,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     previousColumn = this.OwningGrid.ColumnsInternal.GetPreviousVisibleNonFillerColumn(currentColumn);
                 }
 
-                if (_dragMode == DragMode.MouseDown && _dragColumn == null && (distanceFromRight <= DATAGRIDCOLUMNHEADER_resizeRegionWidth))
+                if (_dragMode == DragMode.MouseDown && _dragColumn == null && distanceFromRight <= DATAGRIDCOLUMNHEADER_resizeRegionWidth)
                 {
                     handled = TrySetResizeColumn(currentColumn);
                 }
@@ -416,6 +417,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         internal void OnMouseLeftButtonUp(ref bool handled, Point mousePosition, Point mousePositionHeaders)
         {
+            Debug.WriteLine("DGColumnHeader.OnMouseLeftButtonUp");
+
             this.IsPressed = false;
 
             if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
@@ -485,6 +488,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         internal void OnMouseMove(ref bool handled, Point mousePosition, Point mousePositionHeaders)
         {
+            Debug.WriteLine("DGColumnHeader.OnMouseMove");
+
             if (handled || this.OwningGrid == null || this.OwningGrid.ColumnHeaders == null)
             {
                 return;
@@ -499,9 +504,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             OnMouseMove_Reorder(ref handled, mousePosition, mousePositionHeaders, distanceFromLeft, distanceFromRight);
 
-            // if we still haven't done anything about moving the mouse while
+            // If we still haven't done anything about moving the mouse while
             // the button is down, we remember that we're dragging, but we don't
-            // claim to have actually handled the event
+            // claim to have actually handled the event.
             if (_dragMode == DragMode.MouseDown)
             {
                 _dragMode = DragMode.Drag;
@@ -958,16 +963,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// </summary>
         private void OnLostMouseCapture()
         {
+            Debug.WriteLine("DGColumnHeader.OnLostMouseCapture");
+
             // When we stop interacting with the column headers, we need to reset the drag mode
             // and close any popups if they are open.
+#if WINDOWS_UWP
+            if (_dragColumn != null && _dragColumn.HeaderCell != null && Window.Current.CoreWindow.PointerCursor.Id == (uint)_dragColumn.HeaderCell.GetHashCode())
+            {
+                Window.Current.CoreWindow.PointerCursor = _originalCursor;
+            }
+#else
             if (_dragColumn != null && _dragColumn.HeaderCell != null)
             {
-#if WINDOWS_UWP
-                _dragColumn.HeaderCell._cursor = _originalCursor;
-#else
                 _dragColumn.HeaderCell.Cursor = _originalCursor;
-#endif
             }
+#endif
 
 #if WINDOWS_UWP
             _capturedPointer = null;
@@ -991,12 +1001,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <param name="mousePosition">mouse position relative to the DataGridColumnHeader</param>
         private void OnMouseEnter(Point mousePosition)
         {
-            // TODO - code removal correct?
-            // this.IsMouseOver = true;
+            Debug.WriteLine("DGColumnHeader.OnMouseEnter");
+
             SetDragCursor(mousePosition);
-#if WINDOWS_UWP
-            Window.Current.CoreWindow.PointerCursor = new CoreCursor(_cursor, 0);
-#endif
         }
 
         /// <summary>
@@ -1004,10 +1011,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// </summary>
         private void OnMouseLeave()
         {
-            // TODO - code removal correct?
-            // this.IsMouseOver = false;
+            Debug.WriteLine("DGColumnHeader.OnMouseLeave");
+
 #if WINDOWS_UWP
-            Window.Current.CoreWindow.PointerCursor = new CoreCursor(_cursor, 0);
+            if (_dragMode == DragMode.None && Window.Current.CoreWindow.PointerCursor.Id == (uint)GetHashCode())
+            {
+                Window.Current.CoreWindow.PointerCursor = _originalCursor;
+            }
 #endif
         }
 
@@ -1165,10 +1175,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 (distanceFromLeft <= DATAGRIDCOLUMNHEADER_resizeRegionWidth && previousColumn != null && CanResizeColumn(previousColumn)))
             {
 #if WINDOWS_UWP
-                if (_cursor != CoreCursorType.SizeWestEast)
+                if (Window.Current.CoreWindow.PointerCursor.Type != CoreCursorType.SizeWestEast)
                 {
-                    _originalCursor = _cursor;
-                    _cursor = CoreCursorType.SizeWestEast;
+                    _originalCursor = Window.Current.CoreWindow.PointerCursor;
+                    Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.SizeWestEast, (uint)GetHashCode());
                 }
 #else
                 if (this.Cursor != Cursors.SizeWE)
@@ -1181,7 +1191,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             else
             {
 #if WINDOWS_UWP
-                _cursor = _originalCursor;
+                if (Window.Current.CoreWindow.PointerCursor.Id == (uint)GetHashCode())
+                {
+                    Window.Current.CoreWindow.PointerCursor = _originalCursor;
+                }
 #else
                 this.Cursor = _originalCursor;
 #endif

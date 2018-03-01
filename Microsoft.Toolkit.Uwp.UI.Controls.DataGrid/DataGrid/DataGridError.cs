@@ -129,7 +129,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             }
         }
 
-        // TODO - Is this used?
         public static class DataGridAutomationPeer
         {
             public static InvalidOperationException OperationCannotBePerformed()

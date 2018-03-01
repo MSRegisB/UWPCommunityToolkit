@@ -21,6 +21,7 @@ using System.Linq;
 using System.Collections.Specialized;
 using Microsoft.Toolkit.Uwp.Helpers;
 #endif
+using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 #if WINDOWS_UWP
 using Windows.Foundation;
@@ -1712,7 +1713,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <returns></returns>
         private DataGridRow GenerateRow(int rowIndex, int slot, object dataContext)
         {
-            Debug.Assert(rowIndex > -1);
+            Debug.Assert(rowIndex >= 0, "Expected positive rowIndex.");
             DataGridRow dataGridRow = GetGeneratedRow(dataContext);
             if (dataGridRow == null)
             {
@@ -1725,13 +1726,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 OnLoadingRow(new DataGridRowEventArgs(dataGridRow));
 
-                /* TODO - uncomment after DataGridAutomationPeer creation
                 DataGridAutomationPeer peer = DataGridAutomationPeer.FromElement(this) as DataGridAutomationPeer;
                 if (peer != null)
                 {
                     peer.UpdateRowPeerEventsSource(dataGridRow);
                 }
-                */
             }
 
             return dataGridRow;
@@ -1742,8 +1741,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if WINDOWS_UWP
             // TODO - Can GenerateRowGroupHeader be commented out, as well as the entire DataGridRowGroupHeader class?
 #endif
-            Debug.Assert(slot > -1);
-            Debug.Assert(rowGroupInfo != null);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
+            Debug.Assert(rowGroupInfo != null, "Expected non-null rowGroupInfo.");
 
             DataGridRowGroupHeader groupHeader = this.DisplayData.GetUsedGroupHeader() ?? new DataGridRowGroupHeader();
             groupHeader.OwningGrid = this;
@@ -1792,13 +1791,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             OnLoadingRowGroup(new DataGridRowGroupHeaderEventArgs(groupHeader));
 
-            /* TODO - uncomment after DataGridAutomationPeer creation
+#if FEATURE_ICOLLECTIONVIEW_GROUP
             DataGridAutomationPeer peer = DataGridAutomationPeer.FromElement(this) as DataGridAutomationPeer;
             if (peer != null)
             {
                 peer.UpdateRowGroupHeaderPeerEventsSource(groupHeader);
             }
-            */
+#endif
 
             return groupHeader;
         }
@@ -2895,13 +2894,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 Debug.Assert(DoubleUtil.GreaterThanOrClose(this.NegVerticalOffset, 0));
                 Debug.Assert(DoubleUtil.GreaterThanOrClose(this._verticalOffset, this.NegVerticalOffset));
 
-                /* TODO - uncomment after DataGridAutomationPeer creation
                 DataGridAutomationPeer peer = DataGridAutomationPeer.FromElement(this) as DataGridAutomationPeer;
                 if (peer != null)
                 {
                     peer.RaiseAutomationScrollEvents();
                 }
-                */
             }
             finally
             {
