@@ -75,11 +75,11 @@
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualStateGroup.Transitions>
                                     <VisualTransition GeneratedDuration="0" />
-                                    <VisualTransition To="MouseOver" GeneratedDuration="0:0:0.1" />
+                                    <VisualTransition To="PointerOver" GeneratedDuration="0:0:0.1" />
                                     <VisualTransition To="Pressed" GeneratedDuration="0:0:0.1" />
                                 </VisualStateGroup.Transitions>
                                 <VisualState x:Name="Normal" />
-                                <VisualState x:Name="MouseOver">
+                                <VisualState x:Name="PointerOver">
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="Box" Storyboard.TargetProperty="Opacity" To=".65" Duration="0" />
                                         <ColorAnimation Storyboard.TargetName="BoxMiddleStroke" Storyboard.TargetProperty="Color" To="{StaticResource MiddleBoxStrokeBrushOver}" Duration="0" />

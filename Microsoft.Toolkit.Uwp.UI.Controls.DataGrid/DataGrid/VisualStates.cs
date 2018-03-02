@@ -34,9 +34,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         public const string StateNormal = "Normal";
 
         /// <summary>
-        /// MouseOver state
+        /// PointerOver state
         /// </summary>
-        public const string StateMouseOver = "MouseOver";
+        public const string StatePointerOver = "PointerOver";
 
         /// <summary>
         /// Pressed state

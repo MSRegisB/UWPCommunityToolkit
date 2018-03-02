@@ -36,7 +36,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [TemplatePart(Name = DATAGRIDCELL_elementRightGridLine, Type = typeof(Rectangle))]
 
     [TemplateVisualState(Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = VisualStates.StateMouseOver, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = VisualStates.StatePointerOver, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StateUnselected, GroupName = VisualStates.GroupSelection)]
     [TemplateVisualState(Name = VisualStates.StateSelected, GroupName = VisualStates.GroupSelection)]
     [TemplateVisualState(Name = VisualStates.StateUnfocused, GroupName = VisualStates.GroupFocus)]
@@ -201,26 +201,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private bool IsMouseOver
+        private bool IsPointerOver
         {
             get
             {
-                return this.OwningRow != null && this.OwningRow.MouseOverColumnIndex == this.ColumnIndex;
+                return this.OwningRow != null && this.OwningRow.PointerOverColumnIndex == this.ColumnIndex;
             }
 
             set
             {
                 Debug.Assert(this.OwningRow != null, "Expected non-null owning DataGridRow.");
 
-                if (value != this.IsMouseOver)
+                if (value != this.IsPointerOver)
                 {
                     if (value)
                     {
-                        this.OwningRow.MouseOverColumnIndex = this.ColumnIndex;
+                        this.OwningRow.PointerOverColumnIndex = this.ColumnIndex;
                     }
                     else
                     {
-                        this.OwningRow.MouseOverColumnIndex = null;
+                        this.OwningRow.PointerOverColumnIndex = null;
                     }
                 }
             }
@@ -276,9 +276,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // CommonStates
-            if (this.IsMouseOver)
+            if (this.IsPointerOver)
             {
-                VisualStates.GoToState(this, animate, VisualStates.StateMouseOver, VisualStates.StateNormal);
+                VisualStates.GoToState(this, animate, VisualStates.StatePointerOver, VisualStates.StateNormal);
             }
             else
             {
@@ -392,7 +392,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (this.OwningRow != null)
             {
-                this.IsMouseOver = true;
+                this.IsPointerOver = true;
             }
         }
 
@@ -400,7 +400,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (this.OwningRow != null)
             {
-                this.IsMouseOver = false;
+                this.IsPointerOver = false;
             }
         }
 

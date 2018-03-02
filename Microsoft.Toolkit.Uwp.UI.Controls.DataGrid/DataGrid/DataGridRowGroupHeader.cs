@@ -224,7 +224,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
 #if WINDOWS_UWP
-        private bool IsMouseOver
+        private bool IsPointerOver
         {
             get;
             set;
@@ -278,9 +278,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         internal void ApplyState(bool useTransitions)
         {
             // Common States
-            if (this.IsMouseOver)
+            if (this.IsPointerOver)
             {
-                VisualStates.GoToState(this, useTransitions, VisualStates.StateMouseOver, VisualStates.StateNormal);
+                VisualStates.GoToState(this, useTransitions, VisualStates.StatePointerOver, VisualStates.StateNormal);
             }
             else
             {
@@ -549,7 +549,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // TODO - removing line correct?
-            // this.IsMouseOver = true;
+            // this.IsPointerOver = true;
             ApplyState(true /*useTransitions*/);
         }
 
@@ -565,7 +565,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // TODO - removing line correct?
-            // this.IsMouseOver = false;
+            // this.IsPointerOver = false;
             ApplyState(true /*useTransitions*/);
         }
 #endif

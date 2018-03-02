@@ -55,12 +55,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
     [TemplateVisualState(Name = DATAGRIDROW_stateSelected, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = DATAGRIDROW_stateSelectedFocused, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOver, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOverEditing, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOverEditingFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROW_statePointerOver, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROW_statePointerOverEditing, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROW_statePointerOverEditingFocused, GroupName = VisualStates.GroupCommon)]
 
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOverSelected, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROW_stateMouseOverSelectedFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROW_statePointerOverSelected, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROW_statePointerOverSelectedFocused, GroupName = VisualStates.GroupCommon)]
 
     [TemplateVisualState(Name = VisualStates.StateInvalid, GroupName = VisualStates.GroupValidation)]
     [TemplateVisualState(Name = VisualStates.StateValid, GroupName = VisualStates.GroupValidation)]
@@ -80,22 +80,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         internal const string DATAGRIDROW_elementRowHeader = "RowHeader";
 
         private const string DATAGRIDROW_stateAlternate = "NormalAlternatingRow";
-        private const string DATAGRIDROW_stateMouseOver = "MouseOver";
-        private const string DATAGRIDROW_stateMouseOverEditing = "MouseOverUnfocusedEditing";
-        private const string DATAGRIDROW_stateMouseOverEditingFocused = "MouseOverEditing";
-        private const string DATAGRIDROW_stateMouseOverSelected = "MouseOverUnfocusedSelected";
-        private const string DATAGRIDROW_stateMouseOverSelectedFocused = "MouseOverSelected";
+        private const string DATAGRIDROW_statePointerOver = "PointerOver";
+        private const string DATAGRIDROW_statePointerOverEditing = "PointerOverUnfocusedEditing";
+        private const string DATAGRIDROW_statePointerOverEditingFocused = "PointerOverEditing";
+        private const string DATAGRIDROW_statePointerOverSelected = "PointerOverUnfocusedSelected";
+        private const string DATAGRIDROW_statePointerOverSelectedFocused = "PointerOverSelected";
         private const string DATAGRIDROW_stateNormal = "Normal";
         private const string DATAGRIDROW_stateNormalEditing = "UnfocusedEditing";
         private const string DATAGRIDROW_stateNormalEditingFocused = "NormalEditing";
         private const string DATAGRIDROW_stateSelected = "UnfocusedSelected";
         private const string DATAGRIDROW_stateSelectedFocused = "NormalSelected";
 
-        private const byte DATAGRIDROW_stateMouseOverCode = 0;
-        private const byte DATAGRIDROW_stateMouseOverEditingCode = 1;
-        private const byte DATAGRIDROW_stateMouseOverEditingFocusedCode = 2;
-        private const byte DATAGRIDROW_stateMouseOverSelectedCode = 3;
-        private const byte DATAGRIDROW_stateMouseOverSelectedFocusedCode = 4;
+        private const byte DATAGRIDROW_statePointerOverCode = 0;
+        private const byte DATAGRIDROW_statePointerOverEditingCode = 1;
+        private const byte DATAGRIDROW_statePointerOverEditingFocusedCode = 2;
+        private const byte DATAGRIDROW_statePointerOverSelectedCode = 3;
+        private const byte DATAGRIDROW_statePointerOverSelectedFocusedCode = 4;
         private const byte DATAGRIDROW_stateNormalCode = 5;
         private const byte DATAGRIDROW_stateNormalEditingCode = 6;
         private const byte DATAGRIDROW_stateNormalEditingFocusedCode = 7;
@@ -108,29 +108,29 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             DATAGRIDROW_stateNormalCode,
             DATAGRIDROW_stateNormalCode,
-            DATAGRIDROW_stateMouseOverCode,
-            DATAGRIDROW_stateMouseOverCode,
+            DATAGRIDROW_statePointerOverCode,
+            DATAGRIDROW_statePointerOverCode,
             DATAGRIDROW_stateNullCode,
             DATAGRIDROW_stateNullCode,
             DATAGRIDROW_stateNullCode,
             DATAGRIDROW_stateNullCode,
             DATAGRIDROW_stateSelectedCode,
             DATAGRIDROW_stateSelectedFocusedCode,
-            DATAGRIDROW_stateMouseOverSelectedCode,
-            DATAGRIDROW_stateMouseOverSelectedFocusedCode,
+            DATAGRIDROW_statePointerOverSelectedCode,
+            DATAGRIDROW_statePointerOverSelectedFocusedCode,
             DATAGRIDROW_stateNormalEditingCode,
             DATAGRIDROW_stateNormalEditingFocusedCode,
-            DATAGRIDROW_stateMouseOverEditingCode,
-            DATAGRIDROW_stateMouseOverEditingFocusedCode
+            DATAGRIDROW_statePointerOverEditingCode,
+            DATAGRIDROW_statePointerOverEditingFocusedCode
         };
 
         private static byte[] _fallbackStateMapping = new byte[]
         {
-            DATAGRIDROW_stateNormalCode, // DATAGRIDROW_stateMouseOverCode's fallback
-            DATAGRIDROW_stateMouseOverEditingFocusedCode, // DATAGRIDROW_stateMouseOverEditingCode's fallback
-            DATAGRIDROW_stateNormalEditingFocusedCode, // DATAGRIDROW_stateMouseOverEditingFocusedCode's fallback
-            DATAGRIDROW_stateMouseOverSelectedFocusedCode, // DATAGRIDROW_stateMouseOverSelectedCode's fallback
-            DATAGRIDROW_stateSelectedFocusedCode, // DATAGRIDROW_stateMouseOverSelectedFocusedCode's fallback
+            DATAGRIDROW_stateNormalCode, // DATAGRIDROW_statePointerOverCode's fallback
+            DATAGRIDROW_statePointerOverEditingFocusedCode, // DATAGRIDROW_statePointerOverEditingCode's fallback
+            DATAGRIDROW_stateNormalEditingFocusedCode, // DATAGRIDROW_statePointerOverEditingFocusedCode's fallback
+            DATAGRIDROW_statePointerOverSelectedFocusedCode, // DATAGRIDROW_statePointerOverSelectedCode's fallback
+            DATAGRIDROW_stateSelectedFocusedCode, // DATAGRIDROW_statePointerOverSelectedFocusedCode's fallback
             DATAGRIDROW_stateNullCode, // DATAGRIDROW_stateNormalCode's fallback
             DATAGRIDROW_stateNormalEditingFocusedCode, // DATAGRIDROW_stateNormalEditingCode's fallback
             DATAGRIDROW_stateSelectedFocusedCode, // DATAGRIDROW_stateNormalEditingFocusedCode's fallback
@@ -140,11 +140,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private static string[] _stateNames = new string[]
         {
-            DATAGRIDROW_stateMouseOver,
-            DATAGRIDROW_stateMouseOverEditing,
-            DATAGRIDROW_stateMouseOverEditingFocused,
-            DATAGRIDROW_stateMouseOverSelected,
-            DATAGRIDROW_stateMouseOverSelectedFocused,
+            DATAGRIDROW_statePointerOver,
+            DATAGRIDROW_statePointerOverEditing,
+            DATAGRIDROW_statePointerOverEditingFocused,
+            DATAGRIDROW_statePointerOverSelected,
+            DATAGRIDROW_statePointerOverSelectedFocused,
             DATAGRIDROW_stateNormal,
             DATAGRIDROW_stateNormalEditing,
             DATAGRIDROW_stateNormalEditingFocused,
@@ -177,7 +177,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataGridCell _fillerCell;
         private Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader _headerElement;
         private double _lastHorizontalOffset;
-        private int? _mouseOverColumnIndex;    // TODO: -1 could be used for the column header later. Else make this an int.
+        private int? _pointerOverColumnIndex;    // TODO: -1 could be used for the column header later. Else make this an int.
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/> class.
@@ -189,7 +189,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.Index = -1;
             this.IsValid = true;
             this.Slot = -1;
-            this._mouseOverColumnIndex = null;
+            this._pointerOverColumnIndex = null;
             this._detailsDesiredHeight = double.NaN;
             this._detailsLoaded = false;
             this._appliedDetailsVisibility = Visibility.Collapsed;
@@ -510,24 +510,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             private set;
         }
 
-        internal bool IsMouseOver
+        internal bool IsPointerOver
         {
             get
             {
-                return this.OwningGrid != null && this.OwningGrid.MouseOverRowIndex == this.Index;
+                return this.OwningGrid != null && this.OwningGrid.PointerOverRowIndex == this.Index;
             }
 
             set
             {
-                if (this.OwningGrid != null && value != this.IsMouseOver)
+                if (this.OwningGrid != null && value != this.IsPointerOver)
                 {
                     if (value)
                     {
-                        this.OwningGrid.MouseOverRowIndex = this.Index;
+                        this.OwningGrid.PointerOverRowIndex = this.Index;
                     }
                     else
                     {
-                        this.OwningGrid.MouseOverRowIndex = null;
+                        this.OwningGrid.PointerOverRowIndex = null;
                     }
                 }
             }
@@ -568,37 +568,37 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal int? MouseOverColumnIndex
+        internal int? PointerOverColumnIndex
         {
             get
             {
-                return this._mouseOverColumnIndex;
+                return this._pointerOverColumnIndex;
             }
 
             set
             {
-                if (this._mouseOverColumnIndex != value)
+                if (this._pointerOverColumnIndex != value)
                 {
-                    DataGridCell oldMouseOverCell = null;
-                    if (this._mouseOverColumnIndex != null && this.OwningGrid.IsSlotVisible(this.Slot))
+                    DataGridCell oldPointerOverCell = null;
+                    if (this._pointerOverColumnIndex != null && this.OwningGrid.IsSlotVisible(this.Slot))
                     {
-                        if (this._mouseOverColumnIndex > -1)
+                        if (this._pointerOverColumnIndex > -1)
                         {
-                            oldMouseOverCell = this.Cells[(int)this._mouseOverColumnIndex];
+                            oldPointerOverCell = this.Cells[(int)this._pointerOverColumnIndex];
                         }
                     }
 
-                    this._mouseOverColumnIndex = value;
-                    if (oldMouseOverCell != null && this.Visibility == Visibility.Visible)
+                    this._pointerOverColumnIndex = value;
+                    if (oldPointerOverCell != null && this.Visibility == Visibility.Visible)
                     {
-                        oldMouseOverCell.ApplyCellState(true /*animate*/);
+                        oldPointerOverCell.ApplyCellState(true /*animate*/);
                     }
 
-                    if (this._mouseOverColumnIndex != null && this.OwningGrid != null && this.OwningGrid.IsSlotVisible(this.Slot))
+                    if (this._pointerOverColumnIndex != null && this.OwningGrid != null && this.OwningGrid.IsSlotVisible(this.Slot))
                     {
-                        if (this._mouseOverColumnIndex > -1)
+                        if (this._pointerOverColumnIndex > -1)
                         {
-                            this.Cells[(int)this._mouseOverColumnIndex].ApplyCellState(true /*animate*/);
+                            this.Cells[(int)this._pointerOverColumnIndex].ApplyCellState(true /*animate*/);
                         }
                     }
                 }
@@ -1028,7 +1028,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     idealStateMappingIndex += 4;
                 }
 
-                if (this.IsMouseOver)
+                if (this.IsPointerOver)
                 {
                     idealStateMappingIndex += 2;
                 }
@@ -1330,12 +1330,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if !WINDOWS_UWP
         private void DataGridRow_MouseEnter(object sender, MouseEventArgs e)
         {
-            this.IsMouseOver = true;
+            this.IsPointerOver = true;
         }
 
         private void DataGridRow_MouseLeave(object sender, MouseEventArgs e)
         {
-            this.IsMouseOver = false;
+            this.IsPointerOver = false;
         }
 #endif
 

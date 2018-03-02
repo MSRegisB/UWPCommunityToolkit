@@ -158,7 +158,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private Queue<Action> _lostFocusActions;
         private bool _makeFirstDisplayedCellCurrentCellPending;
         private bool _measured;
-        private int? _mouseOverRowIndex;    // -1 is used for the 'new row'
+        private int? _pointerOverRowIndex;    // -1 is used for the 'new row'
         // the number of pixels of the firstDisplayedScrollingCol which are not displayed
         private double _negHorizontalOffset;
 
@@ -374,7 +374,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.AnchorSlot = -1;
             this._lastEstimatedRow = -1;
             this._editingColumnIndex = -1;
-            this._mouseOverRowIndex = null;
+            this._pointerOverRowIndex = null;
             this.CurrentCellCoordinates = new DataGridCellCoordinates(-1, -1);
 
             this.RowGroupHeaderHeightEstimate = DATAGRID_defaultRowHeight;
@@ -2323,45 +2323,45 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             set;
         }
 
-        internal int? MouseOverRowIndex
+        internal int? PointerOverRowIndex
         {
             get
             {
-                return this._mouseOverRowIndex;
+                return this._pointerOverRowIndex;
             }
 
             set
             {
-                if (this._mouseOverRowIndex != value)
+                if (this._pointerOverRowIndex != value)
                 {
-                    DataGridRow oldMouseOverRow = null;
-                    if (_mouseOverRowIndex.HasValue)
+                    DataGridRow oldPointerOverRow = null;
+                    if (_pointerOverRowIndex.HasValue)
                     {
-                        int oldSlot = SlotFromRowIndex(_mouseOverRowIndex.Value);
+                        int oldSlot = SlotFromRowIndex(_pointerOverRowIndex.Value);
                         if (IsSlotVisible(oldSlot))
                         {
-                            oldMouseOverRow = this.DisplayData.GetDisplayedElement(oldSlot) as DataGridRow;
+                            oldPointerOverRow = this.DisplayData.GetDisplayedElement(oldSlot) as DataGridRow;
                         }
                     }
 
-                    _mouseOverRowIndex = value;
+                    _pointerOverRowIndex = value;
 
                     // State for the old row needs to be applied after setting the new value
-                    if (oldMouseOverRow != null)
+                    if (oldPointerOverRow != null)
                     {
-                        oldMouseOverRow.ApplyState(true /*animate*/);
+                        oldPointerOverRow.ApplyState(true /*animate*/);
                     }
 
-                    if (_mouseOverRowIndex.HasValue)
+                    if (_pointerOverRowIndex.HasValue)
                     {
-                        int newSlot = SlotFromRowIndex(_mouseOverRowIndex.Value);
+                        int newSlot = SlotFromRowIndex(_pointerOverRowIndex.Value);
                         if (IsSlotVisible(newSlot))
                         {
-                            DataGridRow newMouseOverRow = this.DisplayData.GetDisplayedElement(newSlot) as DataGridRow;
-                            Debug.Assert(newMouseOverRow != null, "Expected non-null newMouseOverRow.");
-                            if (newMouseOverRow != null)
+                            DataGridRow newPointerOverRow = this.DisplayData.GetDisplayedElement(newSlot) as DataGridRow;
+                            Debug.Assert(newPointerOverRow != null, "Expected non-null newPointerOverRow.");
+                            if (newPointerOverRow != null)
                             {
-                                newMouseOverRow.ApplyState(true /*animate*/);
+                                newPointerOverRow.ApplyState(true /*animate*/);
                             }
                         }
                     }

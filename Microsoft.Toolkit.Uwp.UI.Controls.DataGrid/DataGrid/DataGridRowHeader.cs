@@ -41,14 +41,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
     [TemplateVisualState(Name = DATAGRIDROWHEADER_stateNormalEditingRow, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = DATAGRIDROWHEADER_stateNormalEditingRowFocused, GroupName = VisualStates.GroupCommon)]
 
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOver, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverCurrentRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverEditingRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverEditingRowFocused, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverSelected, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverSelectedFocused, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRow, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROWHEADER_statePointerOver, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROWHEADER_statePointerOverCurrentRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROWHEADER_statePointerOverEditingRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROWHEADER_statePointerOverEditingRowFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROWHEADER_statePointerOverSelected, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROWHEADER_statePointerOverSelectedFocused, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROWHEADER_statePointerOverSelectedCurrentRow, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = DATAGRIDROWHEADER_statePointerOverSelectedCurrentRowFocused, GroupName = VisualStates.GroupCommon)]
 
     [TemplateVisualState(Name = DATAGRIDROWHEADER_stateSelected, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = DATAGRIDROWHEADER_stateSelectedCurrentRow, GroupName = VisualStates.GroupCommon)]
@@ -62,14 +62,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private const string DATAGRIDROWHEADER_elementRootName = "RowHeaderRoot";
         private const double DATAGRIDROWHEADER_separatorThickness = 1;
 
-        private const string DATAGRIDROWHEADER_stateMouseOver = "MouseOver";
-        private const string DATAGRIDROWHEADER_stateMouseOverCurrentRow = "MouseOverCurrentRow";
-        private const string DATAGRIDROWHEADER_stateMouseOverEditingRow = "MouseOverUnfocusedEditingRow";
-        private const string DATAGRIDROWHEADER_stateMouseOverEditingRowFocused = "MouseOverEditingRow";
-        private const string DATAGRIDROWHEADER_stateMouseOverSelected = "MouseOverUnfocusedSelected";
-        private const string DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRow = "MouseOverUnfocusedCurrentRowSelected";
-        private const string DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocused = "MouseOverCurrentRowSelected";
-        private const string DATAGRIDROWHEADER_stateMouseOverSelectedFocused = "MouseOverSelected";
+        private const string DATAGRIDROWHEADER_statePointerOver = "PointerOver";
+        private const string DATAGRIDROWHEADER_statePointerOverCurrentRow = "PointerOverCurrentRow";
+        private const string DATAGRIDROWHEADER_statePointerOverEditingRow = "PointerOverUnfocusedEditingRow";
+        private const string DATAGRIDROWHEADER_statePointerOverEditingRowFocused = "PointerOverEditingRow";
+        private const string DATAGRIDROWHEADER_statePointerOverSelected = "PointerOverUnfocusedSelected";
+        private const string DATAGRIDROWHEADER_statePointerOverSelectedCurrentRow = "PointerOverUnfocusedCurrentRowSelected";
+        private const string DATAGRIDROWHEADER_statePointerOverSelectedCurrentRowFocused = "PointerOverCurrentRowSelected";
+        private const string DATAGRIDROWHEADER_statePointerOverSelectedFocused = "PointerOverSelected";
         private const string DATAGRIDROWHEADER_stateNormal = "Normal";
         private const string DATAGRIDROWHEADER_stateNormalCurrentRow = "NormalCurrentRow";
         private const string DATAGRIDROWHEADER_stateNormalEditingRow = "UnfocusedEditingRow";
@@ -79,14 +79,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private const string DATAGRIDROWHEADER_stateSelectedCurrentRowFocused = "NormalCurrentRowSelected";
         private const string DATAGRIDROWHEADER_stateSelectedFocused = "NormalSelected";
 
-        private const byte DATAGRIDROWHEADER_stateMouseOverCode = 0;
-        private const byte DATAGRIDROWHEADER_stateMouseOverCurrentRowCode = 1;
-        private const byte DATAGRIDROWHEADER_stateMouseOverEditingRowCode = 2;
-        private const byte DATAGRIDROWHEADER_stateMouseOverEditingRowFocusedCode = 3;
-        private const byte DATAGRIDROWHEADER_stateMouseOverSelectedCode = 4;
-        private const byte DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowCode = 5;
-        private const byte DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocusedCode = 6;
-        private const byte DATAGRIDROWHEADER_stateMouseOverSelectedFocusedCode = 7;
+        private const byte DATAGRIDROWHEADER_statePointerOverCode = 0;
+        private const byte DATAGRIDROWHEADER_statePointerOverCurrentRowCode = 1;
+        private const byte DATAGRIDROWHEADER_statePointerOverEditingRowCode = 2;
+        private const byte DATAGRIDROWHEADER_statePointerOverEditingRowFocusedCode = 3;
+        private const byte DATAGRIDROWHEADER_statePointerOverSelectedCode = 4;
+        private const byte DATAGRIDROWHEADER_statePointerOverSelectedCurrentRowCode = 5;
+        private const byte DATAGRIDROWHEADER_statePointerOverSelectedCurrentRowFocusedCode = 6;
+        private const byte DATAGRIDROWHEADER_statePointerOverSelectedFocusedCode = 7;
         private const byte DATAGRIDROWHEADER_stateNormalCode = 8;
         private const byte DATAGRIDROWHEADER_stateNormalCurrentRowCode = 9;
         private const byte DATAGRIDROWHEADER_stateNormalEditingRowCode = 10;
@@ -101,10 +101,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             DATAGRIDROWHEADER_stateNormalCode,
             DATAGRIDROWHEADER_stateNormalCurrentRowCode,
-            DATAGRIDROWHEADER_stateMouseOverEditingRowFocusedCode,
+            DATAGRIDROWHEADER_statePointerOverEditingRowFocusedCode,
             DATAGRIDROWHEADER_stateNormalEditingRowFocusedCode,
-            DATAGRIDROWHEADER_stateMouseOverSelectedFocusedCode,
-            DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocusedCode,
+            DATAGRIDROWHEADER_statePointerOverSelectedFocusedCode,
+            DATAGRIDROWHEADER_statePointerOverSelectedCurrentRowFocusedCode,
             DATAGRIDROWHEADER_stateSelectedFocusedCode,
             DATAGRIDROWHEADER_stateSelectedFocusedCode,
             DATAGRIDROWHEADER_stateNullCode,
@@ -121,48 +121,48 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             DATAGRIDROWHEADER_stateNormalCode,
             DATAGRIDROWHEADER_stateNormalCode,
-            DATAGRIDROWHEADER_stateMouseOverCode,
-            DATAGRIDROWHEADER_stateMouseOverCode,
+            DATAGRIDROWHEADER_statePointerOverCode,
+            DATAGRIDROWHEADER_statePointerOverCode,
             DATAGRIDROWHEADER_stateNullCode,
             DATAGRIDROWHEADER_stateNullCode,
             DATAGRIDROWHEADER_stateNullCode,
             DATAGRIDROWHEADER_stateNullCode,
             DATAGRIDROWHEADER_stateSelectedCode,
             DATAGRIDROWHEADER_stateSelectedFocusedCode,
-            DATAGRIDROWHEADER_stateMouseOverSelectedCode,
-            DATAGRIDROWHEADER_stateMouseOverSelectedFocusedCode,
+            DATAGRIDROWHEADER_statePointerOverSelectedCode,
+            DATAGRIDROWHEADER_statePointerOverSelectedFocusedCode,
             DATAGRIDROWHEADER_stateNormalEditingRowCode,
             DATAGRIDROWHEADER_stateNormalEditingRowFocusedCode,
-            DATAGRIDROWHEADER_stateMouseOverEditingRowCode,
-            DATAGRIDROWHEADER_stateMouseOverEditingRowFocusedCode,
+            DATAGRIDROWHEADER_statePointerOverEditingRowCode,
+            DATAGRIDROWHEADER_statePointerOverEditingRowFocusedCode,
             DATAGRIDROWHEADER_stateNormalCurrentRowCode,
             DATAGRIDROWHEADER_stateNormalCurrentRowCode,
-            DATAGRIDROWHEADER_stateMouseOverCurrentRowCode,
-            DATAGRIDROWHEADER_stateMouseOverCurrentRowCode,
+            DATAGRIDROWHEADER_statePointerOverCurrentRowCode,
+            DATAGRIDROWHEADER_statePointerOverCurrentRowCode,
             DATAGRIDROWHEADER_stateNullCode,
             DATAGRIDROWHEADER_stateNullCode,
             DATAGRIDROWHEADER_stateNullCode,
             DATAGRIDROWHEADER_stateNullCode,
             DATAGRIDROWHEADER_stateSelectedCurrentRowCode,
             DATAGRIDROWHEADER_stateSelectedCurrentRowFocusedCode,
-            DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowCode,
-            DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocusedCode,
+            DATAGRIDROWHEADER_statePointerOverSelectedCurrentRowCode,
+            DATAGRIDROWHEADER_statePointerOverSelectedCurrentRowFocusedCode,
             DATAGRIDROWHEADER_stateNormalEditingRowCode,
             DATAGRIDROWHEADER_stateNormalEditingRowFocusedCode,
-            DATAGRIDROWHEADER_stateMouseOverEditingRowCode,
-            DATAGRIDROWHEADER_stateMouseOverEditingRowFocusedCode
+            DATAGRIDROWHEADER_statePointerOverEditingRowCode,
+            DATAGRIDROWHEADER_statePointerOverEditingRowFocusedCode
         };
 
         private static string[] _stateNames = new string[]
         {
-            DATAGRIDROWHEADER_stateMouseOver,
-            DATAGRIDROWHEADER_stateMouseOverCurrentRow,
-            DATAGRIDROWHEADER_stateMouseOverEditingRow,
-            DATAGRIDROWHEADER_stateMouseOverEditingRowFocused,
-            DATAGRIDROWHEADER_stateMouseOverSelected,
-            DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRow,
-            DATAGRIDROWHEADER_stateMouseOverSelectedCurrentRowFocused,
-            DATAGRIDROWHEADER_stateMouseOverSelectedFocused,
+            DATAGRIDROWHEADER_statePointerOver,
+            DATAGRIDROWHEADER_statePointerOverCurrentRow,
+            DATAGRIDROWHEADER_statePointerOverEditingRow,
+            DATAGRIDROWHEADER_statePointerOverEditingRowFocused,
+            DATAGRIDROWHEADER_statePointerOverSelected,
+            DATAGRIDROWHEADER_statePointerOverSelectedCurrentRow,
+            DATAGRIDROWHEADER_statePointerOverSelectedCurrentRowFocused,
+            DATAGRIDROWHEADER_statePointerOverSelectedFocused,
             DATAGRIDROWHEADER_stateNormal,
             DATAGRIDROWHEADER_stateNormalCurrentRow,
             DATAGRIDROWHEADER_stateNormalEditingRow,
@@ -382,7 +382,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                         idealStateMappingIndex += 4;
                     }
 
-                    if (this.OwningRow.IsMouseOver)
+                    if (this.OwningRow.IsPointerOver)
                     {
                         idealStateMappingIndex += 2;
                     }
@@ -446,7 +446,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             if (this.OwningRow != null)
             {
-                this.OwningRow.IsMouseOver = true;
+                this.OwningRow.IsPointerOver = true;
             }
         }
 
@@ -454,7 +454,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             if (this.OwningRow != null)
             {
-                this.OwningRow.IsMouseOver = false;
+                this.OwningRow.IsPointerOver = false;
             }
         }
 #endif
