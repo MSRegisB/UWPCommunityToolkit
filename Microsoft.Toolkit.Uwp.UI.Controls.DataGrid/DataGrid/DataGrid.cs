@@ -63,6 +63,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [TemplatePart(Name = DataGrid.DATAGRID_elementVerticalScrollbarName, Type = typeof(ScrollBar))]
     [TemplateVisualState(Name = VisualStates.StateDisabled, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = VisualStates.StateTouchIndicator, GroupName = VisualStates.GroupScrollingIndicator)]
+    [TemplateVisualState(Name = VisualStates.StateMouseIndicator, GroupName = VisualStates.GroupScrollingIndicator)]
+    [TemplateVisualState(Name = VisualStates.StateMouseIndicatorFull, GroupName = VisualStates.GroupScrollingIndicator)]
+    [TemplateVisualState(Name = VisualStates.StateNoIndicator, GroupName = VisualStates.GroupScrollingIndicator)]
+    [TemplateVisualState(Name = VisualStates.StateScrollingSeparatorDisabled, GroupName = VisualStates.GroupScrollingSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateScrollingSeparatorNormal, GroupName = VisualStates.GroupScrollingSeparator)]
     [TemplateVisualState(Name = VisualStates.StateInvalid, GroupName = VisualStates.GroupValidation)]
     [TemplateVisualState(Name = VisualStates.StateValid, GroupName = VisualStates.GroupValidation)]
     [StyleTypedProperty(Property = "CellStyle", StyleTargetType = typeof(DataGridCell))]
@@ -4630,6 +4636,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             UpdateHorizontalScrollBar(needHorizScrollbar, forceHorizScrollbar, totalVisibleWidth, totalVisibleFrozenWidth, cellsWidth);
             UpdateVerticalScrollBar(needVertScrollbar, forceVertScrollbar, totalVisibleHeight, cellsHeight);
+            UpdateScrollingSeparatorVisual();
 
             if (this._topRightCornerHeader != null)
             {
@@ -7406,6 +7413,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     UpdateDisplayedRows(this.DisplayData.FirstScrollingSlot, this.CellsHeight);
                     InvalidateRowsMeasure(false /*invalidateIndividualElements*/);
                 }
+            }
+        }
+
+        private void UpdateScrollingSeparatorVisual()
+        {
+            if ((this._hScrollBar != null && this._hScrollBar.IsEnabled) ||
+                (this._vScrollBar != null && this._vScrollBar.IsEnabled))
+            {
+                VisualStates.GoToState(this, true, VisualStates.StateScrollingSeparatorNormal);
+            }
+            else
+            {
+                VisualStates.GoToState(this, true, VisualStates.StateScrollingSeparatorDisabled, VisualStates.StateScrollingSeparatorNormal);
             }
         }
 

@@ -155,23 +155,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// </summary>
         public const string GroupInteraction = "InteractionStates";
 
-        // GroupAlternatingRow
-
-        /// <summary>
-        /// Regular Row state
-        /// </summary>
-        public const string StateRegularRow = "RegularRow";
-
-        /// <summary>
-        /// Alternating Row state
-        /// </summary>
-        public const string StateAlternatingRow = "AlternatingRow";
-
-        /// <summary>
-        /// Alternating Row state group
-        /// </summary>
-        public const string GroupAlternatingRow = "AlternatingRowStates";
-
         // GroupSort
 
         /// <summary>
@@ -216,15 +199,59 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// </summary>
         public const string StateValid = "Valid";
 
+#if FEATURE_VALIDATION
+        // RuntimeValidationStates
+        public const string StateInvalidUnfocused = "InvalidUnfocused";
+#endif
+
         /// <summary>
         /// Validation state group
         /// </summary>
         public const string GroupValidation = "ValidationStates";
 
-#if FEATURE_VALIDATION
-        // RuntimeValidationStates
-        public const string StateInvalidUnfocused = "InvalidUnfocused";
-#endif
+        // GroupScrollingSeparator
+
+        /// <summary>
+        /// ScrollingSeparatorNormal state
+        /// </summary>
+        public const string StateScrollingSeparatorNormal = "ScrollingSeparatorNormal";
+
+        /// <summary>
+        /// ScrollingSeparatorDisabled state
+        /// </summary>
+        public const string StateScrollingSeparatorDisabled = "ScrollingSeparatorDisabled";
+
+        /// <summary>
+        /// ScrollingSeparator state group
+        /// </summary>
+        public const string GroupScrollingSeparator = "ScrollingSeparatorStates";
+
+        // GroupScrollingIndicator
+
+        /// <summary>
+        /// TouchIndicator state
+        /// </summary>
+        public const string StateTouchIndicator = "TouchIndicator";
+
+        /// <summary>
+        /// MouseIndicator state
+        /// </summary>
+        public const string StateMouseIndicator = "MouseIndicator";
+
+        /// <summary>
+        /// MouseIndicatorFull state
+        /// </summary>
+        public const string StateMouseIndicatorFull = "MouseIndicatorFull";
+
+        /// <summary>
+        /// NoIndicator state
+        /// </summary>
+        public const string StateNoIndicator = "NoIndicator";
+
+        /// <summary>
+        /// ScrollingIndicator state group
+        /// </summary>
+        public const string GroupScrollingIndicator = "ScrollingIndicatorStates";
 
         /// <summary>
         /// Use VisualStateManager to change the visual state of the control.

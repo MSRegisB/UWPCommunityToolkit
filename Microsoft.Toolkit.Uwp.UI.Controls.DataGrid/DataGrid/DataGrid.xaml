@@ -141,6 +141,42 @@
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
+                            
+                            <VisualStateGroup x:Name="ScrollingIndicatorStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition From="MouseIndicator" To="NoIndicator">
+                                    </VisualTransition>
+                                    <VisualTransition From="MouseIndicatorFull" To="NoIndicator">
+                                    </VisualTransition>
+                                    <VisualTransition From="MouseIndicatorFull" To="MouseIndicator">
+                                    </VisualTransition>
+                                    <VisualTransition From="TouchIndicator" To="NoIndicator">
+                                    </VisualTransition>
+                                </VisualStateGroup.Transitions>
+
+                                <VisualState x:Name="NoIndicator">
+                                </VisualState>
+
+                                <VisualState x:Name="TouchIndicator">
+                                </VisualState>
+
+                                <VisualState x:Name="MouseIndicator">
+                                </VisualState>
+
+                                <VisualState x:Name="MouseIndicatorFull">
+                                </VisualState>
+                            </VisualStateGroup>
+
+                            <VisualStateGroup x:Name="ScrollingSeparatorStates">
+                                <VisualState x:Name="ScrollingSeparatorNormal">
+                                </VisualState>
+
+                                <VisualState x:Name="ScrollingSeparatorDisabled">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BottomRightCorner" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="2">
                             <Grid Name="Root" Background="{TemplateBinding Background}">
