@@ -525,9 +525,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerCaptureLost");
 
-            // When we stop interacting with the column headers, we need to reset the drag mode
-            // and close any popups if they are open.
-            if (_resizePointerId == e.Pointer.PointerId && _dragMode != DragMode.Resize)
+            // When we stop interacting with the column headers, we need to reset the drag mode and close any popups if they are open.
+            bool setResizeCursor = false;
+
+            if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
+            {
+                Point pointerPositionHeaders = e.GetCurrentPoint(this.OwningGrid.ColumnHeaders).Position;
+                setResizeCursor = _dragMode == DragMode.Resize && pointerPositionHeaders.X > 0 && pointerPositionHeaders.X < this.OwningGrid.ActualWidth;
+            }
+
+            if (!setResizeCursor)
             {
                 Window.Current.CoreWindow.PointerCursor = _originalCursor;
                 _resizePointerId = 0;
@@ -548,6 +555,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     this.OwningGrid.ColumnHeaders.DragIndicator = null;
                     this.OwningGrid.ColumnHeaders.DropLocationIndicator = null;
                 }
+            }
+
+            if (setResizeCursor)
+            {
+                SetResizeCursor(e.Pointer, e.GetCurrentPoint(this).Position);
             }
         }
 
@@ -1012,6 +1024,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             // Set mouse cursor if we can resize column.
             double distanceFromLeft = pointerPosition.X;
+            double distanceFromTop = pointerPosition.Y;
             double distanceFromRight = this.ActualWidth - distanceFromLeft;
             DataGridColumn currentColumn = this.OwningColumn;
             DataGridColumn previousColumn = null;
@@ -1022,8 +1035,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             }
 
             int resizeRegionWidth = pointer.PointerDeviceType == PointerDeviceType.Touch ? DATAGRIDCOLUMNHEADER_resizeRegionWidthLoose : DATAGRIDCOLUMNHEADER_resizeRegionWidthStrict;
-            bool nearCurrentResizableColumnRightEdge = distanceFromRight <= resizeRegionWidth && currentColumn != null && CanResizeColumn(currentColumn);
-            bool nearPreviousResizableColumnLeftEdge = distanceFromLeft <= resizeRegionWidth && previousColumn != null && CanResizeColumn(previousColumn);
+            bool nearCurrentResizableColumnRightEdge = distanceFromRight <= resizeRegionWidth && currentColumn != null && CanResizeColumn(currentColumn) && distanceFromTop < this.ActualHeight;
+            bool nearPreviousResizableColumnLeftEdge = distanceFromLeft <= resizeRegionWidth && previousColumn != null && CanResizeColumn(previousColumn) && distanceFromTop < this.ActualHeight;
 
             if (nearCurrentResizableColumnRightEdge || nearPreviousResizableColumnLeftEdge)
             {

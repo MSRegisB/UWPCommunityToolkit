@@ -45,6 +45,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 #endif
 
+// TODO - support conscious scrollbars:
+// - show/hide bottom right square based on FullMouseIndicator vs. MouseIndicator states.
+// - switch between NoIndicator, MouseIndicator and TouchIndicator property value based on input and mouse location.
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
@@ -80,6 +83,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const string DATAGRID_elementRowHeadersPresenterName = "RowHeadersPresenter";
         private const string DATAGRID_elementTopLeftCornerHeaderName = "TopLeftCornerHeader";
         private const string DATAGRID_elementTopRightCornerHeaderName = "TopRightCornerHeader";
+        private const string DATAGRID_elementBottomRightCornerHeaderName = "BottomRightCorner";
         private const string DATAGRID_elementVerticalScrollbarName = "VerticalScrollbar";
 
         private const bool DATAGRID_defaultAutoGenerateColumns = true;
@@ -185,6 +189,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private bool _isUserSorting; // True if we're currently in a user invoked sorting operation
         private ContentControl _topLeftCornerHeader;
         private ContentControl _topRightCornerHeader;
+        private UIElement _bottomRightCorner;
         private object _uneditedValue; // Represents the original current cell value at the time it enters editing mode.
         private string _updateSourcePath;
         private Dictionary<INotifyDataErrorInfo, string> _validationItems;
@@ -2579,6 +2584,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        private bool IsHorizontalScrollbarOverCells
+        {
+            get
+            {
+                return this._columnHeadersPresenter != null && Grid.GetColumnSpan(this._columnHeadersPresenter) == 2;
+            }
+        }
+
+        private bool IsVerticalScrollbarOverCells
+        {
+            get
+            {
+                return this._rowsPresenter != null && Grid.GetRowSpan(this._rowsPresenter) == 2;
+            }
+        }
+
         private int NoSelectionChangeCount
         {
             get
@@ -2916,15 +2937,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this._columnHeadersPresenter.Children.Clear();
             }
 
-            _columnHeadersPresenter = GetTemplateChild(DATAGRID_elementColumnHeadersPresenterName) as DataGridColumnHeadersPresenter;
-            if (_columnHeadersPresenter != null)
+            this._columnHeadersPresenter = GetTemplateChild(DATAGRID_elementColumnHeadersPresenterName) as DataGridColumnHeadersPresenter;
+            if (this._columnHeadersPresenter != null)
             {
                 if (this.ColumnsInternal.FillerColumn != null)
                 {
                     this.ColumnsInternal.FillerColumn.IsRepresented = false;
                 }
 
-                _columnHeadersPresenter.OwningGrid = this;
+                this._columnHeadersPresenter.OwningGrid = this;
 
                 // Columns were added before before our Template was applied, add the ColumnHeaders now
                 List<DataGridColumn> sortedInternal = new List<DataGridColumn>(this.ColumnsItemsInternal);
@@ -2941,49 +2962,50 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this.UnloadElements(false /*recycle*/);
             }
 
-            _rowsPresenter = GetTemplateChild(DATAGRID_elementRowsPresenterName) as DataGridRowsPresenter;
-            if (_rowsPresenter != null)
+            this._rowsPresenter = GetTemplateChild(DATAGRID_elementRowsPresenterName) as DataGridRowsPresenter;
+            if (this._rowsPresenter != null)
             {
-                _rowsPresenter.OwningGrid = this;
+                this._rowsPresenter.OwningGrid = this;
                 InvalidateRowHeightEstimate();
                 UpdateRowDetailsHeightEstimate();
             }
 
-            _frozenColumnScrollBarSpacer = GetTemplateChild(DATAGRID_elementFrozenColumnScrollBarSpacerName) as FrameworkElement;
+            this._frozenColumnScrollBarSpacer = GetTemplateChild(DATAGRID_elementFrozenColumnScrollBarSpacerName) as FrameworkElement;
 
-            if (_hScrollBar != null)
+            if (this._hScrollBar != null)
             {
-                _hScrollBar.Scroll -= new ScrollEventHandler(HorizontalScrollBar_Scroll);
+                this._hScrollBar.Scroll -= new ScrollEventHandler(HorizontalScrollBar_Scroll);
             }
 
-            _hScrollBar = GetTemplateChild(DATAGRID_elementHorizontalScrollbarName) as ScrollBar;
-            if (_hScrollBar != null)
+            this._hScrollBar = GetTemplateChild(DATAGRID_elementHorizontalScrollbarName) as ScrollBar;
+            if (this._hScrollBar != null)
             {
-                _hScrollBar.IsTabStop = false;
-                _hScrollBar.Maximum = 0.0;
-                _hScrollBar.Orientation = Orientation.Horizontal;
-                _hScrollBar.Visibility = Visibility.Collapsed;
-                _hScrollBar.Scroll += new ScrollEventHandler(HorizontalScrollBar_Scroll);
+                this._hScrollBar.IsTabStop = false;
+                this._hScrollBar.Maximum = 0.0;
+                this._hScrollBar.Orientation = Orientation.Horizontal;
+                this._hScrollBar.Visibility = Visibility.Collapsed;
+                this._hScrollBar.Scroll += new ScrollEventHandler(HorizontalScrollBar_Scroll);
             }
 
-            if (_vScrollBar != null)
+            if (this._vScrollBar != null)
             {
-                _vScrollBar.Scroll -= new ScrollEventHandler(VerticalScrollBar_Scroll);
+                this._vScrollBar.Scroll -= new ScrollEventHandler(VerticalScrollBar_Scroll);
             }
 
-            _vScrollBar = GetTemplateChild(DATAGRID_elementVerticalScrollbarName) as ScrollBar;
-            if (_vScrollBar != null)
+            this._vScrollBar = GetTemplateChild(DATAGRID_elementVerticalScrollbarName) as ScrollBar;
+            if (this._vScrollBar != null)
             {
-                _vScrollBar.IsTabStop = false;
-                _vScrollBar.Maximum = 0.0;
-                _vScrollBar.Orientation = Orientation.Vertical;
-                _vScrollBar.Visibility = Visibility.Collapsed;
-                _vScrollBar.Scroll += new ScrollEventHandler(VerticalScrollBar_Scroll);
+                this._vScrollBar.IsTabStop = false;
+                this._vScrollBar.Maximum = 0.0;
+                this._vScrollBar.Orientation = Orientation.Vertical;
+                this._vScrollBar.Visibility = Visibility.Collapsed;
+                this._vScrollBar.Scroll += new ScrollEventHandler(VerticalScrollBar_Scroll);
             }
 
-            _topLeftCornerHeader = GetTemplateChild(DATAGRID_elementTopLeftCornerHeaderName) as ContentControl;
+            this._topLeftCornerHeader = GetTemplateChild(DATAGRID_elementTopLeftCornerHeaderName) as ContentControl;
             EnsureTopLeftCornerHeader(); // EnsureTopLeftCornerHeader checks for a null _topLeftCornerHeader;
-            _topRightCornerHeader = GetTemplateChild(DATAGRID_elementTopRightCornerHeaderName) as ContentControl;
+            this._topRightCornerHeader = GetTemplateChild(DATAGRID_elementTopRightCornerHeaderName) as ContentControl;
+            this._bottomRightCorner = GetTemplateChild(DATAGRID_elementBottomRightCornerHeaderName) as UIElement;
 
 #if FEATURE_VALIDATION_SUMMARY
             if (this._validationSummary != null)
@@ -4401,6 +4423,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 // TODO  when it first appears after adding a row when this perf improvement is turned on.
             }
 
+            bool isHorizontalScrollbarOverCells = this.IsHorizontalScrollbarOverCells;
+            bool isVerticalScrollbarOverCells = this.IsVerticalScrollbarOverCells;
+
             double cellsWidth = this.CellsWidth;
             double cellsHeight = this.CellsHeight;
 
@@ -4417,10 +4442,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 // Compensate if the horizontal scrollbar is already taking up space
                 if (!forceHorizScrollbar && _hScrollBar.Visibility == Visibility.Visible)
                 {
-                    cellsHeight += this._hScrollBar.DesiredSize.Height;
+                    if (!isHorizontalScrollbarOverCells)
+                    {
+                        cellsHeight += _hScrollBar.DesiredSize.Height;
+                    }
                 }
 
-                horizScrollBarHeight = _hScrollBar.Height + _hScrollBar.Margin.Top + _hScrollBar.Margin.Bottom;
+                if (!isHorizontalScrollbarOverCells)
+                {
+                    horizScrollBarHeight = _hScrollBar.Height + _hScrollBar.Margin.Top + _hScrollBar.Margin.Bottom;
+                }
             }
 
             bool allowVertScrollbar = false;
@@ -4436,10 +4467,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 // Compensate if the vertical scrollbar is already taking up space
                 if (!forceVertScrollbar && _vScrollBar.Visibility == Visibility.Visible)
                 {
-                    cellsWidth += _vScrollBar.DesiredSize.Width;
+                    if (!isVerticalScrollbarOverCells)
+                    {
+                        cellsWidth += _vScrollBar.DesiredSize.Width;
+                    }
                 }
 
-                vertScrollBarWidth = _vScrollBar.Width + _vScrollBar.Margin.Left + _vScrollBar.Margin.Right;
+                if (!isVerticalScrollbarOverCells)
+                {
+                    vertScrollBarWidth = _vScrollBar.Width + _vScrollBar.Margin.Left + _vScrollBar.Margin.Right;
+                }
             }
 
             // Now cellsWidth is the width potentially available for displaying data cells.
@@ -4466,8 +4503,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     cellsHeight -= horizScrollBarHeight;
                     Debug.Assert(cellsHeight >= 0, "Expected positive cellsHeight.");
                     needHorizScrollbarWithoutVertScrollbar = needHorizScrollbar = true;
-                    if (allowVertScrollbar && (DoubleUtil.LessThanOrClose(totalVisibleWidth - cellsWidth, vertScrollBarWidth) ||
-                        DoubleUtil.LessThanOrClose(cellsWidth - totalVisibleFrozenWidth, vertScrollBarWidth)))
+
+                    if (vertScrollBarWidth > 0 &&
+                        allowVertScrollbar &&
+                        (DoubleUtil.LessThanOrClose(totalVisibleWidth - cellsWidth, vertScrollBarWidth) || DoubleUtil.LessThanOrClose(cellsWidth - totalVisibleFrozenWidth, vertScrollBarWidth)))
                     {
                         // Would we still need a horizontal scrollbar without the vertical one?
                         UpdateDisplayedRows(this.DisplayData.FirstScrollingSlot, cellsHeight);
@@ -4475,12 +4514,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         {
                             needHorizScrollbar = DoubleUtil.LessThan(totalVisibleFrozenWidth, cellsWidth - vertScrollBarWidth);
                         }
-                    }
 
-                    if (!needHorizScrollbar)
-                    {
-                        // Restore old data height because turns out a horizontal scroll bar wouldn't make sense
-                        cellsHeight = oldDataHeight;
+                        if (!needHorizScrollbar)
+                        {
+                            // Restore old data height because turns out a horizontal scroll bar wouldn't make sense
+                            cellsHeight = oldDataHeight;
+                        }
                     }
                 }
 
@@ -4502,10 +4541,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 this.DisplayData.FirstDisplayedScrollingCol = ComputeFirstVisibleScrollingColumn();
 
-                // we compute the number of visible columns only after we set up the vertical scroll bar.
+                // We compute the number of visible columns only after we set up the vertical scroll bar.
                 ComputeDisplayedColumns();
 
-                if (allowHorizScrollbar &&
+                if ((vertScrollBarWidth > 0 || horizScrollBarHeight > 0) &&
+                    allowHorizScrollbar &&
                     needVertScrollbar && !needHorizScrollbar &&
                     DoubleUtil.GreaterThan(totalVisibleWidth, cellsWidth) &&
                     DoubleUtil.LessThan(totalVisibleFrozenWidth, cellsWidth) &&
@@ -4603,6 +4643,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     this._topRightCornerHeader.Visibility = Visibility.Collapsed;
                 }
+            }
+
+            if (this._bottomRightCorner != null)
+            {
+                // Show the BottomRightCorner when both scrollbars are visible.
+                this._bottomRightCorner.Visibility =
+                    this._hScrollBar != null && this._hScrollBar.Visibility == Visibility.Visible &&
+                    this._vScrollBar != null && this._vScrollBar.Visibility == Visibility.Visible ?
+                        Visibility.Visible : Visibility.Collapsed;
             }
 
             this.DisplayData.FullyRecycleElements();
@@ -7219,12 +7268,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         // maximum travel distance -- not the total width
                         this._hScrollBar.Maximum = totalVisibleWidth - cellsWidth;
-                        Debug.Assert(totalVisibleFrozenWidth >= 0);
+                        Debug.Assert(totalVisibleFrozenWidth >= 0, "Expected positive totalVisibleFrozenWidth.");
                         if (this._frozenColumnScrollBarSpacer != null)
                         {
                             this._frozenColumnScrollBarSpacer.Width = totalVisibleFrozenWidth;
                         }
-                        Debug.Assert(this._hScrollBar.Maximum >= 0);
+
+                        Debug.Assert(this._hScrollBar.Maximum >= 0, "Expected positive _hScrollBar.Maximum.");
 
                         // width of the scrollable viewing area
                         double viewPortSize = Math.Max(0, cellsWidth - totalVisibleFrozenWidth);
@@ -7249,12 +7299,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                     if (this._hScrollBar.Visibility != Visibility.Visible)
                     {
-                        // This will trigger a call to this method via Cells_SizeChanged for
+                        // This will trigger a call to this method via Cells_SizeChanged for which no processing is needed.
+                        this._hScrollBar.Visibility = Visibility.Visible;
                         this._ignoreNextScrollBarsLayout = true;
 
-                        // which no processing is needed.
-                        this._hScrollBar.Visibility = Visibility.Visible;
-                        if (this._hScrollBar.DesiredSize.Height == 0)
+                        if (!this.IsHorizontalScrollbarOverCells && this._hScrollBar.DesiredSize.Height == 0)
                         {
                             // We need to know the height for the rest of layout to work correctly so measure it now
                             this._hScrollBar.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -7625,7 +7674,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         // maximum travel distance -- not the total height
                         this._vScrollBar.Maximum = totalVisibleHeight - cellsHeight;
-                        Debug.Assert(this._vScrollBar.Maximum >= 0);
+                        Debug.Assert(this._vScrollBar.Maximum >= 0, "Expected positive _vScrollBar.Maximum.");
 
                         // total height of the display area
                         this._vScrollBar.ViewportSize = cellsHeight;
@@ -7643,13 +7692,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         // This will trigger a call to this method via Cells_SizeChanged for which no processing is needed.
                         this._vScrollBar.Visibility = Visibility.Visible;
-                        if (this._vScrollBar.DesiredSize.Width == 0)
+                        this._ignoreNextScrollBarsLayout = true;
+
+                        if (!this.IsVerticalScrollbarOverCells && this._vScrollBar.DesiredSize.Width == 0)
                         {
-                            // We need to know the width for the rest of layout to work correctly so measure it now
+                            // We need to know the width for the rest of layout to work correctly so measure it now.
                             this._vScrollBar.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                         }
-
-                        this._ignoreNextScrollBarsLayout = true;
                     }
                 }
                 else
@@ -7710,6 +7759,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     // IDEI entity validation.
                     this.ValidateIdei(dataItem as IDataErrorInfo, null, null, validationResults);
 #endif
+
                     // INDEI entity validation.
                     this.ValidateIndei(dataItem as INotifyDataErrorInfo, null, null, null, validationResults, wireEvents);
                 }
@@ -7864,7 +7914,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                                     }
                                     else
                                     {
-                                        Debug.Assert(string.IsNullOrEmpty(bindingPath));
+                                        Debug.Assert(string.IsNullOrEmpty(bindingPath), "Expected bindingPath is null or empty.");
                                         validationResult = new ValidationResult(errorString);
                                     }
 
