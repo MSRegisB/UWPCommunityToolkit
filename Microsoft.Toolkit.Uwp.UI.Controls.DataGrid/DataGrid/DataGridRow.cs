@@ -189,10 +189,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.Index = -1;
             this.IsValid = true;
             this.Slot = -1;
-            this._pointerOverColumnIndex = null;
-            this._detailsDesiredHeight = double.NaN;
-            this._detailsLoaded = false;
-            this._appliedDetailsVisibility = Visibility.Collapsed;
+            _pointerOverColumnIndex = null;
+            _detailsDesiredHeight = double.NaN;
+            _detailsLoaded = false;
+            _appliedDetailsVisibility = Visibility.Collapsed;
             this.Cells = new DataGridCellCollection(this);
             this.Cells.CellAdded += new EventHandler<DataGridCellEventArgs>(DataGridCellCollection_CellAdded);
             this.Cells.CellRemoved += new EventHandler<DataGridCellEventArgs>(DataGridCellCollection_CellRemoved);
@@ -431,7 +431,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 if (_detailsElement != null)
                 {
-                    return this._detailsElement.ContentHeight;
+                    return _detailsElement.ContentHeight;
                 }
 
                 return 0;
@@ -464,7 +464,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._bottomGridLine != null;
+                return _bottomGridLine != null;
             }
         }
 
@@ -472,7 +472,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._headerElement != null;
+                return _headerElement != null;
             }
         }
 
@@ -572,33 +572,33 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._pointerOverColumnIndex;
+                return _pointerOverColumnIndex;
             }
 
             set
             {
-                if (this._pointerOverColumnIndex != value)
+                if (_pointerOverColumnIndex != value)
                 {
                     DataGridCell oldPointerOverCell = null;
-                    if (this._pointerOverColumnIndex != null && this.OwningGrid.IsSlotVisible(this.Slot))
+                    if (_pointerOverColumnIndex != null && this.OwningGrid.IsSlotVisible(this.Slot))
                     {
-                        if (this._pointerOverColumnIndex > -1)
+                        if (_pointerOverColumnIndex > -1)
                         {
-                            oldPointerOverCell = this.Cells[(int)this._pointerOverColumnIndex];
+                            oldPointerOverCell = this.Cells[(int)_pointerOverColumnIndex];
                         }
                     }
 
-                    this._pointerOverColumnIndex = value;
+                    _pointerOverColumnIndex = value;
                     if (oldPointerOverCell != null && this.Visibility == Visibility.Visible)
                     {
                         oldPointerOverCell.ApplyCellState(true /*animate*/);
                     }
 
-                    if (this._pointerOverColumnIndex != null && this.OwningGrid != null && this.OwningGrid.IsSlotVisible(this.Slot))
+                    if (_pointerOverColumnIndex != null && this.OwningGrid != null && this.OwningGrid.IsSlotVisible(this.Slot))
                     {
-                        if (this._pointerOverColumnIndex > -1)
+                        if (_pointerOverColumnIndex > -1)
                         {
-                            this.Cells[(int)this._pointerOverColumnIndex].ApplyCellState(true /*animate*/);
+                            this.Cells[(int)_pointerOverColumnIndex].ApplyCellState(true /*animate*/);
                         }
                     }
                 }
@@ -692,29 +692,29 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                if (this._detailsVisibleStoryboard == null && this.RootElement != null)
+                if (_detailsVisibleStoryboard == null && this.RootElement != null)
                 {
-                    this._detailsVisibleStoryboard = this.RootElement.Resources[DATAGRIDROW_detailsVisibleTransition] as Storyboard;
-                    if (this._detailsVisibleStoryboard != null)
+                    _detailsVisibleStoryboard = this.RootElement.Resources[DATAGRIDROW_detailsVisibleTransition] as Storyboard;
+                    if (_detailsVisibleStoryboard != null)
                     {
 #if WINDOWS_UWP
-                        this._detailsVisibleStoryboard.Completed += new EventHandler<object>(DetailsVisibleStoryboard_Completed);
+                        _detailsVisibleStoryboard.Completed += new EventHandler<object>(DetailsVisibleStoryboard_Completed);
 #else
-                        this._detailsVisibleStoryboard.Completed += new EventHandler(DetailsVisibleStoryboard_Completed);
+                        _detailsVisibleStoryboard.Completed += new EventHandler(DetailsVisibleStoryboard_Completed);
 #endif
-                        if (this._detailsVisibleStoryboard.Children.Count > 0)
+                        if (_detailsVisibleStoryboard.Children.Count > 0)
                         {
                             // If the user set a To value for the animation, we want to respect
-                            this._detailsHeightAnimation = this._detailsVisibleStoryboard.Children[0] as DoubleAnimation;
-                            if (this._detailsHeightAnimation != null)
+                            _detailsHeightAnimation = _detailsVisibleStoryboard.Children[0] as DoubleAnimation;
+                            if (_detailsHeightAnimation != null)
                             {
-                                this._detailsHeightAnimationToOverride = this._detailsHeightAnimation.To;
+                                _detailsHeightAnimationToOverride = _detailsHeightAnimation.To;
                             }
                         }
                     }
                 }
 
-                return this._detailsVisibleStoryboard;
+                return _detailsVisibleStoryboard;
             }
         }
 
@@ -796,11 +796,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
-            if (this._bottomGridLine != null)
+            if (_bottomGridLine != null)
             {
                 RectangleGeometry gridlineClipGeometry = new RectangleGeometry();
-                gridlineClipGeometry.Rect = new Rect(this.OwningGrid.HorizontalOffset, 0, Math.Max(0, this.DesiredSize.Width - this.OwningGrid.HorizontalOffset), this._bottomGridLine.DesiredSize.Height);
-                this._bottomGridLine.Clip = gridlineClipGeometry;
+                gridlineClipGeometry.Rect = new Rect(this.OwningGrid.HorizontalOffset, 0, Math.Max(0, this.DesiredSize.Width - this.OwningGrid.HorizontalOffset), _bottomGridLine.DesiredSize.Height);
+                _bottomGridLine.Clip = gridlineClipGeometry;
             }
 
             return size;
@@ -884,16 +884,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 ApplyState(false /*animate*/);
             }
 
-            if (this._cellsElement != null)
+            if (_cellsElement != null)
             {
                 // If we're applying a new template, we  want to remove the cells from the previous _cellsElement
-                this._cellsElement.Children.Clear();
+                _cellsElement.Children.Clear();
             }
 
-            this._cellsElement = GetTemplateChild(DATAGRIDROW_elementCells) as Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridCellsPresenter;
-            if (this._cellsElement != null)
+            _cellsElement = GetTemplateChild(DATAGRIDROW_elementCells) as Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridCellsPresenter;
+            if (_cellsElement != null)
             {
-                this._cellsElement.OwningRow = this;
+                _cellsElement.OwningRow = this;
 
                 // Cells that were already added before the Template was applied need to
                 // be added to the Canvas
@@ -901,7 +901,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     foreach (DataGridCell cell in this.Cells)
                     {
-                        this._cellsElement.Children.Add(cell);
+                        _cellsElement.Children.Add(cell);
                     }
                 }
             }
@@ -910,7 +910,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (_detailsElement != null && this.OwningGrid != null)
             {
                 _detailsElement.OwningRow = this;
-                if (this.ActualDetailsVisibility == Visibility.Visible && this.ActualDetailsTemplate != null && this._appliedDetailsTemplate == null)
+                if (this.ActualDetailsVisibility == Visibility.Visible && this.ActualDetailsTemplate != null && _appliedDetailsTemplate == null)
                 {
                     // Apply the DetailsTemplate now that the row template is applied.
                     SetDetailsVisibilityInternal(this.ActualDetailsVisibility, _detailsVisibilityNotificationPending /*raiseNotification*/, false /*animate*/);
@@ -1097,13 +1097,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     _cellsElement.Recycle();
                 }
 
-                this._checkDetailsContentHeight = false;
+                _checkDetailsContentHeight = false;
 
                 // Clear out the old Details cache so it won't be reused for other data
-                this._detailsDesiredHeight = double.NaN;
-                if (this._detailsElement != null)
+                _detailsDesiredHeight = double.NaN;
+                if (_detailsElement != null)
                 {
-                    this._detailsElement.ClearValue(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridDetailsPresenter.ContentHeightProperty);
+                    _detailsElement.ClearValue(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridDetailsPresenter.ContentHeightProperty);
                 }
             }
 
@@ -1190,16 +1190,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         // Set the proper style for the Header by walking up the Style hierarchy
         internal void EnsureHeaderStyleAndVisibility(Style previousStyle)
         {
-            if (this._headerElement != null && this.OwningGrid != null)
+            if (_headerElement != null && this.OwningGrid != null)
             {
                 if (this.OwningGrid.AreRowHeadersVisible)
                 {
-                    this._headerElement.EnsureStyle(previousStyle);
-                    this._headerElement.Visibility = Visibility.Visible;
+                    _headerElement.EnsureStyle(previousStyle);
+                    _headerElement.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    this._headerElement.Visibility = Visibility.Collapsed;
+                    _headerElement.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -1227,7 +1227,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void ResetGridLine()
         {
-            this._bottomGridLine = null;
+            _bottomGridLine = null;
         }
 
         // Sets AreDetailsVisible on the row and animates if necessary
@@ -1313,17 +1313,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void DataGridCellCollection_CellAdded(object sender, DataGridCellEventArgs e)
         {
-            if (this._cellsElement != null)
+            if (_cellsElement != null)
             {
-                this._cellsElement.Children.Add(e.Cell);
+                _cellsElement.Children.Add(e.Cell);
             }
         }
 
         private void DataGridCellCollection_CellRemoved(object sender, DataGridCellEventArgs e)
         {
-            if (this._cellsElement != null)
+            if (_cellsElement != null)
             {
-                this._cellsElement.Children.Remove(e.Cell);
+                _cellsElement.Children.Remove(e.Cell);
             }
         }
 
@@ -1394,7 +1394,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private void DetailsVisibleStoryboard_Completed(object sender, EventArgs e)
 #endif
         {
-            this._animatingDetails = false;
+            _animatingDetails = false;
             if (this.OwningGrid != null && (this.Slot != -1) && this.OwningGrid.IsSlotVisible(this.Slot))
             {
                 if (this.AreDetailsVisible)
@@ -1432,18 +1432,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void EnsureDetailsContentHeight()
         {
-            if (this._detailsElement != null &&
-                this._detailsContent != null &&
-                double.IsNaN(this._detailsContent.Height) &&
+            if (_detailsElement != null &&
+                _detailsContent != null &&
+                double.IsNaN(_detailsContent.Height) &&
                 this.AreDetailsVisible &&
-                !double.IsNaN(this._detailsDesiredHeight) &&
-                !DoubleUtil.AreClose(this._detailsContent.ActualHeight, _detailsDesiredHeight) &&
+                !double.IsNaN(_detailsDesiredHeight) &&
+                !DoubleUtil.AreClose(_detailsContent.ActualHeight, _detailsDesiredHeight) &&
                 this.Slot != -1)
             {
-                this._detailsDesiredHeight = this._detailsContent.ActualHeight;
-                if (!this._animatingDetails)
+                _detailsDesiredHeight = _detailsContent.ActualHeight;
+                if (!_animatingDetails)
                 {
-                    this._detailsElement.ContentHeight = this._detailsDesiredHeight;
+                    _detailsElement.ContentHeight = _detailsDesiredHeight;
                 }
             }
         }
@@ -1453,7 +1453,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (this.DetailsVisibleStoryboard != null)
             {
                 this.DetailsVisibleStoryboard.Stop();
-                this._animatingDetails = false;
+                _animatingDetails = false;
             }
         }
 

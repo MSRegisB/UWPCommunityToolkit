@@ -66,8 +66,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         protected internal DataGridColumn()
         {
-            this._visibility = Visibility.Visible;
-            this._displayIndexWithFiller = -1;
+            _visibility = Visibility.Visible;
+            _displayIndexWithFiller = -1;
             this.IsInitialDesiredWidthDetermined = false;
             this.InheritsWidth = true;
         }
@@ -99,15 +99,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._cellStyle;
+                return _cellStyle;
             }
 
             set
             {
                 if (_cellStyle != value)
                 {
-                    Style previousStyle = this._cellStyle;
-                    this._cellStyle = value;
+                    Style previousStyle = _cellStyle;
+                    _cellStyle = value;
                     if (this.OwningGrid != null)
                     {
                         this.OwningGrid.OnColumnCellStyleChanged(this, previousStyle);
@@ -227,12 +227,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._clipboardContentBinding;
+                return _clipboardContentBinding;
             }
 
             set
             {
-                this._clipboardContentBinding = value;
+                _clipboardContentBinding = value;
             }
         }
 
@@ -284,7 +284,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         value++;
                     }
 
-                    if (this._displayIndexWithFiller != value)
+                    if (_displayIndexWithFiller != value)
                     {
                         if (value < 0 || value >= this.OwningGrid.ColumnsItemsInternal.Count)
                         {
@@ -293,7 +293,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                         // Will throw an error if a visible frozen column is placed inside a non-frozen area or vice-versa.
                         this.OwningGrid.OnColumnDisplayIndexChanging(this, value);
-                        this._displayIndexWithFiller = value;
+                        _displayIndexWithFiller = value;
                         try
                         {
                             this.OwningGrid.InDisplayIndexAdjustments = true;
@@ -313,7 +313,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         throw DataGridError.DataGrid.ValueMustBeGreaterThanOrEqualTo("value", "DisplayIndex", -1);
                     }
 
-                    this._displayIndexWithFiller = value;
+                    _displayIndexWithFiller = value;
                 }
             }
         }
@@ -344,18 +344,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._headerStyle;
+                return _headerStyle;
             }
 
             set
             {
-                if (this._headerStyle != value)
+                if (_headerStyle != value)
                 {
-                    Style previousStyle = this._headerStyle;
-                    this._headerStyle = value;
-                    if (this._headerCell != null)
+                    Style previousStyle = _headerStyle;
+                    _headerStyle = value;
+                    if (_headerCell != null)
                     {
-                        this._headerCell.EnsureStyle(previousStyle);
+                        _headerCell.EnsureStyle(previousStyle);
                     }
                 }
             }
@@ -368,17 +368,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._header;
+                return _header;
             }
 
             set
             {
-                if (this._header != value)
+                if (_header != value)
                 {
-                    this._header = value;
-                    if (this._headerCell != null)
+                    _header = value;
+                    if (_headerCell != null)
                     {
-                        this._headerCell.Content = this._header;
+                        _headerCell.Content = _header;
                     }
                 }
             }
@@ -411,12 +411,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 if (this.OwningGrid == null)
                 {
-                    return this._isReadOnly ?? DATAGRIDCOLUMN_defaultIsReadOnly;
+                    return _isReadOnly ?? DATAGRIDCOLUMN_defaultIsReadOnly;
                 }
 
-                if (this._isReadOnly != null)
+                if (_isReadOnly != null)
                 {
-                    return this._isReadOnly.Value || this.OwningGrid.IsReadOnly;
+                    return _isReadOnly.Value || this.OwningGrid.IsReadOnly;
                 }
 
                 return this.OwningGrid.GetColumnReadOnlyState(this, DATAGRIDCOLUMN_defaultIsReadOnly);
@@ -424,14 +424,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             set
             {
-                if (value != this._isReadOnly)
+                if (value != _isReadOnly)
                 {
                     if (this.OwningGrid != null)
                     {
                         this.OwningGrid.OnColumnReadOnlyStateChanging(this, value);
                     }
 
-                    this._isReadOnly = value;
+                    _isReadOnly = value;
                 }
             }
         }
@@ -540,7 +540,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._visibility;
+                return _visibility;
             }
 
             set
@@ -552,11 +552,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         this.OwningGrid.OnColumnVisibleStateChanging(this);
                     }
 
-                    this._visibility = value;
+                    _visibility = value;
 
-                    if (this._headerCell != null)
+                    if (_headerCell != null)
                     {
-                        this._headerCell.Visibility = this._visibility;
+                        _headerCell.Visibility = _visibility;
                     }
 
                     if (this.OwningGrid != null)
@@ -668,13 +668,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                if (this._bindingPaths != null)
+                if (_bindingPaths != null)
                 {
-                    return this._bindingPaths;
+                    return _bindingPaths;
                 }
 
-                this._bindingPaths = CreateBindingPaths();
-                return this._bindingPaths;
+                _bindingPaths = CreateBindingPaths();
+                return _bindingPaths;
             }
         }
 
@@ -706,7 +706,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._displayIndexWithFiller;
+                return _displayIndexWithFiller;
             }
 
             set
@@ -714,7 +714,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 Debug.Assert(value >= -1, "Expected value >= -1.");
                 Debug.Assert(value < int.MaxValue, "Expected value < int.MaxValue.");
 
-                this._displayIndexWithFiller = value;
+                _displayIndexWithFiller = value;
             }
         }
 
@@ -722,7 +722,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._headerCell != null;
+                return _headerCell != null;
             }
         }
 
@@ -730,12 +730,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                if (this._headerCell == null)
+                if (_headerCell == null)
                 {
-                    this._headerCell = CreateHeader();
+                    _headerCell = CreateHeader();
                 }
 
-                return this._headerCell;
+                return _headerCell;
             }
         }
 
@@ -1047,7 +1047,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             List<string> bindingPaths = new List<string>();
             List<BindingInfo> bindings = null;
-            if (this._inputBindings == null && this.OwningGrid != null)
+            if (_inputBindings == null && this.OwningGrid != null)
             {
                 DataGridRow row = this.OwningGrid.EditingRow;
                 if (row != null && row.Cells != null && row.Cells.Count > this.Index)
@@ -1057,12 +1057,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
-            if (this._inputBindings != null)
+            if (_inputBindings != null)
             {
                 Debug.Assert(this.OwningGrid != null, "Expected non-null owning DataGrid.");
 
                 // Use the editing bindings if they've already been created
-                bindings = this._inputBindings;
+                bindings = _inputBindings;
             }
 
             if (bindings != null)
@@ -1092,7 +1092,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             DataGridColumnHeader result = new DataGridColumnHeader();
             result.OwningColumn = this;
-            result.Content = this._header;
+            result.Content = _header;
             result.EnsureStyle(null);
 
             return result;
@@ -1108,17 +1108,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal FrameworkElement GenerateEditingElementInternal(DataGridCell cell, object dataItem)
         {
-            if (this._editingElement == null)
+            if (_editingElement == null)
             {
-                this._editingElement = GenerateEditingElement(cell, dataItem);
+                _editingElement = GenerateEditingElement(cell, dataItem);
             }
 
-            if (this._inputBindings == null && this._editingElement != null)
+            if (_inputBindings == null && _editingElement != null)
             {
-                this._inputBindings = CreateBindings(this._editingElement, dataItem, true /*twoWay*/);
+                _inputBindings = CreateBindings(_editingElement, dataItem, true /*twoWay*/);
 
                 // Setup all of the active input bindings to support validation
-                foreach (BindingInfo bindingData in this._inputBindings)
+                foreach (BindingInfo bindingData in _inputBindings)
                 {
                     if (bindingData.BindingExpression != null
                         && bindingData.BindingExpression.ParentBinding != null
@@ -1146,7 +1146,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
-            return this._editingElement;
+            return _editingElement;
         }
 
         internal FrameworkElement GenerateElementInternal(DataGridCell cell, object dataItem)
@@ -1177,9 +1177,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal List<BindingInfo> GetInputBindings(FrameworkElement element, object dataItem)
         {
-            if (this._inputBindings != null)
+            if (_inputBindings != null)
             {
-                return this._inputBindings;
+                return _inputBindings;
             }
 
             return CreateBindings(element, dataItem, true /*twoWay*/);
@@ -1242,9 +1242,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         internal void RemoveEditingElement()
         {
-            this._editingElement = null;
-            this._inputBindings = null;
-            this._bindingPaths = null;
+            _editingElement = null;
+            _inputBindings = null;
+            _bindingPaths = null;
         }
 
         /// <summary>

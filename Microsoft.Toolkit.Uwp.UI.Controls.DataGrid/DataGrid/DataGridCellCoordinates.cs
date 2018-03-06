@@ -50,8 +50,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             return false;
         }
 
-        // TODO - check if this is still true.
-        // There is build warning if this is missing
+        // Avoiding build warning CS0659: 'DataGridCellCoordinates' overrides Object.Equals(object o) but does not override Object.GetHashCode()
         public override int GetHashCode()
         {
             return base.GetHashCode();

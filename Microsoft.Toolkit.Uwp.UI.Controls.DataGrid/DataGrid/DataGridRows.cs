@@ -229,7 +229,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (_selectedItems.Count > 0)
             {
-                this._noSelectionChangeCount++;
+                _noSelectionChangeCount++;
                 try
                 {
                     // Individually deselecting displayed rows to view potential transitions
@@ -263,7 +263,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         internal void ClearRowSelection(int slotException, bool setAnchorSlot)
         {
-            this._noSelectionChangeCount++;
+            _noSelectionChangeCount++;
             try
             {
                 bool exceptionAlreadySelected = false;
@@ -413,7 +413,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
             else
             {
-                InsertElement(slot, null, this._vScrollBar == null || this._vScrollBar.Visibility == Visibility.Visible /*updateVerticalScrollBarOnly*/, false /*isCollapsed*/, isRow);
+                InsertElement(slot, null, _vScrollBar == null || _vScrollBar.Visibility == Visibility.Visible /*updateVerticalScrollBarOnly*/, false /*isCollapsed*/, isRow);
             }
         }
 
@@ -433,7 +433,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal bool IsRowRecyclable(DataGridRow row)
         {
-            return row != this.EditingRow && row != this._focusedRow;
+            return row != this.EditingRow && row != _focusedRow;
         }
 
         internal bool IsSlotVisible(int slot)
@@ -532,8 +532,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 // _desiredCurrentColumnIndex is used in MakeFirstDisplayedCellCurrentCell to set the
                 // column position back to what it was before the refresh
-                this._desiredCurrentColumnIndex = this.CurrentColumnIndex;
-                double verticalOffset = this._verticalOffset;
+                _desiredCurrentColumnIndex = this.CurrentColumnIndex;
+                double verticalOffset = _verticalOffset;
                 if (this.DisplayData.PendingVerticalScrollHeight > 0)
                 {
                     // Use the pending vertical scrollbar position if there is one, in the case that the collection
@@ -541,7 +541,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     verticalOffset = this.DisplayData.PendingVerticalScrollHeight;
                 }
 
-                this._verticalOffset = 0;
+                _verticalOffset = 0;
                 this.NegVerticalOffset = 0;
 
                 if (clearRows)
@@ -727,15 +727,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
-            this._verticalOffset += deltaY;
-            if (this._verticalOffset < 0 || this.DisplayData.FirstScrollingSlot == 0)
+            _verticalOffset += deltaY;
+            if (_verticalOffset < 0 || this.DisplayData.FirstScrollingSlot == 0)
             {
                 // We scrolled too far because a row's height was larger than its approximation
-                this._verticalOffset = this.NegVerticalOffset;
+                _verticalOffset = this.NegVerticalOffset;
             }
 
             // TODO in certain cases (eg, variable row height), this may not be true
-            Debug.Assert(DoubleUtil.LessThanOrClose(this.NegVerticalOffset, this._verticalOffset));
+            Debug.Assert(DoubleUtil.LessThanOrClose(this.NegVerticalOffset, _verticalOffset));
 
             SetVerticalOffset(_verticalOffset);
 
@@ -749,7 +749,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             Debug.Assert(!(!isSelected && setAnchorSlot));
             Debug.Assert(!IsSlotOutOfSelectionBounds(slot));
-            this._noSelectionChangeCount++;
+            _noSelectionChangeCount++;
             try
             {
                 if (this.SelectionMode == DataGridSelectionMode.Single && isSelected)
@@ -790,7 +790,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             Debug.Assert(endSlot >= 0 && endSlot < this.SlotCount);
             Debug.Assert(startSlot <= endSlot);
 
-            this._noSelectionChangeCount++;
+            _noSelectionChangeCount++;
             try
             {
                 if (/*isSelected &&*/ !_selectedItems.ContainsAll(startSlot, endSlot))
@@ -893,7 +893,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 this.SlotCount += totalSlots - slot;
                 this.VisibleSlotCount += totalSlots - slot;
-                OnAddedElement_Phase2(0, this._vScrollBar == null || this._vScrollBar.Visibility == Visibility.Visible /*updateVerticalScrollBarOnly*/);
+                OnAddedElement_Phase2(0, _vScrollBar == null || _vScrollBar.Visibility == Visibility.Visible /*updateVerticalScrollBarOnly*/);
                 OnElementsChanged(true /*grew*/);
             }
         }
@@ -941,11 +941,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #endif
 
 #if FEATURE_ICOLLECTIONVIEW_GROUP
-            if (this._topLevelGroup != null)
+            if (_topLevelGroup != null)
             {
                 // The PagedCollectionView reuses the top level group so we need to detach any existing or else we'll get duplicate handers here
-                UnhookCollectionChangedListenerFromGroup(this._topLevelGroup, /*removeFromTable*/ false);
-                this._topLevelGroup = null;
+                UnhookCollectionChangedListenerFromGroup(_topLevelGroup, /*removeFromTable*/ false);
+                _topLevelGroup = null;
             }
 
             _groupsPropertyChangedListenersTable.Clear();
@@ -978,11 +978,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void ClearShowDetailsTable()
         {
-            this._showDetailsTable.Clear();
+            _showDetailsTable.Clear();
 #if FEATURE_IEDITABLECOLLECTIONVIEW
             if (this.DataConnection.NewItemPlaceholderPosition == NewItemPlaceholderPosition.AtEnd)
             {
-                this._showDetailsTable.AddValue(this.DataConnection.NewItemPlaceholderIndex, Visibility.Collapsed);
+                _showDetailsTable.AddValue(this.DataConnection.NewItemPlaceholderIndex, Visibility.Collapsed);
             }
 #endif
         }
@@ -1093,9 +1093,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             Debug.Assert(slotDeleted >= 0, "Expected positive slotDeleted.");
 
             // Take care of the non-visible loaded rows
-            for (int index = 0; index < this._loadedRows.Count;)
+            for (int index = 0; index < _loadedRows.Count;)
             {
-                DataGridRow dataGridRow = this._loadedRows[index];
+                DataGridRow dataGridRow = _loadedRows[index];
                 if (this.IsSlotVisible(dataGridRow.Slot))
                 {
                     index++;
@@ -1109,7 +1109,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
                     else if (dataGridRow.Slot == slotDeleted)
                     {
-                        this._loadedRows.RemoveAt(index);
+                        _loadedRows.RemoveAt(index);
                     }
                     else
                     {
@@ -1122,13 +1122,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.CorrectEditingRow();
 
             // Take care of the non-visible focused row
-            if (this._focusedRow != null &&
-                this._focusedRow != this.EditingRow &&
-                !this.IsSlotVisible(this._focusedRow.Slot) &&
-                this._focusedRow.Slot > slotDeleted)
+            if (_focusedRow != null &&
+                _focusedRow != this.EditingRow &&
+                !this.IsSlotVisible(_focusedRow.Slot) &&
+                _focusedRow.Slot > slotDeleted)
             {
-                CorrectRowAfterDeletion(this._focusedRow, wasRow);
-                this._focusedRow.EnsureBackground();
+                CorrectRowAfterDeletion(_focusedRow, wasRow);
+                _focusedRow.EnsureBackground();
             }
 
             // Take care of the visible rows
@@ -1170,7 +1170,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             Debug.Assert(slotInserted >= 0);
 
             // Take care of the non-visible loaded rows
-            foreach (DataGridRow dataGridRow in this._loadedRows)
+            foreach (DataGridRow dataGridRow in _loadedRows)
             {
                 if (!this.IsSlotVisible(dataGridRow.Slot) && dataGridRow.Slot >= slotInserted)
                 {
@@ -1179,13 +1179,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // Take care of the non-visible focused row
-            if (this._focusedRow != null &&
-                this._focusedRow != EditingRow &&
+            if (_focusedRow != null &&
+                _focusedRow != EditingRow &&
                 !(this.IsSlotVisible(_focusedRow.Slot) || ((_focusedRow.Slot == slotInserted) && isCollapsed)) &&
-                this._focusedRow.Slot >= slotInserted)
+                _focusedRow.Slot >= slotInserted)
             {
-                DataGrid.CorrectRowAfterInsertion(this._focusedRow, rowInserted);
-                this._focusedRow.EnsureBackground();
+                DataGrid.CorrectRowAfterInsertion(_focusedRow, rowInserted);
+                _focusedRow.EnsureBackground();
             }
 
             // Take care of the visible rows
@@ -1262,10 +1262,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             // If we receive this event when the number of GroupDescriptions is different than what we have already
             // accounted for, that means the ICollectionView is still in the process of updating its groups.  It will
             // send a reset notification when it's done, at which point we can update our visuals.
-            if (this._rowGroupHeightsByLevel != null &&
+            if (_rowGroupHeightsByLevel != null &&
                 this.DataConnection.CollectionView != null &&
                 this.DataConnection.CollectionView.GroupDescriptions != null &&
-                this.DataConnection.CollectionView.GroupDescriptions.Count == this._rowGroupHeightsByLevel.Length)
+                this.DataConnection.CollectionView.GroupDescriptions.Count == _rowGroupHeightsByLevel.Length)
             {
                 switch (e.Action)
                 {
@@ -1943,9 +1943,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // Check the potential focused row.
-            if (this._focusedRow != null && dataContext == this._focusedRow.DataContext)
+            if (_focusedRow != null && dataContext == _focusedRow.DataContext)
             {
-                return this._focusedRow;
+                return _focusedRow;
             }
 
             return null;
@@ -1953,7 +1953,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private DataGridRow GetLoadedRow(object dataContext)
         {
-            foreach (DataGridRow dataGridRow in this._loadedRows)
+            foreach (DataGridRow dataGridRow in _loadedRows)
             {
                 if (dataGridRow.DataContext == dataContext)
                 {
@@ -1990,7 +1990,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             Debug.Assert(this.DisplayData.FirstScrollingSlot == -1 || slot >= GetPreviousVisibleSlot(this.DisplayData.FirstScrollingSlot) && slot <= GetNextVisibleSlot(this.DisplayData.LastScrollingSlot));
             Debug.Assert(element != null);
 
-            if (this._rowsPresenter != null)
+            if (_rowsPresenter != null)
             {
                 DataGridRowGroupHeader groupHeader = null;
                 DataGridRow row = element as DataGridRow;
@@ -2002,7 +2002,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         if (!row.IsRecycled)
                         {
-                            Debug.Assert(!this._rowsPresenter.Children.Contains(element));
+                            Debug.Assert(!_rowsPresenter.Children.Contains(element));
                             _rowsPresenter.Children.Add(row);
                         }
                     }
@@ -2010,9 +2010,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         element.Clip = null;
                         Debug.Assert(row.Index == RowIndexFromSlot(slot));
-                        if (!this._rowsPresenter.Children.Contains(row))
+                        if (!_rowsPresenter.Children.Contains(row))
                         {
-                            this._rowsPresenter.Children.Add(row);
+                            _rowsPresenter.Children.Add(row);
                         }
                     }
                 }
@@ -2178,7 +2178,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 if (this.CurrentSlot != -1 && slotInserted <= this.CurrentSlot)
                 {
                     // The underlying data was already added, therefore we need to avoid accessing any back-end data since we might be off by 1 row.
-                    this._temporarilyResetCurrentCell = true;
+                    _temporarilyResetCurrentCell = true;
                     bool success = SetCurrentCellCore(-1, -1);
                     Debug.Assert(success);
                 }
@@ -2187,18 +2187,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             // Update the slot ranges for the RowGroupHeaders before updating the _selectedItems table,
             // because it's dependent on the slots being correct with regards to grouping.
             this.RowGroupHeadersTable.InsertIndex(slotInserted);
-            this._selectedItems.InsertIndex(slotInserted);
+            _selectedItems.InsertIndex(slotInserted);
             if (isRow)
             {
                 // Since details are only visible for rows, the showDetailsTable only contains row indexes.
                 int rowIndex = this.RowIndexFromSlot(slotInserted);
                 if (rowIndex == this.DataConnection.NewItemPlaceholderIndex)
                 {
-                    this._showDetailsTable.InsertIndexAndValue(rowIndex, Visibility.Collapsed);
+                    _showDetailsTable.InsertIndexAndValue(rowIndex, Visibility.Collapsed);
                 }
                 else
                 {
-                    this._showDetailsTable.InsertIndex(rowIndex);
+                    _showDetailsTable.InsertIndex(rowIndex);
                 }
             }
 
@@ -2221,14 +2221,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private void OnRemovedElement(int slotDeleted, object itemDeleted, bool isRow)
         {
             this.SlotCount--;
-            bool wasCollapsed = this._collapsedSlotsTable.Contains(slotDeleted);
+            bool wasCollapsed = _collapsedSlotsTable.Contains(slotDeleted);
             if (!wasCollapsed)
             {
                 this.VisibleSlotCount--;
             }
 
             // If we're deleting the focused row, we need to clear the cached value
-            if (this._focusedRow != null && this._focusedRow.DataContext == itemDeleted)
+            if (_focusedRow != null && _focusedRow.DataContext == itemDeleted)
             {
                 ResetFocusedRow();
             }
@@ -2323,12 +2323,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             // Note that the row needs to be deleted no matter what. The underlying data row was already deleted.
             Debug.Assert(slotDeleted >= 0 && slotDeleted < this.SlotCount);
-            this._temporarilyResetCurrentCell = false; 
+            _temporarilyResetCurrentCell = false;
 
             // Reset the current cell's address if it's on the deleted row, or after it.
             if (this.CurrentSlot != -1 && slotDeleted <= this.CurrentSlot)
             {
-                this._desiredCurrentColumnIndex = this.CurrentColumnIndex;
+                _desiredCurrentColumnIndex = this.CurrentColumnIndex;
                 if (slotDeleted == this.CurrentSlot)
                 {
                     // No editing is committed since the underlying entity was already deleted.
@@ -2338,7 +2338,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 else
                 {
                     // Underlying data of deleted row is gone. It cannot be accessed anymore. Skip the commit of the editing.
-                    this._temporarilyResetCurrentCell = true;
+                    _temporarilyResetCurrentCell = true;
                     bool success = SetCurrentCellCore(-1, -1);
                     Debug.Assert(success);
                 }
@@ -2391,8 +2391,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this.DataConnection.CollectionView.Groups != null)
             {
                 int totalSlots = 0;
-                this._topLevelGroup = (INotifyCollectionChanged)this.DataConnection.CollectionView.Groups;
-                HookupCollectionChangedListenerToGroup(this._topLevelGroup);
+                _topLevelGroup = (INotifyCollectionChanged)this.DataConnection.CollectionView.Groups;
+                HookupCollectionChangedListenerToGroup(_topLevelGroup);
 
                 foreach (object group in this.DataConnection.CollectionView.Groups)
                 {
@@ -2403,12 +2403,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_IEDITABLECOLLECTIONVIEW
             if (this.IsReadOnly && this.DataConnection.NewItemPlaceholderPosition == NewItemPlaceholderPosition.AtEnd)
             {
-                this._collapsedSlotsTable.AddValue(this.SlotFromRowIndex(this.DataConnection.NewItemPlaceholderIndex), Visibility.Collapsed);
+                _collapsedSlotsTable.AddValue(this.SlotFromRowIndex(this.DataConnection.NewItemPlaceholderIndex), Visibility.Collapsed);
             }
 #endif
 
             this.SlotCount = this.DataConnection.Count + this.RowGroupHeadersTable.IndexCount;
-            this.VisibleSlotCount = this.SlotCount - this._collapsedSlotsTable.GetIndexCount(0, this.SlotCount - 1);
+            this.VisibleSlotCount = this.SlotCount - _collapsedSlotsTable.GetIndexCount(0, this.SlotCount - 1);
         }
 
 #if FEATURE_ICOLLECTIONVIEW_GROUP
@@ -2660,12 +2660,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 double deltaY = 0;
                 int newFirstScrollingSlot = this.DisplayData.FirstScrollingSlot;
-                double newVerticalOffset = this._verticalOffset + height;
+                double newVerticalOffset = _verticalOffset + height;
                 if (height > 0)
                 {
                     // Scrolling Down
                     int lastVisibleSlot = GetPreviousVisibleSlot(this.SlotCount);
-                    if (this._vScrollBar != null && DoubleUtil.AreClose(this._vScrollBar.Maximum, newVerticalOffset))
+                    if (_vScrollBar != null && DoubleUtil.AreClose(_vScrollBar.Maximum, newVerticalOffset))
                     {
                         // We've scrolled to the bottom of the ScrollBar, automatically place the user at the very bottom
                         // of the DataGrid.  If this produces very odd behavior, evaluate the coping strategy used by
@@ -2750,6 +2750,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         // Figure out what row we've scrolled up to and update the value for this.NegVerticalOffset
                         deltaY = -this.NegVerticalOffset;
                         this.NegVerticalOffset = 0;
+
                         // TODO: This optimization is a very complex and risky with details being VisibleWhenSelected and also taking into account other
                         // details exception.  This is a temporary fix for DDB 181447 and DDB 199109.  Put in a real fix after Beta2
                         if (height < -2 * this.CellsHeight &&
@@ -2793,6 +2794,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                                     this.NegVerticalOffset = 0;
                                     break;
                                 }
+
                                 double rowHeight = GetExactSlotElementHeight(newFirstScrollingSlot);
                                 double remainingHeight = height - deltaY;
                                 if (DoubleUtil.LessThanOrClose(rowHeight + remainingHeight, 0))
@@ -2831,6 +2833,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         newFirstScrollingSlot = GetNextVisibleSlot(newFirstScrollingSlot);
                         Debug.Assert(newFirstScrollingSlot != -1);
                     }
+
                     this.NegVerticalOffset = 0;
                 }
 
@@ -2848,12 +2851,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         if (previousSlot == -1)
                         {
                             this.NegVerticalOffset = 0;
-                            this._verticalOffset = 0;
+                            _verticalOffset = 0;
                         }
                         else
                         {
                             this.NegVerticalOffset -= firstElementHeight;
-                            this._verticalOffset = Math.Max(0, this._verticalOffset - firstElementHeight);
+                            _verticalOffset = Math.Max(0, _verticalOffset - firstElementHeight);
                             firstElementSlot = previousSlot;
                             firstElementHeight = GetExactSlotElementHeight(firstElementSlot);
                         }
@@ -2871,28 +2874,28 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 if (this.DisplayData.FirstScrollingSlot == 0)
                 {
-                    this._verticalOffset = this.NegVerticalOffset;
+                    _verticalOffset = this.NegVerticalOffset;
                 }
                 else if (DoubleUtil.GreaterThan(this.NegVerticalOffset, newVerticalOffset))
                 {
                     // The scrolled-in row was larger than anticipated. Adjust the DataGrid so the ScrollBar thumb
                     // can stay in the same place
                     this.NegVerticalOffset = newVerticalOffset;
-                    this._verticalOffset = newVerticalOffset;
+                    _verticalOffset = newVerticalOffset;
                 }
                 else
                 {
-                    this._verticalOffset = newVerticalOffset;
+                    _verticalOffset = newVerticalOffset;
                 }
 
-                Debug.Assert(!(this._verticalOffset == 0 && this.NegVerticalOffset == 0 && this.DisplayData.FirstScrollingSlot > 0));
+                Debug.Assert(!(_verticalOffset == 0 && this.NegVerticalOffset == 0 && this.DisplayData.FirstScrollingSlot > 0));
 
                 SetVerticalOffset(_verticalOffset);
 
                 this.DisplayData.FullyRecycleElements();
 
                 Debug.Assert(DoubleUtil.GreaterThanOrClose(this.NegVerticalOffset, 0));
-                Debug.Assert(DoubleUtil.GreaterThanOrClose(this._verticalOffset, this.NegVerticalOffset));
+                Debug.Assert(DoubleUtil.GreaterThanOrClose(_verticalOffset, this.NegVerticalOffset));
 
                 DataGridAutomationPeer peer = DataGridAutomationPeer.FromElement(this) as DataGridAutomationPeer;
                 if (peer != null)
@@ -2962,7 +2965,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.ResetEditingRow();
 
             // Make sure to clear the focused row (because it's no longer relevant).
-            if (this._focusedRow != null)
+            if (_focusedRow != null)
             {
                 ResetFocusedRow();
 #if WINDOWS_UWP
@@ -2972,9 +2975,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #endif
             }
 
-            if (this._rowsPresenter != null)
+            if (_rowsPresenter != null)
             {
-                foreach (UIElement element in this._rowsPresenter.Children)
+                foreach (UIElement element in _rowsPresenter.Children)
                 {
                     DataGridRow row = element as DataGridRow;
                     if (row != null)
@@ -3002,7 +3005,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 if (!recycle)
                 {
-                    this._rowsPresenter.Children.Clear();
+                    _rowsPresenter.Children.Clear();
                 }
             }
 
@@ -3016,10 +3019,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private void UnloadRow(DataGridRow dataGridRow)
         {
             Debug.Assert(dataGridRow != null);
-            Debug.Assert(this._rowsPresenter != null);
-            Debug.Assert(this._rowsPresenter.Children.Contains(dataGridRow));
+            Debug.Assert(_rowsPresenter != null);
+            Debug.Assert(_rowsPresenter.Children.Contains(dataGridRow));
 
-            if (this._loadedRows.Contains(dataGridRow))
+            if (_loadedRows.Contains(dataGridRow))
             {
                 return; // The row is still referenced, we can't release it.
             }
@@ -3040,7 +3043,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             else
             {
                 // TODO: Should we raise Unloading for rows that are not going to be recycled as well
-                this._rowsPresenter.Children.Remove(dataGridRow);
+                _rowsPresenter.Children.Remove(dataGridRow);
                 dataGridRow.DetachFromDataGrid(false);
             }
         }
@@ -3100,10 +3103,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 this.DisplayData.NumTotallyDisplayedScrollingElements = visibleScrollingRows;
             }
+
             if (visibleScrollingRows == 0)
             {
                 firstDisplayedScrollingSlot = -1;
-                Debug.Assert(lastDisplayedScrollingSlot == -1);
+                Debug.Assert(lastDisplayedScrollingSlot == -1, "Expected lastDisplayedScrollingSlot equal to -1.");
             }
 
             Debug.Assert(lastDisplayedScrollingSlot < this.SlotCount, "lastDisplayedScrollingRow larger than number of rows");
@@ -3113,8 +3117,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             Debug.Assert(this.DisplayData.NumDisplayedScrollingElements >= 0, "the number of visible scrolling rows can't be negative");
             Debug.Assert(this.DisplayData.NumTotallyDisplayedScrollingElements >= 0, "the number of totally visible scrolling rows can't be negative");
             Debug.Assert(this.DisplayData.FirstScrollingSlot < this.SlotCount, "firstDisplayedScrollingRow larger than number of rows");
-            Debug.Assert(this.DisplayData.FirstScrollingSlot == firstDisplayedScrollingSlot);
-            Debug.Assert(this.DisplayData.LastScrollingSlot == lastDisplayedScrollingSlot);
+            Debug.Assert(this.DisplayData.FirstScrollingSlot == firstDisplayedScrollingSlot, "Expected DisplayData.FirstScrollingSlot equal to firstDisplayedScrollingSlot.");
+            Debug.Assert(this.DisplayData.LastScrollingSlot == lastDisplayedScrollingSlot, "DisplayData.LastScrollingSlot equal to lastDisplayedScrollingSlot.");
         }
 
         // Similar to UpdateDisplayedRows except that it starts with the LastDisplayedScrollingRow
@@ -3306,7 +3310,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     // Our first visible slot was collapsed, find the replacement
                     int collapsedSlotsAbove = this.DisplayData.FirstScrollingSlot - startSlot - _collapsedSlotsTable.GetIndexCount(startSlot, this.DisplayData.FirstScrollingSlot);
-                    Debug.Assert(collapsedSlotsAbove > 0);
+                    Debug.Assert(collapsedSlotsAbove > 0, "Expected positive collapsedSlotsAbove.");
                     int newFirstScrollingSlot = GetNextVisibleSlot(this.DisplayData.FirstScrollingSlot);
                     while (collapsedSlotsAbove > 1 && newFirstScrollingSlot < this.SlotCount)
                     {
@@ -3342,7 +3346,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 // Collapsing could cause the vertical offset to move up if we collapsed a lot of slots
                 // near the bottom of the DataGrid.  To do this, we compare the height we collapsed to
                 // the distance to the last visible row and adjust the scrollbar if we collapsed more
-                if (isHeaderDisplayed && this._verticalOffset > 0)
+                if (isHeaderDisplayed && _verticalOffset > 0)
                 {
                     int lastVisibleSlot = GetPreviousVisibleSlot(this.SlotCount);
                     int slot = GetNextVisibleSlot(oldLastDisplayedSlot);
@@ -3400,7 +3404,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
 
                 _selectedItems.Delete(slotDeleted, itemDeleted);
-                this._showDetailsTable.RemoveIndex(RowIndexFromSlot(slotDeleted));
+                _showDetailsTable.RemoveIndex(RowIndexFromSlot(slotDeleted));
                 this.RowGroupHeadersTable.RemoveIndex(slotDeleted);
                 _collapsedSlotsTable.RemoveIndex(slotDeleted);
             }

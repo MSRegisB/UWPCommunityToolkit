@@ -31,9 +31,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="content">DataGrid cell value.</param>
         public DataGridClipboardCellContent(object item, DataGridColumn column, object content)
         {
-            this._item = item;
-            this._column = column;
-            this._content = content;
+            _item = item;
+            _column = column;
+            _content = content;
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             DataGridClipboardCellContent clipboardCellContent = (DataGridClipboardCellContent)obj;
-            return this._column == clipboardCellContent._column && this._content == clipboardCellContent._content && this._item == clipboardCellContent._item;
+            return _column == clipboardCellContent._column && _content == clipboardCellContent._content && _item == clipboardCellContent._item;
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <returns>Hash value.</returns>
         public override int GetHashCode()
         {
-            return (this._column.GetHashCode() ^ this._content.GetHashCode()) ^ this._item.GetHashCode();
+            return (_column.GetHashCode() ^ _content.GetHashCode()) ^ _item.GetHashCode();
         }
 
         /// <summary>

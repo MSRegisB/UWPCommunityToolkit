@@ -29,30 +29,30 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         public DataGridCellCollection(DataGridRow owningRow)
         {
-            this._owningRow = owningRow;
-            this._cells = new List<DataGridCell>();
+            _owningRow = owningRow;
+            _cells = new List<DataGridCell>();
         }
 
         public int Count
         {
             get
             {
-                return this._cells.Count;
+                return _cells.Count;
             }
         }
 
         public IEnumerator GetEnumerator()
         {
-            return this._cells.GetEnumerator();
+            return _cells.GetEnumerator();
         }
 
         public void Insert(int cellIndex, DataGridCell cell)
         {
-            Debug.Assert(cellIndex >= 0 && cellIndex <= this._cells.Count, "Expected cellIndex between 0 and _cells.Count inclusive.");
+            Debug.Assert(cellIndex >= 0 && cellIndex <= _cells.Count, "Expected cellIndex between 0 and _cells.Count inclusive.");
             Debug.Assert(cell != null, "Expected non-null cell.");
 
-            cell.OwningRow = this._owningRow;
-            this._cells.Insert(cellIndex, cell);
+            cell.OwningRow = _owningRow;
+            _cells.Insert(cellIndex, cell);
 
             if (CellAdded != null)
             {
@@ -62,8 +62,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         public void RemoveAt(int cellIndex)
         {
-            DataGridCell dataGridCell = this._cells[cellIndex];
-            this._cells.RemoveAt(cellIndex);
+            DataGridCell dataGridCell = _cells[cellIndex];
+            _cells.RemoveAt(cellIndex);
             dataGridCell.OwningRow = null;
             if (CellRemoved != null)
             {
@@ -75,12 +75,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                if (index < 0 || index >= this._cells.Count)
+                if (index < 0 || index >= _cells.Count)
                 {
-                    throw DataGridError.DataGrid.ValueMustBeBetween("index", "Index", 0, true, this._cells.Count, false);
+                    throw DataGridError.DataGrid.ValueMustBeBetween("index", "Index", 0, true, _cells.Count, false);
                 }
 
-                return this._cells[index];
+                return _cells[index];
             }
         }
     }

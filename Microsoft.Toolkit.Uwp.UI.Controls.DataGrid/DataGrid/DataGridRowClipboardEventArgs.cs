@@ -31,8 +31,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="isColumnHeadersRow">Whether or not this EventArgs is for the column headers.</param>
         internal DataGridRowClipboardEventArgs(object item, bool isColumnHeadersRow)
         {
-            this._isColumnHeadersRow = isColumnHeadersRow;
-            this._item = item;
+            _isColumnHeadersRow = isColumnHeadersRow;
+            _item = item;
         }
 
         /// <summary>
@@ -42,12 +42,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                if (this._clipboardRowContent == null)
+                if (_clipboardRowContent == null)
                 {
-                    this._clipboardRowContent = new List<DataGridClipboardCellContent>();
+                    _clipboardRowContent = new List<DataGridClipboardCellContent>();
                 }
 
-                return this._clipboardRowContent;
+                return _clipboardRowContent;
             }
         }
 
@@ -58,7 +58,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._isColumnHeadersRow;
+                return _isColumnHeadersRow;
             }
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._item;
+                return _item;
             }
         }
     }

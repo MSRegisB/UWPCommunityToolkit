@@ -445,16 +445,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void EnsureHeaderStyleAndVisibility(Style previousStyle)
         {
-            if (this._headerElement != null && this.OwningGrid != null)
+            if (_headerElement != null && this.OwningGrid != null)
             {
                 if (this.OwningGrid.AreRowHeadersVisible)
                 {
-                    this._headerElement.EnsureStyle(previousStyle);
-                    this._headerElement.Visibility = Visibility.Visible;
+                    _headerElement.EnsureStyle(previousStyle);
+                    _headerElement.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    this._headerElement.Visibility = Visibility.Collapsed;
+                    _headerElement.Visibility = Visibility.Collapsed;
                 }
             }
         }

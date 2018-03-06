@@ -33,22 +33,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         public DataGridSelectedItemsCollection(DataGrid owningGrid)
         {
             this.OwningGrid = owningGrid;
-            this._oldSelectedItemsCache = new List<object>();
-            this._oldSelectedSlotsTable = new IndexToValueTable<bool>();
-            this._selectedItemsCache = new List<object>();
-            this._selectedSlotsTable = new IndexToValueTable<bool>();
+            _oldSelectedItemsCache = new List<object>();
+            _oldSelectedSlotsTable = new IndexToValueTable<bool>();
+            _selectedItemsCache = new List<object>();
+            _selectedSlotsTable = new IndexToValueTable<bool>();
         }
 
         public object this[int index]
         {
             get
             {
-                if (index < 0 || index >= this._selectedSlotsTable.IndexCount)
+                if (index < 0 || index >= _selectedSlotsTable.IndexCount)
                 {
-                    throw DataGridError.DataGrid.ValueMustBeBetween("index", "Index", 0, true, this._selectedSlotsTable.IndexCount, false);
+                    throw DataGridError.DataGrid.ValueMustBeBetween("index", "Index", 0, true, _selectedSlotsTable.IndexCount, false);
                 }
 
-                int slot = this._selectedSlotsTable.GetNthIndex(index);
+                int slot = _selectedSlotsTable.GetNthIndex(index);
                 Debug.Assert(slot >= 0, "Expected positive slot.");
                 return this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot));
             }
@@ -91,7 +91,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             Debug.Assert(itemIndex >= 0, "Expected positive itemIndex.");
 
             int slot = this.OwningGrid.SlotFromRowIndex(itemIndex);
-            if (this._selectedSlotsTable.RangeCount == 0)
+            if (_selectedSlotsTable.RangeCount == 0)
             {
                 this.OwningGrid.SelectedItem = dataItem;
             }
@@ -110,7 +110,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 throw DataGridError.DataGridSelectedItemsCollection.CannotChangeSelectedItemsCollectionInSingleMode();
             }
 
-            if (this._selectedSlotsTable.RangeCount > 0)
+            if (_selectedSlotsTable.RangeCount > 0)
             {
                 // Clearing the selection does not reset the potential current cell.
                 if (!this.OwningGrid.CommitEdit(DataGridEditingUnit.Row, true /*exitEditing*/))
@@ -187,12 +187,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 throw DataGridError.DataGridSelectedItemsCollection.CannotChangeSelectedItemsCollectionInSingleMode();
             }
 
-            if (index < 0 || index >= this._selectedSlotsTable.IndexCount)
+            if (index < 0 || index >= _selectedSlotsTable.IndexCount)
             {
-                throw DataGridError.DataGrid.ValueMustBeBetween("index", "Index", 0, true, this._selectedSlotsTable.IndexCount, false);
+                throw DataGridError.DataGrid.ValueMustBeBetween("index", "Index", 0, true, _selectedSlotsTable.IndexCount, false);
             }
 
-            int rowIndex = this._selectedSlotsTable.GetNthIndex(index);
+            int rowIndex = _selectedSlotsTable.GetNthIndex(index);
             Debug.Assert(rowIndex > -1, "Expected positive itemIndex.");
 
             if (rowIndex == this.OwningGrid.CurrentSlot &&
@@ -259,25 +259,25 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._selectedItemsCache;
+                return _selectedItemsCache;
             }
 
             set
             {
-                this._selectedItemsCache = value;
+                _selectedItemsCache = value;
                 UpdateIndexes();
             }
         }
 
         internal void ClearRows()
         {
-            this._selectedSlotsTable.Clear();
-            this._selectedItemsCache.Clear();
+            _selectedSlotsTable.Clear();
+            _selectedItemsCache.Clear();
         }
 
         internal bool ContainsSlot(int slot)
         {
-            return this._selectedSlotsTable.Contains(slot);
+            return _selectedSlotsTable.Contains(slot);
         }
 
         internal bool ContainsAll(int startSlot, int endSlot)
@@ -302,35 +302,35 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         // Called when an item is deleted from the ItemsSource as opposed to just being unselected
         internal void Delete(int slot, object item)
         {
-            if (this._oldSelectedSlotsTable.Contains(slot))
+            if (_oldSelectedSlotsTable.Contains(slot))
             {
                 this.OwningGrid.SelectionHasChanged = true;
             }
 
             DeleteSlot(slot);
-            this._selectedItemsCache.Remove(item);
+            _selectedItemsCache.Remove(item);
         }
 
         internal void DeleteSlot(int slot)
         {
-            this._selectedSlotsTable.RemoveIndex(slot);
-            this._oldSelectedSlotsTable.RemoveIndex(slot);
+            _selectedSlotsTable.RemoveIndex(slot);
+            _oldSelectedSlotsTable.RemoveIndex(slot);
         }
 
         // Returns the inclusive index count between lowerBound and upperBound of all indexes with the given value
         internal int GetIndexCount(int lowerBound, int upperBound)
         {
-            return this._selectedSlotsTable.GetIndexCount(lowerBound, upperBound, true);
+            return _selectedSlotsTable.GetIndexCount(lowerBound, upperBound, true);
         }
 
         internal IEnumerable<int> GetIndexes()
         {
-            return this._selectedSlotsTable.GetIndexes();
+            return _selectedSlotsTable.GetIndexes();
         }
 
         internal IEnumerable<int> GetSlots(int startSlot)
         {
-            return this._selectedSlotsTable.GetIndexes(startSlot);
+            return _selectedSlotsTable.GetIndexes(startSlot);
         }
 
         internal SelectionChangedEventArgs GetSelectionChangedEventArgs()
@@ -340,13 +340,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             // Compare the old selected indexes with the current selection to determine which items
             // have been added and removed since the last time this method was called
-            foreach (int newSlot in this._selectedSlotsTable.GetIndexes())
+            foreach (int newSlot in _selectedSlotsTable.GetIndexes())
             {
                 object newItem = this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(newSlot));
-                if (this._oldSelectedSlotsTable.Contains(newSlot))
+                if (_oldSelectedSlotsTable.Contains(newSlot))
                 {
-                    this._oldSelectedSlotsTable.RemoveValue(newSlot);
-                    this._oldSelectedItemsCache.Remove(newItem);
+                    _oldSelectedSlotsTable.RemoveValue(newSlot);
+                    _oldSelectedItemsCache.Remove(newItem);
                 }
                 else
                 {
@@ -354,22 +354,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
-            foreach (object oldItem in this._oldSelectedItemsCache)
+            foreach (object oldItem in _oldSelectedItemsCache)
             {
                 removedSelectedItems.Add(oldItem);
             }
 
             // The current selection becomes the old selection
-            this._oldSelectedSlotsTable = this._selectedSlotsTable.Copy();
-            this._oldSelectedItemsCache = new List<object>(this._selectedItemsCache);
+            _oldSelectedSlotsTable = _selectedSlotsTable.Copy();
+            _oldSelectedItemsCache = new List<object>(_selectedItemsCache);
 
             return new SelectionChangedEventArgs(removedSelectedItems, addedSelectedItems);
         }
 
         internal void InsertIndex(int slot)
         {
-            this._selectedSlotsTable.InsertIndex(slot);
-            this._oldSelectedSlotsTable.InsertIndex(slot);
+            _selectedSlotsTable.InsertIndex(slot);
+            _oldSelectedSlotsTable.InsertIndex(slot);
 
             // It's possible that we're inserting an item that was just removed.  If that's the case,
             // and the re-inserted item used to be selected, we want to update the _oldSelectedSlotsTable
@@ -378,9 +378,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (rowIndex != -1)
             {
                 object insertedItem = this.OwningGrid.DataConnection.GetDataItem(rowIndex);
-                if (insertedItem != null && this._oldSelectedItemsCache.Contains(insertedItem))
+                if (insertedItem != null && _oldSelectedItemsCache.Contains(insertedItem))
                 {
-                    this._oldSelectedSlotsTable.AddValue(slot, true);
+                    _oldSelectedSlotsTable.AddValue(slot, true);
                 }
             }
         }
@@ -394,21 +394,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (select)
             {
-                if (!this._selectedSlotsTable.Contains(slot))
+                if (!_selectedSlotsTable.Contains(slot))
                 {
-                    this._selectedItemsCache.Add(this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot)));
+                    _selectedItemsCache.Add(this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot)));
                 }
 
-                this._selectedSlotsTable.AddValue(slot, true);
+                _selectedSlotsTable.AddValue(slot, true);
             }
             else
             {
-                if (this._selectedSlotsTable.Contains(slot))
+                if (_selectedSlotsTable.Contains(slot))
                 {
-                    this._selectedItemsCache.Remove(this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot)));
+                    _selectedItemsCache.Remove(this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot)));
                 }
 
-                this._selectedSlotsTable.RemoveValue(slot);
+                _selectedSlotsTable.RemoveValue(slot);
             }
         }
 
@@ -425,13 +425,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     int lastItemSlot = nextRowGroupHeaderSlot == -1 ? endItemSlot : Math.Min(endItemSlot, nextRowGroupHeaderSlot - 1);
                     for (int slot = itemSlot; slot <= lastItemSlot; slot++)
                     {
-                        if (!this._selectedSlotsTable.Contains(slot))
+                        if (!_selectedSlotsTable.Contains(slot))
                         {
-                            this._selectedItemsCache.Add(this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot)));
+                            _selectedItemsCache.Add(this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot)));
                         }
                     }
 
-                    this._selectedSlotsTable.AddValues(itemSlot, lastItemSlot - itemSlot + 1, true);
+                    _selectedSlotsTable.AddValues(itemSlot, lastItemSlot - itemSlot + 1, true);
                     itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(lastItemSlot);
                 }
             }
@@ -444,13 +444,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     int lastItemSlot = nextRowGroupHeaderSlot == -1 ? endItemSlot : Math.Min(endItemSlot, nextRowGroupHeaderSlot - 1);
                     for (int slot = itemSlot; slot <= lastItemSlot; slot++)
                     {
-                        if (this._selectedSlotsTable.Contains(slot))
+                        if (_selectedSlotsTable.Contains(slot))
                         {
-                            this._selectedItemsCache.Remove(this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot)));
+                            _selectedItemsCache.Remove(this.OwningGrid.DataConnection.GetDataItem(this.OwningGrid.RowIndexFromSlot(slot)));
                         }
                     }
 
-                    this._selectedSlotsTable.RemoveValues(itemSlot, lastItemSlot - itemSlot + 1);
+                    _selectedSlotsTable.RemoveValues(itemSlot, lastItemSlot - itemSlot + 1);
                     itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(lastItemSlot);
                 }
             }
@@ -458,8 +458,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void UpdateIndexes()
         {
-            this._oldSelectedSlotsTable.Clear();
-            this._selectedSlotsTable.Clear();
+            _oldSelectedSlotsTable.Clear();
+            _selectedSlotsTable.Clear();
 
             if (this.OwningGrid.DataConnection.DataSource == null)
             {
@@ -472,17 +472,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             else
             {
                 List<object> tempSelectedItemsCache = new List<object>();
-                foreach (object item in this._selectedItemsCache)
+                foreach (object item in _selectedItemsCache)
                 {
                     int index = this.OwningGrid.DataConnection.IndexOf(item);
                     if (index != -1)
                     {
                         tempSelectedItemsCache.Add(item);
-                        this._selectedSlotsTable.AddValue(this.OwningGrid.SlotFromRowIndex(index), true);
+                        _selectedSlotsTable.AddValue(this.OwningGrid.SlotFromRowIndex(index), true);
                     }
                 }
 
-                foreach (object item in this._oldSelectedItemsCache)
+                foreach (object item in _oldSelectedItemsCache)
                 {
                     int index = this.OwningGrid.DataConnection.IndexOf(item);
                     if (index == -1)
@@ -491,11 +491,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
                     else
                     {
-                        this._oldSelectedSlotsTable.AddValue(this.OwningGrid.SlotFromRowIndex(index), true);
+                        _oldSelectedSlotsTable.AddValue(this.OwningGrid.SlotFromRowIndex(index), true);
                     }
                 }
 
-                this._selectedItemsCache = tempSelectedItemsCache;
+                _selectedItemsCache = tempSelectedItemsCache;
             }
         }
     }

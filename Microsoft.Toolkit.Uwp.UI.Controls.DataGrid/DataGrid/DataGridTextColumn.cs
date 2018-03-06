@@ -90,14 +90,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._fontSize ?? double.NaN;
+                return _fontSize ?? double.NaN;
             }
 
             set
             {
-                if (this._fontSize != value)
+                if (_fontSize != value)
                 {
-                    this._fontSize = value;
+                    _fontSize = value;
                     NotifyPropertyChanged(DATAGRIDTEXTCOLUMN_fontSizeName);
                 }
             }
@@ -111,17 +111,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             get
             {
 #if WINDOWS_UWP
-                return this._fontStyle ?? FontStyle.Normal;
+                return _fontStyle ?? FontStyle.Normal;
 #else
-                return this._fontStyle ?? FontStyles.Normal;
+                return _fontStyle ?? FontStyles.Normal;
 #endif
             }
 
             set
             {
-                if (this._fontStyle != value)
+                if (_fontStyle != value)
                 {
-                    this._fontStyle = value;
+                    _fontStyle = value;
                     NotifyPropertyChanged(DATAGRIDTEXTCOLUMN_fontStyleName);
                 }
             }
@@ -134,18 +134,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._fontWeight ?? FontWeights.Normal;
+                return _fontWeight ?? FontWeights.Normal;
             }
 
             set
             {
 #if WINDOWS_UWP
-                if (!this._fontWeight.HasValue || this._fontWeight.Value.Weight != value.Weight)
+                if (!_fontWeight.HasValue || _fontWeight.Value.Weight != value.Weight)
 #else
-                if (this._fontWeight != value)
+                if (_fontWeight != value)
 #endif
                 {
-                    this._fontWeight = value;
+                    _fontWeight = value;
                     NotifyPropertyChanged(DATAGRIDTEXTCOLUMN_fontWeightName);
                 }
             }
@@ -158,14 +158,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._foreground;
+                return _foreground;
             }
 
             set
             {
-                if (this._foreground != value)
+                if (_foreground != value)
                 {
-                    this._foreground = value;
+                    _foreground = value;
                     NotifyPropertyChanged(DATAGRIDTEXTCOLUMN_foregroundName);
                 }
             }
@@ -203,24 +203,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 textBox.FontFamily = this.FontFamily;
             }
 
-            if (this._fontSize.HasValue)
+            if (_fontSize.HasValue)
             {
-                textBox.FontSize = this._fontSize.Value;
+                textBox.FontSize = _fontSize.Value;
             }
 
-            if (this._fontStyle.HasValue)
+            if (_fontStyle.HasValue)
             {
-                textBox.FontStyle = this._fontStyle.Value;
+                textBox.FontStyle = _fontStyle.Value;
             }
 
-            if (this._fontWeight.HasValue)
+            if (_fontWeight.HasValue)
             {
-                textBox.FontWeight = this._fontWeight.Value;
+                textBox.FontWeight = _fontWeight.Value;
             }
 
-            if (this._foreground != null)
+            if (_foreground != null)
             {
-                textBox.Foreground = this._foreground;
+                textBox.Foreground = _foreground;
             }
 
 #if WINDOWS_UWP
@@ -253,24 +253,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 textBlockElement.FontFamily = this.FontFamily;
             }
 
-            if (this._fontSize.HasValue)
+            if (_fontSize.HasValue)
             {
-                textBlockElement.FontSize = this._fontSize.Value;
+                textBlockElement.FontSize = _fontSize.Value;
             }
 
-            if (this._fontStyle.HasValue)
+            if (_fontStyle.HasValue)
             {
-                textBlockElement.FontStyle = this._fontStyle.Value;
+                textBlockElement.FontStyle = _fontStyle.Value;
             }
 
-            if (this._fontWeight.HasValue)
+            if (_fontWeight.HasValue)
             {
-                textBlockElement.FontWeight = this._fontWeight.Value;
+                textBlockElement.FontWeight = _fontWeight.Value;
             }
 
-            if (this._foreground != null)
+            if (_foreground != null)
             {
-                textBlockElement.Foreground = this._foreground;
+                textBlockElement.Foreground = _foreground;
             }
 
 #if WINDOWS_UWP

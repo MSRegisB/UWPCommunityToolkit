@@ -42,12 +42,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._binding;
+                return _binding;
             }
 
             set
             {
-                if (this._binding != value)
+                if (_binding != value)
                 {
                     if (this.OwningGrid != null && !this.OwningGrid.CommitEdit(DataGridEditingUnit.Row, true /*exitEditing*/))
                     {
@@ -55,28 +55,28 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         this.OwningGrid.CancelEdit(DataGridEditingUnit.Row, false /*raiseEvents*/);
                     }
 
-                    this._binding = value;
+                    _binding = value;
 
-                    if (this._binding != null)
+                    if (_binding != null)
                     {
                         // Force the TwoWay binding mode if there is a Path present.  TwoWay binding requires a Path.
-                        if (this._binding.Path != null && !string.IsNullOrEmpty(this._binding.Path.Path))
+                        if (_binding.Path != null && !string.IsNullOrEmpty(_binding.Path.Path))
                         {
-                            this._binding.Mode = BindingMode.TwoWay;
+                            _binding.Mode = BindingMode.TwoWay;
                         }
 
-                        if (this._binding.Converter == null)
+                        if (_binding.Converter == null)
                         {
-                            this._binding.Converter = new DataGridValueConverter();
+                            _binding.Converter = new DataGridValueConverter();
                         }
 
 #if !WINDOWS_UWP
                         // Setup the binding for validation
-                        this._binding.ValidatesOnDataErrors = true;
-                        this._binding.ValidatesOnExceptions = true;
-                        this._binding.NotifyOnValidationError = true;
+                        _binding.ValidatesOnDataErrors = true;
+                        _binding.ValidatesOnExceptions = true;
+                        _binding.NotifyOnValidationError = true;
 #endif
-                        this._binding.UpdateSourceTrigger = UpdateSourceTrigger.Explicit;
+                        _binding.UpdateSourceTrigger = UpdateSourceTrigger.Explicit;
 
                         // Apply the new Binding to existing rows in the DataGrid
                         if (this.OwningGrid != null)

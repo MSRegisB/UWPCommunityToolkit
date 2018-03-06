@@ -297,8 +297,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             base.OnApplyTemplate();
 
-            this._rootElement = GetTemplateChild(DATAGRIDROWHEADER_elementRootName) as FrameworkElement;
-            if (this._rootElement != null)
+            _rootElement = GetTemplateChild(DATAGRIDROWHEADER_elementRootName) as FrameworkElement;
+            if (_rootElement != null)
             {
                 ApplyOwnerStatus(false /*animate*/);
             }
@@ -344,7 +344,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         internal void ApplyOwnerStatus(bool animate)
         {
-            if (this._rootElement != null && this.Owner != null && this.Owner.Visibility == Visibility.Visible)
+            if (_rootElement != null && this.Owner != null && this.Owner.Visibility == Visibility.Visible)
             {
                 byte idealStateMappingIndex = 0;
 

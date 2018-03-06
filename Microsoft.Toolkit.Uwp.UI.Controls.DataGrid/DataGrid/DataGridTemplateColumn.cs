@@ -41,15 +41,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._cellEditingTemplate;
+                return _cellEditingTemplate;
             }
 
             set
             {
-                if (this._cellEditingTemplate != value)
+                if (_cellEditingTemplate != value)
                 {
                     this.RemoveEditingElement();
-                    this._cellEditingTemplate = value;
+                    _cellEditingTemplate = value;
                 }
             }
         }
@@ -61,19 +61,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._cellTemplate;
+                return _cellTemplate;
             }
 
             set
             {
-                if (this._cellTemplate != value)
+                if (_cellTemplate != value)
                 {
-                    if (this._cellEditingTemplate == null)
+                    if (_cellEditingTemplate == null)
                     {
                         this.RemoveEditingElement();
                     }
 
-                    this._cellTemplate = value;
+                    _cellTemplate = value;
                 }
             }
         }

@@ -175,7 +175,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         public IndexToValueTable<T> Copy()
         {
             IndexToValueTable<T> copy = new IndexToValueTable<T>();
-            foreach (Range<T> range in this._list)
+            foreach (Range<T> range in _list)
             {
                 copy._list.Add(range.Copy());
             }

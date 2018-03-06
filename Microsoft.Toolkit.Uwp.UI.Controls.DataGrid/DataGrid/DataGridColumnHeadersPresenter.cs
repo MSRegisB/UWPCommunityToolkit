@@ -90,7 +90,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             get
             {
-                return this._dropLocationIndicator;
+                return _dropLocationIndicator;
             }
 
             set

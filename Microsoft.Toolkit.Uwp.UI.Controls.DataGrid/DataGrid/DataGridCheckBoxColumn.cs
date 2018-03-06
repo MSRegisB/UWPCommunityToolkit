@@ -61,14 +61,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this._isThreeState;
+                return _isThreeState;
             }
 
             set
             {
-                if (this._isThreeState != value)
+                if (_isThreeState != value)
                 {
-                    this._isThreeState = value;
+                    _isThreeState = value;
                     NotifyPropertyChanged(DATAGRIDCHECKBOXCOLUMN_isThreeStateName);
                 }
             }

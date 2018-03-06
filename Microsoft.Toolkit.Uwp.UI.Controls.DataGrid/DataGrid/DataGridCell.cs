@@ -241,7 +241,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             ApplyCellState(false /*animate*/);
 
-            this._rightGridLine = GetTemplateChild(DATAGRIDCELL_elementRightGridLine) as Rectangle;
+            _rightGridLine = GetTemplateChild(DATAGRIDCELL_elementRightGridLine) as Rectangle;
             if (_rightGridLine != null && this.OwningColumn == null)
             {
                 // Turn off the right GridLine for filler cells

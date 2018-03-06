@@ -71,6 +71,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// </summary>
         public DataGridColumnHeader()
         {
+            this.PointerCanceled += new PointerEventHandler(DataGridColumnHeader_PointerCanceled);
             this.PointerCaptureLost += new PointerEventHandler(DataGridColumnHeader_PointerCaptureLost);
             this.PointerPressed += new PointerEventHandler(DataGridColumnHeader_PointerPressed);
             this.PointerReleased += new PointerEventHandler(DataGridColumnHeader_PointerReleased);
@@ -530,10 +531,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 ((column.CanUserReorderInternal.HasValue && column.CanUserReorderInternal.Value) || !column.CanUserReorderInternal.HasValue);
         }
 
+        private void DataGridColumnHeader_PointerCanceled(object sender, PointerRoutedEventArgs e)
+        {
+            // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerCanceled");
+            CancelPointer(e);
+        }
+
         private void DataGridColumnHeader_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
         {
             // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerCaptureLost");
+            CancelPointer(e);
+        }
 
+        private void CancelPointer(PointerRoutedEventArgs e)
+        {
             // When we stop interacting with the column headers, we need to reset the drag mode and close any popups if they are open.
             bool setResizeCursor = false;
 
