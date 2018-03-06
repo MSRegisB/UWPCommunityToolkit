@@ -136,9 +136,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private List<ValidationResult> _bindingValidationResults;
         private ContentControl _clipboardContentControl;
         private IndexToValueTable<Visibility> _collapsedSlotsTable;
-
-        // this is a workaround only for the scenarios where we need it, it is not all encompassing nor always updated
-        private UIElement _clickedElement;
         private DataGridCellCoordinates _currentCellCoordinates;
 
         // used to store the current column during a Reset
@@ -2510,7 +2507,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             private set;
         }
 
-        internal bool UpdatedStateOnMouseLeftButtonDown
+        internal bool UpdatedStateOnPointerPressed
         {
             get;
             set;
@@ -3493,19 +3490,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        // TODO: Remove this workaround when there is a DoubleClick in SL
-        internal bool IsDoubleClickRecordsClickOnCall(UIElement element)
+        internal UIElement LastSinglePressedElement
         {
-            if (_clickedElement == element)
-            {
-                _clickedElement = null;
-                return true;
-            }
-            else
-            {
-                _clickedElement = element;
-                return false;
-            }
+            get;
+            set;
         }
 
         // Returns the item or the CollectionViewGroup that is used as the DataContext for a given slot.
@@ -4083,14 +4071,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
 #if WINDOWS_UWP
-        internal bool UpdateStateOnMouseLeftButtonDown(PointerRoutedEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit)
+        internal bool UpdateStateOnPointerPressed(PointerRoutedEventArgs args, int columnIndex, int slot, bool allowEdit)
 #else
         internal bool UpdateStateOnMouseLeftButtonDown(MouseButtonEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit)
 #endif
         {
             bool ctrl, shift;
             KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
-            return this.UpdateStateOnMouseLeftButtonDown(mouseButtonEventArgs, columnIndex, slot, allowEdit, shift, ctrl);
+            return this.UpdateStateOnPointerPressed(args, columnIndex, slot, allowEdit, shift, ctrl);
         }
 
         internal void UpdateVerticalScrollBar()
@@ -7430,7 +7418,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
 #if WINDOWS_UWP
-        private bool UpdateStateOnMouseLeftButtonDown(PointerRoutedEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
+        private bool UpdateStateOnPointerPressed(PointerRoutedEventArgs args, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
 #else
         private bool UpdateStateOnMouseLeftButtonDown(MouseButtonEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
 #endif
@@ -7450,7 +7438,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             if (wasInEdit && (columnIndex != this.EditingColumnIndex || slot != this.CurrentSlot) &&
-                this.WaitForLostFocus(delegate { this.UpdateStateOnMouseLeftButtonDown(mouseButtonEventArgs, columnIndex, slot, allowEdit, shift, ctrl); }))
+                this.WaitForLostFocus(delegate { this.UpdateStateOnPointerPressed(args, columnIndex, slot, allowEdit, shift, ctrl); }))
             {
                 return true;
             }
@@ -7509,7 +7497,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this.NoSelectionChangeCount--;
             }
 
-            if (this._successfullyUpdatedSelection && beginEdit && BeginCellEdit(mouseButtonEventArgs))
+            if (this._successfullyUpdatedSelection && beginEdit && BeginCellEdit(args))
             {
                 FocusEditingCell(true /*setFocus*/);
             }

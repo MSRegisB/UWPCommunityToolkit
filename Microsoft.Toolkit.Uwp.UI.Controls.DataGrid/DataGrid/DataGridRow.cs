@@ -1342,22 +1342,23 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if WINDOWS_UWP
         private void DataGridRow_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            // TODO - Should Touch/Pen be supported too?
-            if (this.OwningGrid != null && e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
 #else
         private void DataGridRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (this.OwningGrid != null)
 #endif
             {
-                this.OwningGrid.IsDoubleClickRecordsClickOnCall(this);
-                if (this.OwningGrid.UpdatedStateOnMouseLeftButtonDown)
+                bool isDoublePressedElement = this.OwningGrid.LastSinglePressedElement == this;
+                this.OwningGrid.LastSinglePressedElement = isDoublePressedElement ? null : this;
+
+                if (this.OwningGrid.UpdatedStateOnPointerPressed)
                 {
-                    this.OwningGrid.UpdatedStateOnMouseLeftButtonDown = false;
+                    this.OwningGrid.UpdatedStateOnPointerPressed = false;
                 }
                 else
                 {
-                    e.Handled = this.OwningGrid.UpdateStateOnMouseLeftButtonDown(e, -1, this.Slot, false);
+                    e.Handled = this.OwningGrid.UpdateStateOnPointerPressed(e, -1, this.Slot, false /*allowEdit*/);
                 }
             }
         }

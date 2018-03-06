@@ -17,6 +17,7 @@ using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Core;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -133,6 +134,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     columnHeader.UpdateSeparatorVisibility(null);
                 }
+            }
+        }
+
+        internal static bool HasUserInteraction
+        {
+            get
+            {
+                return _dragMode != DragMode.None;
             }
         }
 
@@ -601,7 +610,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return;
             }
 
-            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse && !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            PointerPoint pointerPoint = e.GetCurrentPoint(this);
+
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse && !pointerPoint.Properties.IsLeftButtonPressed)
             {
                 return;
             }
@@ -614,7 +625,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             if (this.OwningGrid.ColumnHeaders != null)
             {
-                Point pointerPosition = e.GetCurrentPoint(this).Position;
+                Point pointerPosition = pointerPoint.Position;
 
                 if (this.CapturePointer(e.Pointer))
                 {
@@ -674,7 +685,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return;
             }
 
-            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            PointerPoint pointerPoint = e.GetCurrentPoint(this);
+
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse && pointerPoint.Properties.IsLeftButtonPressed)
             {
                 return;
             }
@@ -684,7 +697,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return;
             }
 
-            Point pointerPosition = e.GetCurrentPoint(this).Position;
+            Point pointerPosition = pointerPoint.Position;
             Point pointerPositionHeaders = e.GetCurrentPoint(this.OwningGrid.ColumnHeaders).Position;
             bool handled = e.Handled;
 
@@ -755,9 +768,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return;
             }
 
-            Point pointerPosition = e.GetCurrentPoint(this).Position;
+            PointerPoint pointerPoint = e.GetCurrentPoint(this);
+            Point pointerPosition = pointerPoint.Position;
 
-            if (_dragPointerId == 0 || _dragPointerId == e.Pointer.PointerId)
+            if (pointerPoint.IsInContact && (_dragPointerId == 0 || _dragPointerId == e.Pointer.PointerId))
             {
                 Point pointerPositionHeaders = e.GetCurrentPoint(this.OwningGrid.ColumnHeaders).Position;
                 bool handled = false;

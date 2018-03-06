@@ -13,8 +13,9 @@
 using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-using Windows.Devices.Input;
+using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 #if WINDOWS_UWP
+using Windows.Devices.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -409,9 +410,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if WINDOWS_UWP
         private void DataGridCell_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            // TODO - Should Touch/Pen be supported too?
             // OwningGrid is null for TopLeftHeaderCell and TopRightHeaderCell because they have no OwningRow
-            if (this.OwningGrid != null && e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
 #else
         private void DataGridCell_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -431,10 +431,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 if (this.OwningRow != null)
                 {
-                    Debug.Assert(sender is DataGridCell);
-                    Debug.Assert(sender == this);
-                    e.Handled = this.OwningGrid.UpdateStateOnMouseLeftButtonDown(e, this.ColumnIndex, this.OwningRow.Slot, !e.Handled);
-                    this.OwningGrid.UpdatedStateOnMouseLeftButtonDown = true;
+                    Debug.Assert(sender is DataGridCell, "Expected sender is DataGridCell.");
+                    Debug.Assert(sender == this, "Expected sender is this.");
+                    e.Handled = this.OwningGrid.UpdateStateOnPointerPressed(e, this.ColumnIndex, this.OwningRow.Slot, !e.Handled /*allowEdit*/);
+                    this.OwningGrid.UpdatedStateOnPointerPressed = true;
                 }
             }
         }

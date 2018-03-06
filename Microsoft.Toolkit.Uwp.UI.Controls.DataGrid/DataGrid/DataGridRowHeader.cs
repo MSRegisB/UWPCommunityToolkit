@@ -462,8 +462,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 #if WINDOWS_UWP
         private void DataGridRowHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            // TODO - Should Touch/Pen be supported too?
-            if (this.OwningGrid != null && e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
 #else
         private void DataGridRowHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -485,8 +484,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     Debug.Assert(sender is DataGridRowHeader, "Expected sender is DataGridRowHeader.");
                     Debug.Assert(sender == this, "Expected sender is this.");
 
-                    e.Handled = this.OwningGrid.UpdateStateOnMouseLeftButtonDown(e, -1, this.Slot, false);
-                    this.OwningGrid.UpdatedStateOnMouseLeftButtonDown = true;
+                    e.Handled = this.OwningGrid.UpdateStateOnPointerPressed(e, -1, this.Slot, false /*allowEdit*/);
+                    this.OwningGrid.UpdatedStateOnPointerPressed = true;
                 }
             }
         }

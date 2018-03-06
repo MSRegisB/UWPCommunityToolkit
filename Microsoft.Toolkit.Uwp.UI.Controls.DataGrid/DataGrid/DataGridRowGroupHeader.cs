@@ -385,15 +385,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if WINDOWS_UWP
         private void DataGridRowGroupHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            // TODO - Should Touch/Pen be supported too?
-            if (this.OwningGrid != null && e.Pointer.PointerDeviceType == PointerDeviceType.Mouse)
+            if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
 #else
         private void DataGridRowGroupHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (this.OwningGrid != null)
 #endif
             {
-                if (this.OwningGrid.IsDoubleClickRecordsClickOnCall(this) && !e.Handled)
+                bool isDoublePressedElement = this.OwningGrid.LastSinglePressedElement == this;
+                this.OwningGrid.LastSinglePressedElement = isDoublePressedElement ? null : this;
+                if (isDoublePressedElement && !e.Handled)
                 {
                     ToggleExpandCollapse(this.RowGroupInfo.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible, true);
                     e.Handled = true;
@@ -410,7 +411,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         Debug.Assert(success, "Expected successful focus change.");
                     }
 
-                    e.Handled = this.OwningGrid.UpdateStateOnMouseLeftButtonDown(e, this.OwningGrid.CurrentColumnIndex, this.RowGroupInfo.Slot, false /*allowEdit*/);
+                    e.Handled = this.OwningGrid.UpdateStateOnPointerPressed(e, this.OwningGrid.CurrentColumnIndex, this.RowGroupInfo.Slot, false /*allowEdit*/);
                 }
             }
         }
