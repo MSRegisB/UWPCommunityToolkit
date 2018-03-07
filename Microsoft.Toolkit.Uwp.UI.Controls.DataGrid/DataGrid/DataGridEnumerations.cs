@@ -180,4 +180,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         Single = 1
     }
+
+    /// <summary>
+    /// Determines the sort direction of a column.
+    /// </summary>
+    public enum DataGridSortDirection
+    {
+        /// <summary>
+        /// Sorts in ascending order.
+        /// </summary>
+        Ascending = 0,
+
+        /// <summary>
+        /// Sorts in descending order.
+        /// </summary>
+        Descending = 1
+    }
 }

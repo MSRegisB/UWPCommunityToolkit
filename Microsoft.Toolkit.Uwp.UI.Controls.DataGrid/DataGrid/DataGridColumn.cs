@@ -41,7 +41,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [StyleTypedProperty(Property = "HeaderStyle", StyleTargetType = typeof(DataGridColumnHeader))]
     public abstract class DataGridColumn : DependencyObject
     {
-        internal const int DATAGRIDCOLUMN_maximumWidth = 65536;
+        private const bool DATAGRIDCOLUMN_defaultCanUserReorder = true;
+        private const bool DATAGRIDCOLUMN_defaultCanUserResize = true;
+        private const bool DATAGRIDCOLUMN_defaultCanUserSort = true;
         private const bool DATAGRIDCOLUMN_defaultIsReadOnly = false;
 
         private List<string> _bindingPaths;
@@ -60,6 +62,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private bool _settingWidthInternally;
         private DataGridLength? _width; // Null by default, null means inherit the Width from the DataGrid
         private Visibility _visibility;
+        private DataGridSortDirection? _sortDirection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn"/> class.
@@ -136,7 +139,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
                 else
                 {
-                    return DataGrid.DATAGRID_defaultCanUserResizeColumns;
+                    return DATAGRIDCOLUMN_defaultCanUserReorder;
                 }
             }
 
@@ -150,7 +153,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// Gets or sets a value indicating whether the user can adjust the column width using the mouse.
         /// </summary>
         /// <returns>
-        /// true if the user can resize the column; false if the user cannot resize the column. The default is the current <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.CanUserResizeColumns"/> property value.
+        /// True if the user can resize the column; false if the user cannot resize the column. The default is the current <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.CanUserResizeColumns"/> property value.
         /// </returns>
         public bool CanUserResize
         {
@@ -166,7 +169,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
                 else
                 {
-                    return DataGrid.DATAGRID_defaultCanUserResizeColumns;
+                    return DATAGRIDCOLUMN_defaultCanUserResize;
                 }
             }
 
@@ -184,7 +187,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// Gets or sets a value indicating whether the user can sort the column by clicking the column header.
         /// </summary>
         /// <returns>
-        /// true if the user can sort the column; false if the user cannot sort the column. The default is the current <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.CanUserSortColumns"/> property value.
+        /// True if the user can sort the column; false if the user cannot sort the column. The default is the current <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.CanUserSortColumns"/> property value.
         /// </returns>
         public bool CanUserSort
         {
@@ -194,6 +197,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return this.CanUserSortInternal.Value;
                 }
+#if FEATURE_ICOLLECTIONVIEW_SORT
                 else if (this.OwningGrid != null)
                 {
                     string propertyPath = GetSortPropertyName();
@@ -208,9 +212,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     // return whether or not the property type can be compared
                     return typeof(IComparable).IsAssignableFrom(propertyType) ? true : false;
                 }
+#endif
                 else
                 {
-                    return DataGrid.DATAGRID_defaultCanUserSortColumns;
+                    return DATAGRIDCOLUMN_defaultCanUserSort;
                 }
             }
 
@@ -525,9 +530,44 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets the column's sort direction. Null indicates no sorting.
+        /// </summary>
+        public DataGridSortDirection? SortDirection
+        {
+            get
+            {
+                return _sortDirection;
+            }
+
+            set
+            {
+                if (value != _sortDirection)
+                {
+                    _sortDirection = value;
+
+                    if (this.HasHeaderCell)
+                    {
+                        this.HeaderCell.ApplyState(true /*useTransitions*/);
+                    }
+                }
+            }
+        }
+
+#if FEATURE_ICOLLECTIONVIEW_SORT
+        /// <summary>
         /// Gets or sets the name of the member to use for sorting, if not using the default.
         /// </summary>
         public string SortMemberPath
+        {
+            get;
+            set;
+        }
+#endif
+
+        /// <summary>
+        /// Gets or sets an object associated with this column.
+        /// </summary>
+        public object Tag
         {
             get;
             set;
@@ -1213,24 +1253,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 #endif
 
-        internal string GetSortPropertyName()
+#if FEATURE_ICOLLECTIONVIEW_SORT
+        internal virtual string GetSortPropertyName()
         {
-            // TODO - this should be a virtual method implemented in DataGridBoundColumn.
-            // DataGridColumn should not know about DataGridBoundColumn.
-            string result = this.SortMemberPath;
-
-            if (string.IsNullOrEmpty(result))
-            {
-                DataGridBoundColumn boundColumn = this as DataGridBoundColumn;
-
-                if (boundColumn != null && boundColumn.Binding != null && boundColumn.Binding.Path != null)
-                {
-                    result = boundColumn.Binding.Path.Path;
-                }
-            }
-
-            return result;
+            return this.SortMemberPath;
         }
+#endif
 
         internal object PrepareCellForEditInternal(FrameworkElement editingElement, RoutedEventArgs editingEventArgs)
         {

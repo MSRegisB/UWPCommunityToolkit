@@ -93,10 +93,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const string DATAGRID_elementBottomRightCornerHeaderName = "BottomRightCorner";
         private const string DATAGRID_elementVerticalScrollbarName = "VerticalScrollbar";
 
-        private const bool DATAGRID_defaultAutoGenerateColumns = true;
-        internal const bool DATAGRID_defaultCanUserReorderColumns = true;
-        internal const bool DATAGRID_defaultCanUserResizeColumns = true;
-        internal const bool DATAGRID_defaultCanUserSortColumns = true;
+        private const bool DATAGRID_defaultAutoGenerateColumns = false;
+        private const bool DATAGRID_defaultCanUserReorderColumns = false;
+        private const bool DATAGRID_defaultCanUserResizeColumns = false;
+        private const bool DATAGRID_defaultCanUserSortColumns = true;
         private const DataGridRowDetailsVisibilityMode DATAGRID_defaultRowDetailsVisibility = DataGridRowDetailsVisibilityMode.VisibleWhenSelected;
         private const DataGridSelectionMode DATAGRID_defaultSelectionMode = DataGridSelectionMode.Extended;
 
@@ -329,6 +329,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         public event SelectionChangedEventHandler SelectionChanged;
 
         /// <summary>
+        /// Occurs when the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn"/> sorting request is triggered.
+        /// </summary>
+        public event EventHandler<DataGridColumnEventArgs> Sorting;
+
+        /// <summary>
         /// Occurs when a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/>
         /// object becomes available for reuse.
         /// </summary>
@@ -509,7 +514,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "AutoGenerateColumns",
                 typeof(bool),
                 typeof(DataGrid),
-                new PropertyMetadata(false, OnAutoGenerateColumnsPropertyChanged));
+                new PropertyMetadata(DATAGRID_defaultAutoGenerateColumns, OnAutoGenerateColumnsPropertyChanged));
 
         private static void OnAutoGenerateColumnsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -543,7 +548,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "CanUserReorderColumns",
                 typeof(bool),
                 typeof(DataGrid),
-                null);
+                new PropertyMetadata(DATAGRID_defaultCanUserReorderColumns));
 
         /// <summary>
         /// Gets or sets a value indicating whether the user can adjust column widths using the mouse.
@@ -562,7 +567,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "CanUserResizeColumns",
                 typeof(bool),
                 typeof(DataGrid),
-                new PropertyMetadata(true, OnCanUserResizeColumnsPropertyChanged));
+                new PropertyMetadata(DATAGRID_defaultCanUserResizeColumns, OnCanUserResizeColumnsPropertyChanged));
 
         /// <summary>
         /// CanUserResizeColumns property changed handler.
@@ -592,7 +597,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "CanUserSortColumns",
                 typeof(bool),
                 typeof(DataGrid),
-                new PropertyMetadata(true));
+                new PropertyMetadata(DATAGRID_defaultCanUserSortColumns));
 
         /// <summary>
         /// Gets or sets the style that is used when rendering the data grid cells.
@@ -1472,7 +1477,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "RowDetailsVisibilityMode",
                 typeof(DataGridRowDetailsVisibilityMode),
                 typeof(DataGrid),
-                new PropertyMetadata(DataGridRowDetailsVisibilityMode.VisibleWhenSelected, OnRowDetailsVisibilityModePropertyChanged));
+                new PropertyMetadata(DATAGRID_defaultRowDetailsVisibility, OnRowDetailsVisibilityModePropertyChanged));
 
         /// <summary>
         /// RowDetailsVisibilityModeProperty property changed handler.
@@ -1687,7 +1692,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "SelectionMode",
                 typeof(DataGridSelectionMode),
                 typeof(DataGrid),
-                new PropertyMetadata(DataGridSelectionMode.Extended, OnSelectionModePropertyChanged));
+                new PropertyMetadata(DATAGRID_defaultSelectionMode, OnSelectionModePropertyChanged));
 
         /// <summary>
         /// SelectionModeProperty property changed handler.

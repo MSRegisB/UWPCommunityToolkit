@@ -197,6 +197,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return base.CreateBindings(element, dataItem, twoWay);
         }
 
+#if FEATURE_ICOLLECTIONVIEW_SORT
+        internal override string GetSortPropertyName()
+        {
+            if (string.IsNullOrEmpty(this.SortMemberPath) && this.Binding != null && this.Binding.Path != null)
+            {
+                return this.Binding.Path.Path;
+            }
+
+            return this.SortMemberPath;
+        }
+#endif
+
         internal void SetHeaderFromBinding()
         {
             if (this.OwningGrid != null && this.OwningGrid.DataConnection.DataType != null &&

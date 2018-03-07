@@ -74,19 +74,16 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         /// <returns>The string that contains the help text.</returns>
         protected override string GetHelpTextCore()
         {
-#if FEATURE_ICOLLECTIONVIEW_SORT
-            if (this.OwningHeader.CurrentSortingState.HasValue)
+            if (this.OwningHeader.OwningColumn != null && this.OwningHeader.OwningColumn.SortDirection.HasValue)
             {
-                if (this.OwningHeader.CurrentSortingState.Value == ListSortDirection.Ascending)
+                if (this.OwningHeader.OwningColumn.SortDirection.Value == DataGridSortDirection.Ascending)
                 {
                     return "Ascending";
                 }
 
                 return "Descending";
             }
-#endif
 
-            // TODO - implement once DataGridSortOrder is added.
             return base.GetHelpTextCore();
         }
 
@@ -122,7 +119,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 {
                     case PatternInterface.Invoke:
                     {
-                       // this.OwningHeader.OwningGrid.DataConnection.AllowSort is ignored because of the DataGrid.Sorting custom sorting capability.
+                       // this.OwningHeader.OwningGrid.DataConnection.AllowSort property is ignored because of the DataGrid.Sorting custom sorting capability.
                        if (this.OwningHeader.OwningGrid.CanUserSortColumns &&
                            this.OwningHeader.OwningColumn.CanUserSort)
                         {

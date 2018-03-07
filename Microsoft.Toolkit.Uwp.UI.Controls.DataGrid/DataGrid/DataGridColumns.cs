@@ -62,6 +62,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
+        /// OnColumnSorting
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        protected internal virtual void OnColumnSorting(DataGridColumnEventArgs e)
+        {
+            this.Sorting?.Invoke(this, e);
+        }
+
+        /// <summary>
         /// Adjusts the widths of all columns with DisplayIndex >= displayIndex such that the total
         /// width is adjusted by the given amount, if possible.  If the total desired adjustment amount
         /// could not be met, the remaining amount of adjustment is returned.
