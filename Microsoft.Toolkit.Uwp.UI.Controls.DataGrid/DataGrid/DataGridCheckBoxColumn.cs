@@ -13,17 +13,10 @@
 using System;
 using System.Collections.Specialized;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if WINDOWS_UWP
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-#else
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -173,20 +166,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (editingCheckBox != null)
             {
                 bool? uneditedValue = editingCheckBox.IsChecked;
-#if WINDOWS_UWP
+                // TODO - mouseButtonEventArgs ==> pointerEventArgs
                 PointerRoutedEventArgs mouseButtonEventArgs = editingEventArgs as PointerRoutedEventArgs;
-#else
-                MouseButtonEventArgs mouseButtonEventArgs = editingEventArgs as MouseButtonEventArgs;
-#endif
                 bool editValue = false;
                 if (mouseButtonEventArgs != null)
                 {
                     // Editing was triggered by a mouse click
-#if WINDOWS_UWP
                     Point position = mouseButtonEventArgs.GetCurrentPoint(editingCheckBox).Position;
-#else
-                    Point position = mouseButtonEventArgs.GetPosition(editingCheckBox);
-#endif
                     Rect rect = new Rect(0, 0, editingCheckBox.ActualWidth, editingCheckBox.ActualHeight);
                     editValue = rect.Contains(position);
                 }
@@ -271,11 +257,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             checkBox.HorizontalAlignment = HorizontalAlignment.Center;
             checkBox.VerticalAlignment = VerticalAlignment.Center;
             checkBox.IsThreeState = this.IsThreeState;
-#if WINDOWS_UWP
             bool isDesignMode = Windows.ApplicationModel.DesignMode.DesignModeEnabled;
-#else
-            bool isDesignMode = DesignerProperties.GetIsInDesignMode(this);
-#endif
             if (this.Binding != null || !isDesignMode)
             {
                 checkBox.SetBinding(this.BindingTarget, this.Binding);
@@ -325,18 +307,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         private void OwningGrid_KeyDown(object sender, KeyRoutedEventArgs e)
-#else
-        private void OwningGrid_KeyDown(object sender, KeyEventArgs e)
-#endif
         {
-#if WINDOWS_UWP
-            bool isForSpaceKey = e.Key == Windows.System.VirtualKey.Space;
-#else
-            bool isForSpaceKey = e.Key == Key.Space;
-#endif
-            if (isForSpaceKey && this.OwningGrid != null &&
+            if (e.Key == Windows.System.VirtualKey.Space &&
+                this.OwningGrid != null &&
                 this.OwningGrid.CurrentColumn == this)
             {
                 DataGridRow row = this.OwningGrid.DisplayData.GetDisplayedElement(this.OwningGrid.CurrentSlot) as DataGridRow;

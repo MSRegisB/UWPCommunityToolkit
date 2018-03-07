@@ -12,11 +12,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-#if WINDOWS_UWP
 using Windows.UI.Xaml.Automation.Peers;
-#else
-using System.Windows.Controls.Primitives;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.Automation.Peers
 {

@@ -12,14 +12,8 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-
-#if !WINDOWS_UWP
-using System.Windows;
-using System.Windows.Media;
-#else
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {

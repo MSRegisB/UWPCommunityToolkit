@@ -13,14 +13,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if WINDOWS_UWP
 using System.Reflection;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Markup;
-#else
-using System.Windows.Controls;
-using System.Windows.Markup;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {
@@ -55,11 +50,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 try
                 {
 #endif
-#if WINDOWS_UWP
                     return XamlReader.Load(xaml) as ControlTemplate;
-#else
-                    return XamlReader.Load(type.Assembly.GetManifestResourceStream(resourceName + ".xaml")) as ControlTemplate;
-#endif
 #if DEBUG
                 }
                 catch
@@ -76,11 +67,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 
             if (!_cache.TryGetValue(resourceName, out template))
             {
-#if WINDOWS_UWP
                 Stream s = type.GetTypeInfo().Assembly.GetManifestResourceStream(resourceName + ".xaml");
-#else
-                Stream s = type.Assembly.GetManifestResourceStream(resourceName + ".xaml");
-#endif
                 if (s != null)
                 {
                     template = new StreamReader(s).ReadToEnd();

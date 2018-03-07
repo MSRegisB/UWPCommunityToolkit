@@ -11,31 +11,18 @@
 // ******************************************************************
 
 using System;
-#if WINDOWS_UWP
 using Windows.UI.Xaml.Data;
-#else
-using System.Globalization;
-using System.Windows.Data;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {
     internal class DataGridValueConverter : IValueConverter
     {
-#if WINDOWS_UWP
         public object Convert(object value, Type targetType, object parameter, string language)
-#else
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-#endif
         {
             return value;
         }
 
-#if WINDOWS_UWP
         public object ConvertBack(object value, Type targetType, object parameter, string language)
-#else
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-#endif
         {
             if (targetType != null && TypeHelper.IsNullableType(targetType))
             {

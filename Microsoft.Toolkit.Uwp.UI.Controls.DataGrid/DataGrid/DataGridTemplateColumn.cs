@@ -11,9 +11,7 @@
 // ******************************************************************
 
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if WINDOWS_UWP
 using Windows.UI.Xaml;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -117,11 +115,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 return this.CellTemplate.LoadContent() as FrameworkElement;
             }
 
-#if WINDOWS_UWP
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
-#else
-            if (DesignerProperties.GetIsInDesignMode(this))
-#endif
             {
                 return null;
             }
@@ -152,11 +146,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 return this.CellEditingTemplate.LoadContent() as FrameworkElement;
             }
 
-#if WINDOWS_UWP
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
-#else
-            if (DesignerProperties.GetIsInDesignMode(this))
-#endif
             {
                 return null;
             }

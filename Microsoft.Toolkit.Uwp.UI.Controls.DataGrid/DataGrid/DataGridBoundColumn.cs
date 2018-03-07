@@ -12,13 +12,8 @@
 
 using System.Collections.Generic;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if WINDOWS_UWP
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
-#else
-using System.Windows;
-using System.Windows.Data;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {

@@ -23,7 +23,6 @@ using System.Text;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-#if WINDOWS_UWP
 using Microsoft.Toolkit.Uwp.Helpers;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
@@ -37,14 +36,6 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-#else
-using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
-#endif
 
 // TODO - support conscious scrollbars:
 // - show/hide bottom right square based on FullMouseIndicator vs. MouseIndicator states.
@@ -2930,12 +2921,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Builds the visual tree for the column header when a new template is applied.
         /// </summary>
-#if WINDOWS_UWP
-        protected
-#else
-        public
-#endif
-        override void OnApplyTemplate()
+        protected override void OnApplyTemplate()
         {
             // The template has changed, so we need to refresh the visuals
             _measured = false;
@@ -3035,11 +3021,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 _validationSummary.FocusingInvalidControl += new EventHandler<FocusingInvalidControlEventArgs>(ValidationSummary_FocusingInvalidControl);
                 _validationSummary.SelectionChanged += new EventHandler<SelectionChangedEventArgs>(ValidationSummary_SelectionChanged);
-#if WINDOWS_UWP
                 if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
-#else
-                if (DesignerProperties.GetIsInDesignMode(this))
-#endif
                 {
                     Debug.Assert(_validationSummary.Errors != null);
 
@@ -3214,7 +3196,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         /// <summary>
         /// Scrolls the DataGrid according to the direction of the delta.
         /// </summary>
@@ -3228,19 +3209,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 e.Handled = ProcessMouseWheelScroll(pointerPoint.Properties.MouseWheelDelta, pointerPoint.Properties.IsHorizontalMouseWheel);
             }
         }
-#else
-        /// <summary>
-        /// Scrolls the DataGrid according to the direction of the delta.
-        /// </summary>
-        /// <param name="e">MouseWheelEventArgs</param>
-        protected override void OnMouseWheel(MouseWheelEventArgs e)
-        {
-            if (!e.Handled)
-            {
-                e.Handled = ProcessMouseWheelScroll(e.Delta);
-            }
-        }
-#endif
 
         /// <summary>
         /// Raises the PreparingCellForEdit event.
@@ -4076,11 +4044,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         internal bool UpdateStateOnPointerPressed(PointerRoutedEventArgs args, int columnIndex, int slot, bool allowEdit)
-#else
-        internal bool UpdateStateOnMouseLeftButtonDown(MouseButtonEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit)
-#endif
         {
             bool ctrl, shift;
             KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
@@ -4123,11 +4087,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     _lostFocusActions.Enqueue(action);
                     editingElement.LostFocus += new RoutedEventHandler(EditingElement_LostFocus);
                     this.IsTabStop = true;
-#if WINDOWS_UWP
                     this.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-#else
-                    this.Focus();
-#endif
                     return true;
                 }
             }
@@ -5043,11 +5003,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             UpdateDisabledVisual();
         }
 
-#if WINDOWS_UWP
         private void DataGrid_KeyDown(object sender, KeyRoutedEventArgs e)
-#else
-        private void DataGrid_KeyDown(object sender, KeyEventArgs e)
-#endif
         {
             if (!e.Handled)
             {
@@ -5055,26 +5011,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         private void DataGrid_KeyUp(object sender, KeyRoutedEventArgs e)
-#else
-        private void DataGrid_KeyUp(object sender, KeyEventArgs e)
-#endif
         {
-#if WINDOWS_UWP
-            if (e.Key == Windows.System.VirtualKey.Tab)
-#else
-            if (e.Key == Key.Tab)
-#endif
+            if (e.Key == Windows.System.VirtualKey.Tab && this.CurrentColumnIndex != -1 && e.OriginalSource == this)
             {
-                if (this.CurrentColumnIndex != -1 && e.OriginalSource == this)
+                bool success = ScrollSlotIntoView(this.CurrentColumnIndex, this.CurrentSlot, false /*forCurrentCellChange*/, true /*forceHorizontalScroll*/);
+                Debug.Assert(success, "Expected ScrollSlotIntoView returns true.");
+                if (this.CurrentColumnIndex != -1 && this.SelectedItem == null)
                 {
-                    bool success = ScrollSlotIntoView(this.CurrentColumnIndex, this.CurrentSlot, false /*forCurrentCellChange*/, true /*forceHorizontalScroll*/);
-                    Debug.Assert(success, "Expected ScrollSlotIntoView returns true.");
-                    if (this.CurrentColumnIndex != -1 && this.SelectedItem == null)
-                    {
-                        SetRowSelection(this.CurrentSlot, true /*isSelected*/, true /*setAnchorSlot*/);
-                    }
+                    SetRowSelection(this.CurrentSlot, true /*isSelected*/, true /*setAnchorSlot*/);
                 }
             }
         }
@@ -5089,11 +5034,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 // Walk up the visual tree of the newly focused element
                 // to determine if focus is still within DataGrid.
-#if WINDOWS_UWP
                 object focusedObject = FocusManager.GetFocusedElement();
-#else
-                object focusedObject = FocusManager.GetFocusedElement(this /*TODO - correct parameter?*/);
-#endif
                 DependencyObject focusedDependencyObject = focusedObject as DependencyObject;
 
                 while (focusedDependencyObject != null)
@@ -5284,11 +5225,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this.IsTabStop = true;
                 if (keepFocus && editingElement.ContainsFocusedElement())
                 {
-#if WINDOWS_UWP
                     this.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-#else
-                    this.Focus();
-#endif
                 }
 
                 PopulateCellContent(!exitEditingMode /*isCellEdited*/, this.CurrentColumn, this.EditingRow, editingCell);
@@ -5467,12 +5404,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             ResetEditingRow();
             if (keepFocus)
             {
-                bool success = false;
-#if WINDOWS_UWP
-                success = Focus(Windows.UI.Xaml.FocusState.Programmatic);
-#else
-                success = Focus();
-#endif
+                bool success = Focus(Windows.UI.Xaml.FocusState.Programmatic);
                 Debug.Assert(success, "Expected successful Focus call.");
             }
         }
@@ -5530,11 +5462,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _previousAutomationFocusCoordinates = new DataGridCellCoordinates(this.CurrentCellCoordinates);
 
                 // If the DataGrid itself has focus, we want to move automation focus to the new current element
-#if WINDOWS_UWP
                 object focusedObject = FocusManager.GetFocusedElement();
-#else
-                object focusedObject = FocusManager.GetFocusedElement(this /*TODO - correct parameter?*/);
-#endif
                 if (focusedObject == this && AutomationPeer.ListenerExists(AutomationEvents.AutomationFocusChanged))
                 {
                     peer.RaiseAutomationFocusChangedEvent(this.CurrentSlot, this.CurrentColumnIndex);
@@ -5594,11 +5522,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
                 else
                 {
-#if WINDOWS_UWP
                     success = dataGridCell.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-#else
-                    success = dataGridCell.Focus();
-#endif
                 }
 
                 _focusEditingControl = !success;
@@ -5946,13 +5870,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     try
                     {
-#if WINDOWS_UWP
                         DataPackage content = new DataPackage();
                         content.SetText(text);
                         Clipboard.SetContent(content);
-#else
-                        Clipboard.SetText(text);
-#endif
                     }
                     catch (SecurityException)
                     {
@@ -5966,15 +5886,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return false;
         }
 
-#if WINDOWS_UWP
         private bool ProcessDataGridKey(KeyRoutedEventArgs e)
-#else
-        private bool ProcessDataGridKey(KeyEventArgs e)
-#endif
         {
             bool focusDataGrid = false;
 
-#if WINDOWS_UWP
             switch (e.Key)
             {
                 case VirtualKey.Tab:
@@ -6036,69 +5951,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 this.Focus(Windows.UI.Xaml.FocusState.Programmatic);
             }
-#else
-            switch (e.Key)
-            {
-                case Key.Tab:
-                    return ProcessTabKey(e);
-
-                case Key.Up:
-                    focusDataGrid = ProcessUpKey();
-                    break;
-
-                case Key.Down:
-                    focusDataGrid = ProcessDownKey();
-                    break;
-
-                case Key.PageDown:
-                    focusDataGrid = ProcessNextKey();
-                    break;
-
-                case Key.PageUp:
-                    focusDataGrid = ProcessPriorKey();
-                    break;
-
-                case Key.Left:
-                    focusDataGrid = this.FlowDirection == FlowDirection.LeftToRight ? ProcessLeftKey() : ProcessRightKey();
-                    break;
-
-                case Key.Right:
-                    focusDataGrid = this.FlowDirection == FlowDirection.LeftToRight ? ProcessRightKey() : ProcessLeftKey();
-                    break;
-
-                case Key.F2:
-                    return ProcessF2Key(e);
-
-                case Key.Home:
-                    focusDataGrid = ProcessHomeKey();
-                    break;
-
-                case Key.End:
-                    focusDataGrid = ProcessEndKey();
-                    break;
-
-                case Key.Enter:
-                    focusDataGrid = ProcessEnterKey();
-                    break;
-
-                case Key.Escape:
-                    return ProcessEscapeKey();
-
-                case Key.A:
-                    return ProcessAKey();
-
-                case Key.C:
-                    return ProcessCopyKey();
-
-                case Key.Insert:
-                    return ProcessCopyKey();
-            }
-
-            if (focusDataGrid && this.IsTabStop)
-            {
-                this.Focus();
-            }
-#endif
 
             return focusDataGrid;
         }
@@ -6238,11 +6090,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (!ctrl)
             {
                 // If Enter was used by a TextBox, we shouldn't handle the key
-#if WINDOWS_UWP
                 TextBox focusedTextBox = FocusManager.GetFocusedElement() as TextBox;
-#else
-                TextBox focusedTextBox = FocusManager.GetFocusedElement(this /*TODO - correct parameter?*/) as TextBox;
-#endif
                 if (focusedTextBox != null && focusedTextBox.AcceptsReturn)
                 {
                     return false;
@@ -6297,11 +6145,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return false;
         }
 
-#if WINDOWS_UWP
         private bool ProcessF2Key(KeyRoutedEventArgs e)
-#else
-        private bool ProcessF2Key(KeyEventArgs e)
-#endif
         {
             bool ctrl, shift;
             KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
@@ -6712,23 +6556,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return _successfullyUpdatedSelection;
         }
 
-#if WINDOWS_UWP
         private bool ProcessTabKey(KeyRoutedEventArgs e)
-#else
-
-        private bool ProcessTabKey(KeyEventArgs e)
-#endif
         {
             bool ctrl, shift;
             KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
             return this.ProcessTabKey(e, shift, ctrl);
         }
 
-#if WINDOWS_UWP
         private bool ProcessTabKey(KeyRoutedEventArgs e, bool shift, bool ctrl)
-#else
-        private bool ProcessTabKey(KeyEventArgs e, bool shift, bool ctrl)
-#endif
         {
             if (ctrl || _editingColumnIndex == -1 || this.IsReadOnly)
             {
@@ -7447,11 +7282,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         private bool UpdateStateOnPointerPressed(PointerRoutedEventArgs args, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
-#else
-        private bool UpdateStateOnMouseLeftButtonDown(MouseButtonEventArgs mouseButtonEventArgs, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
-#endif
         {
             bool beginEdit;
 

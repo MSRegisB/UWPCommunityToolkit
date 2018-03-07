@@ -16,7 +16,6 @@ using System.Globalization;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-#if WINDOWS_UWP
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -25,14 +24,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-#else
-using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -69,11 +60,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             DefaultStyleKey = typeof(DataGridRowGroupHeader);
 
-#if WINDOWS_UWP
             this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRowGroupHeader_PointerPressed), true /*handledEventsToo*/);
-#else
-            this.AddHandler(FrameworkElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(DataGridRowGroupHeader_MouseLeftButtonDown), true /*handledEventsToo*/);
-#endif
         }
 
         /// <summary>
@@ -223,13 +210,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         private bool IsPointerOver
         {
             get;
             set;
         }
-#endif
 
         internal bool IsRecycled
         {
@@ -382,15 +367,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         private void DataGridRowGroupHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
-#else
-        private void DataGridRowGroupHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (this.OwningGrid != null)
-#endif
             {
                 bool isDoublePressedElement = this.OwningGrid.LastSinglePressedElement == this;
                 this.OwningGrid.LastSinglePressedElement = isDoublePressedElement ? null : this;
@@ -403,11 +382,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     if (!e.Handled && this.OwningGrid.IsTabStop)
                     {
-#if WINDOWS_UWP
                         bool success = this.OwningGrid.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-#else
-                        bool success = this.OwningGrid.Focus();
-#endif
                         Debug.Assert(success, "Expected successful focus change.");
                     }
 
@@ -487,12 +462,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Builds the visual tree for the row group header when a new template is applied.
         /// </summary>
-#if WINDOWS_UWP
-        protected
-#else
-        public
-#endif
-        override void OnApplyTemplate()
+        protected override void OnApplyTemplate()
         {
             _rootElement = GetTemplateChild(DataGridRow.DATAGRIDROW_elementRoot) as Panel;
 
@@ -536,40 +506,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             return new DataGridRowGroupHeaderAutomationPeer(this);
         }
-
-#if !WINDOWS_UWP
-        /// <summary>
-        /// OnMouseEnter
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnMouseEnter(MouseEventArgs e)
-        {
-            if (!this.IsEnabled)
-            {
-                return;
-            }
-
-            // TODO - removing line correct?
-            // this.IsPointerOver = true;
-            ApplyState(true /*useTransitions*/);
-        }
-
-        /// <summary>
-        /// OnMouseLeave
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnMouseLeave(MouseEventArgs e)
-        {
-            if (!this.IsEnabled)
-            {
-                return;
-            }
-
-            // TODO - removing line correct?
-            // this.IsPointerOver = false;
-            ApplyState(true /*useTransitions*/);
-        }
-#endif
 
         private void SetIsCheckedNoCallBack(bool value)
         {

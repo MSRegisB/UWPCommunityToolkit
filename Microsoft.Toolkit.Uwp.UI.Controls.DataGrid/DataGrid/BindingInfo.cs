@@ -10,13 +10,8 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if WINDOWS_UWP
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
-#else
-using System.Windows;
-using System.Windows.Data;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {

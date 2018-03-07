@@ -11,9 +11,7 @@
 // ******************************************************************
 
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-#if WINDOWS_UWP
 using Windows.UI.Xaml.Automation.Peers;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.Automation.Peers
 {

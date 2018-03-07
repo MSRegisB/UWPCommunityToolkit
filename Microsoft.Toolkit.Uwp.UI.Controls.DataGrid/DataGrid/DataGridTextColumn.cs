@@ -13,19 +13,12 @@
 using System;
 using System.ComponentModel;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if WINDOWS_UWP
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-#else
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -110,11 +103,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-#if WINDOWS_UWP
                 return _fontStyle ?? FontStyle.Normal;
-#else
-                return _fontStyle ?? FontStyles.Normal;
-#endif
             }
 
             set
@@ -139,11 +128,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             set
             {
-#if WINDOWS_UWP
                 if (!_fontWeight.HasValue || _fontWeight.Value.Weight != value.Weight)
-#else
-                if (_fontWeight != value)
-#endif
                 {
                     _fontWeight = value;
                     NotifyPropertyChanged(DATAGRIDTEXTCOLUMN_fontWeightName);
@@ -223,11 +208,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 textBox.Foreground = _foreground;
             }
 
-#if WINDOWS_UWP
             bool isDesignMode = Windows.ApplicationModel.DesignMode.DesignModeEnabled;
-#else
-            bool isDesignMode = DesignerProperties.GetIsInDesignMode(this);
-#endif
 
             if (this.Binding != null || !isDesignMode)
             {
@@ -273,11 +254,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 textBlockElement.Foreground = _foreground;
             }
 
-#if WINDOWS_UWP
             bool isDesignMode = Windows.ApplicationModel.DesignMode.DesignModeEnabled;
-#else
-            bool isDesignMode = DesignerProperties.GetIsInDesignMode(this);
-#endif
 
             if (this.Binding != null || !isDesignMode)
             {
@@ -300,13 +277,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 string uneditedText = textBox.Text;
                 int len = uneditedText.Length;
-#if WINDOWS_UWP
                 KeyRoutedEventArgs keyEventArgs = editingEventArgs as KeyRoutedEventArgs;
                 bool isF2Key = keyEventArgs.Key == Windows.System.VirtualKey.F2;
-#else
-                KeyEventArgs keyEventArgs = editingEventArgs as KeyEventArgs;
-                bool isF2Key = keyEventArgs.Key == Key.F2;
-#endif
                 if (keyEventArgs != null && isF2Key)
                 {
                     // Put caret at the end of the text

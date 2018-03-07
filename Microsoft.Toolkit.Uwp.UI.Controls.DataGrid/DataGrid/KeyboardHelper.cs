@@ -10,13 +10,9 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if WINDOWS_UWP
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-#else
-using System.Windows.Input;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {
@@ -24,23 +20,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
     {
         public static void GetMetaKeyState(out bool ctrl, out bool shift)
         {
-#if WINDOWS_UWP
             ctrl = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) == CoreVirtualKeyStates.Down;
             shift = Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down;
-#else
-            ctrl = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-            shift = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
-#endif
         }
 
         public static void GetMetaKeyState(out bool ctrl, out bool shift, out bool alt)
         {
             GetMetaKeyState(out ctrl, out shift);
-#if WINDOWS_UWP
             alt = Window.Current.CoreWindow.GetKeyState(VirtualKey.Menu) == CoreVirtualKeyStates.Down;
-#else
-            alt = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
-#endif
         }
     }
 }

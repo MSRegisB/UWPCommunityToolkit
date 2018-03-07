@@ -14,14 +14,8 @@ using System.ComponentModel;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-#if WINDOWS_UWP
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
-#else
-using System.Windows.Automation.Provider;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.Automation.Peers
 {
@@ -107,11 +101,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         /// </summary>
         /// <param name="patternInterface">A value from the Windows.UI.Xaml.Automation.Peers.PatternInterface enumeration.</param>
         /// <returns>The object that supports the specified pattern, or null if unsupported.</returns>
-#if WINDOWS_UWP
         protected override object GetPatternCore(PatternInterface patternInterface)
-#else
-        public override object GetPattern(PatternInterface patternInterface)
-#endif
         {
             if (this.OwningHeader.OwningGrid != null)
             {
@@ -153,11 +143,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 }
             }
 
-#if WINDOWS_UWP
             return base.GetPatternCore(patternInterface);
-#else
-            return base.GetPattern(patternInterface);
-#endif
         }
 
         /// <summary>

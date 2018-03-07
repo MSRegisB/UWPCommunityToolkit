@@ -23,17 +23,9 @@ using Microsoft.Toolkit.Uwp.Helpers;
 #endif
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if WINDOWS_UWP
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-#else
-using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Data;
-using System.Windows.Media;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -1738,9 +1730,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private DataGridRowGroupHeader GenerateRowGroupHeader(int slot, DataGridRowGroupInfo rowGroupInfo)
         {
-#if WINDOWS_UWP
             // TODO - Can GenerateRowGroupHeader be commented out, as well as the entire DataGridRowGroupHeader class?
-#endif
             Debug.Assert(slot >= 0, "Expected positive slot.");
             Debug.Assert(rowGroupInfo != null, "Expected non-null rowGroupInfo.");
 
@@ -2968,11 +2958,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (_focusedRow != null)
             {
                 ResetFocusedRow();
-#if WINDOWS_UWP
                 Focus(Windows.UI.Xaml.FocusState.Programmatic);
-#else
-                Focus();
-#endif
             }
 
             if (_rowsPresenter != null)

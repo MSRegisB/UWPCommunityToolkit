@@ -10,12 +10,8 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if WINDOWS_UWP
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using Windows.UI.Xaml.Automation.Peers;
-#else
-using System.Windows.Controls;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.Automation.Peers
 {

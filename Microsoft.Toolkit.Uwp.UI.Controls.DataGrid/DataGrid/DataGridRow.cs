@@ -16,7 +16,6 @@ using System.Reflection;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-#if WINDOWS_UWP
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -26,16 +25,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Shapes;
-#else
-using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -197,13 +186,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.Cells.CellAdded += new EventHandler<DataGridCellEventArgs>(DataGridCellCollection_CellAdded);
             this.Cells.CellRemoved += new EventHandler<DataGridCellEventArgs>(DataGridCellCollection_CellRemoved);
 
-#if WINDOWS_UWP
             this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRow_PointerPressed), true /*handledEventsToo*/);
-#else
-            this.AddHandler(FrameworkElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(DataGridRow_MouseLeftButtonDown), true);
-            this.MouseEnter += new MouseEventHandler(DataGridRow_MouseEnter);
-            this.MouseLeave += new MouseEventHandler(DataGridRow_MouseLeave);
-#endif
 
             DefaultStyleKey = typeof(DataGridRow);
         }
@@ -697,11 +680,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     _detailsVisibleStoryboard = this.RootElement.Resources[DATAGRIDROW_detailsVisibleTransition] as Storyboard;
                     if (_detailsVisibleStoryboard != null)
                     {
-#if WINDOWS_UWP
                         _detailsVisibleStoryboard.Completed += new EventHandler<object>(DetailsVisibleStoryboard_Completed);
-#else
-                        _detailsVisibleStoryboard.Completed += new EventHandler(DetailsVisibleStoryboard_Completed);
-#endif
                         if (_detailsVisibleStoryboard.Children.Count > 0)
                         {
                             // If the user set a To value for the animation, we want to respect
@@ -868,12 +847,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Builds the visual tree for the column header when a new template is applied.
         /// </summary>
-#if WINDOWS_UWP
-        protected
-#else
-        public
-#endif
-        override void OnApplyTemplate()
+        protected override void OnApplyTemplate()
         {
             this.RootElement = GetTemplateChild(DATAGRIDROW_elementRoot) as Panel;
 
@@ -1327,27 +1301,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if !WINDOWS_UWP
-        private void DataGridRow_MouseEnter(object sender, MouseEventArgs e)
-        {
-            this.IsPointerOver = true;
-        }
-
-        private void DataGridRow_MouseLeave(object sender, MouseEventArgs e)
-        {
-            this.IsPointerOver = false;
-        }
-#endif
-
-#if WINDOWS_UWP
         private void DataGridRow_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
-#else
-        private void DataGridRow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (this.OwningGrid != null)
-#endif
             {
                 bool isDoublePressedElement = this.OwningGrid.LastSinglePressedElement == this;
                 this.OwningGrid.LastSinglePressedElement = isDoublePressedElement ? null : this;
@@ -1387,12 +1343,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         private void DetailsVisibleStoryboard_Completed(object sender, object e)
-#else
-
-        private void DetailsVisibleStoryboard_Completed(object sender, EventArgs e)
-#endif
         {
             _animatingDetails = false;
             if (this.OwningGrid != null && (this.Slot != -1) && this.OwningGrid.IsSlotVisible(this.Slot))

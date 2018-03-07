@@ -19,12 +19,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-#if WINDOWS_UWP
 using Microsoft.Toolkit.Uwp.Helpers;
 using Windows.UI.Xaml.Data;
-#else
-using System.Windows.Data;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {
@@ -42,11 +38,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         private DataGridSelectionAction _selectionActionForCurrentChanged;
         private WeakEventListener<DataGridDataConnection, object, NotifyCollectionChangedEventArgs> _weakCollectionChangedListener;
         private WeakEventListener<DataGridDataConnection, object, CurrentChangingEventArgs> _weakCurrentChangingListener;
-#if WINDOWS_UWP
         private WeakEventListener<DataGridDataConnection, object, object> _weakCurrentChangedListener;
-#else
-        private WeakEventListener<DataGridDataConnection, object, EventArgs> _weakCurrentChangedListener;
-#endif
 #if FEATURE_ICOLLECTIONVIEW_SORT
         private WeakEventListener<DataGridDataConnection, object, NotifyCollectionChangedEventArgs> _weakSortDescriptionsCollectionChangedListener;
 #endif
@@ -330,11 +322,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             type = type.GetNonNullableType();
 
             return
-#if WINDOWS_UWP
                 type.GetTypeInfo().IsEnum
-#else
-                type.IsEnum
-#endif
                 || type == typeof(string)
                 || type == typeof(char)
                 || type == typeof(bool)
@@ -530,11 +518,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                     List<string> propertyNames = TypeHelper.SplitPropertyPath(propertyName);
                     for (int i = 0; i < propertyNames.Count; i++)
                     {
-#if WINDOWS_UWP
                         if (propertyType.GetTypeInfo().GetIsReadOnly())
-#else
-                        if (propertyType.GetIsReadOnly())
-#endif
                         {
                             return true;
                         }
@@ -549,16 +533,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 
                         // Check if EditableAttribute is defined on the property and if it indicates uneditable
                         EditableAttribute editableAttribute = null;
-#if WINDOWS_UWP
                         editableAttribute = propertyInfo.GetCustomAttributes().OfType<EditableAttribute>().FirstOrDefault();
-#else
-                        object[] attributes = propertyInfo.GetCustomAttributes(typeof(EditableAttribute), true);
-                        if (attributes != null && attributes.Length > 0)
-                        {
-                            editableAttribute = attributes[0] as EditableAttribute;
-                            Debug.Assert(editableAttribute != null, "Expected non-null editableAttribute.");
-                        }
-#endif
                         if (editableAttribute != null && !editableAttribute.AllowEdit)
                         {
                             return true;
@@ -571,11 +546,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 }
                 else
                 {
-#if WINDOWS_UWP
                     if (this.DataType.GetTypeInfo().GetIsReadOnly())
-#else
-                    if (this.DataType.GetIsReadOnly())
-#endif
                     {
                         return true;
                     }
@@ -668,11 +639,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             {
                 Type type = TypeHelper.GetNonNullableType(dataType);  // no-opt if dataType isn't nullable
                 return
-#if WINDOWS_UWP
                     type.GetTypeInfo().IsPrimitive ||
-#else
-                    type.IsPrimitive ||
-#endif
                     type == typeof(string) ||
                     type == typeof(decimal) ||
                     type == typeof(DateTime);
@@ -772,17 +739,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 // A local variable must be used in the lambda expression or the CollectionView will leak
                 ICollectionView collectionView = this.CollectionView;
 
-#if WINDOWS_UWP
                 _weakCurrentChangedListener = new WeakEventListener<DataGridDataConnection, object, object>(this);
                 _weakCurrentChangedListener.OnEventAction = (instance, source, eventArgs) => instance.CollectionView_CurrentChanged(source, null);
                 _weakCurrentChangedListener.OnDetachAction = (weakEventListener) => collectionView.CurrentChanged -= weakEventListener.OnEvent;
                 this.CollectionView.CurrentChanged += _weakCurrentChangedListener.OnEvent;
-#else
-                _weakCurrentChangedListener = new WeakEventListener<DataGridDataConnection, object, EventArgs>(this);
-                _weakCurrentChangedListener.OnEventAction = (instance, source, eventArgs) => instance.CollectionView_CurrentChanged(source, eventArgs);
-                _weakCurrentChangedListener.OnDetachAction = (weakEventListener) => collectionView.CurrentChanged -= weakEventListener.OnEvent;
-                this.CollectionView.CurrentChanged += _weakCurrentChangedListener.OnEvent;
-#endif
 
                 _weakCurrentChangingListener = new WeakEventListener<DataGridDataConnection, object, CurrentChangingEventArgs>(this);
                 _weakCurrentChangingListener.OnEventAction = (instance, source, eventArgs) => instance.CollectionView_CurrentChanging(source, eventArgs);
@@ -793,11 +753,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             this.EventsWired = true;
         }
 
-#if WINDOWS_UWP
         private void CollectionView_CurrentChanged(object sender, object e)
-#else
-        private void CollectionView_CurrentChanged(object sender, EventArgs e)
-#endif
         {
             if (_expectingCurrentChanged)
             {

@@ -16,17 +16,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if WINDOWS_UWP
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
-#else
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -1502,18 +1495,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     int columnOrder = DATAGRID_defaultColumnDisplayOrder;
 
                     // Check if DisplayAttribute is defined on the property
-#if WINDOWS_UWP
                     DisplayAttribute displayAttribute = propertyInfo.GetCustomAttributes().OfType<DisplayAttribute>().FirstOrDefault();
-#else
-                    DisplayAttribute displayAttribute = null;
-                    object[] attributes = propertyInfo.GetCustomAttributes(typeof(DisplayAttribute), true);
-                    if (attributes != null && attributes.Length > 0)
-                    {
-                        System.Diagnostics.Debug.Assert(attributes.Length == 1, "Expected exactly one DisplayAttribute attribute.");
-                        displayAttribute = attributes[0] as DisplayAttribute;
-                        Debug.Assert(displayAttribute != null);
-                    }
-#endif
                     if (displayAttribute != null)
                     {
                         bool? autoGenerateField = displayAttribute.GetAutoGenerateField();

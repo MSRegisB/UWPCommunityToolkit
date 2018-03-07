@@ -15,11 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if WINDOWS_UWP
 using Windows.UI.Xaml.Controls;
-#else
-using System.Windows.Controls;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {

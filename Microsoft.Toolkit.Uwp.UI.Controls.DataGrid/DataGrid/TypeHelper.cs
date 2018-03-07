@@ -114,16 +114,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// <returns>Default member name.</returns>
         private static string GetDefaultMemberName(this Type type)
         {
-#if WINDOWS_UWP
             DefaultMemberAttribute defaultMemberAttribute = type.GetTypeInfo().GetCustomAttributes().OfType<DefaultMemberAttribute>().FirstOrDefault();
-#else
-            DefaultMemberAttribute defaultMemberAttribute = null;
-            object[] attributes = type.GetCustomAttributes(typeof(DefaultMemberAttribute), true);
-            if (attributes != null && attributes.Length == 1)
-            {
-                defaultMemberAttribute = attributes[0] as DefaultMemberAttribute;
-            }
-#endif
             return defaultMemberAttribute == null ? null : defaultMemberAttribute.MemberName;
         }
 
@@ -140,17 +131,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             PropertyInfo propertyInfo = type.GetNestedProperty(propertyPath);
             if (propertyInfo != null)
             {
-#if WINDOWS_UWP
                 DisplayAttribute displayAttribute = propertyInfo.GetCustomAttributes().OfType<DisplayAttribute>().FirstOrDefault();
-#else
-                DisplayAttribute displayAttribute = null;
-                object[] attributes = propertyInfo.GetCustomAttributes(typeof(DisplayAttribute), true);
-                if (attributes != null && attributes.Length > 0)
-                {
-                    System.Diagnostics.Debug.Assert(attributes.Length == 1, "Expected exactly one DisplayAttribute attribute.");
-                    displayAttribute = attributes[0] as DisplayAttribute;
-                }
-#endif
                 return displayAttribute == null ? null : displayAttribute.GetShortName();
             }
 
@@ -328,7 +309,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             //}
 #endif
 
-                return indexer;
+            return indexer;
         }
 
         internal static bool IsEnumerableType(this Type enumerableType)

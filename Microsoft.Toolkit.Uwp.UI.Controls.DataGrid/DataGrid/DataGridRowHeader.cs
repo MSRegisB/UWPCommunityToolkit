@@ -13,7 +13,6 @@
 using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if WINDOWS_UWP
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -21,13 +20,6 @@ using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-#else
-using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 {
@@ -180,13 +172,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// </summary>
         public DataGridRowHeader()
         {
-#if WINDOWS_UWP
             this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRowHeader_PointerPressed), true /*handledEventsToo*/);
-#else
-            this.AddHandler(FrameworkElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(DataGridRowHeader_MouseLeftButtonDown), true /*handledEventsToo*/);
-            this.MouseEnter += new MouseEventHandler(DataGridRowHeader_MouseEnter);
-            this.MouseLeave += new MouseEventHandler(DataGridRowHeader_MouseLeave);
-#endif
 
             DefaultStyleKey = typeof(DataGridRowHeader);
         }
@@ -288,12 +274,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <summary>
         /// Builds the visual tree for the row header when a new template is applied.
         /// </summary>
-#if WINDOWS_UWP
-        protected
-#else
-        public
-#endif
-        override void OnApplyTemplate()
+        protected override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
@@ -441,41 +422,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.SetStyleWithType(style);
         }
 
-#if !WINDOWS_UWP
-        private void DataGridRowHeader_MouseEnter(object sender, MouseEventArgs e)
-        {
-            if (this.OwningRow != null)
-            {
-                this.OwningRow.IsPointerOver = true;
-            }
-        }
-
-        private void DataGridRowHeader_MouseLeave(object sender, MouseEventArgs e)
-        {
-            if (this.OwningRow != null)
-            {
-                this.OwningRow.IsPointerOver = false;
-            }
-        }
-#endif
-
-#if WINDOWS_UWP
         private void DataGridRowHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
-#else
-        private void DataGridRowHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (this.OwningGrid != null)
-#endif
             {
                 if (!e.Handled && this.OwningGrid.IsTabStop)
                 {
-#if WINDOWS_UWP
                     bool success = this.OwningGrid.Focus(FocusState.Programmatic);
-#else
-                    bool success = this.OwningGrid.Focus();
-#endif
                     Debug.Assert(success, "Expected successful focus change.");
                 }
 

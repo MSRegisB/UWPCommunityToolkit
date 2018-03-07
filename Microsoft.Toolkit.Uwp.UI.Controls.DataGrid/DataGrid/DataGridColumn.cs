@@ -13,23 +13,13 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Collections.Generic;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-#if WINDOWS_UWP
-using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
-#else
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -639,11 +629,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                     if (this.OwningGrid != null)
                     {
-#if WINDOWS_UWP
                         bool isDesignMode = Windows.ApplicationModel.DesignMode.DesignModeEnabled;
-#else
-                        bool isDesignMode = DesignerProperties.GetIsInDesignMode(this);
-#endif
                         DataGridLength width = CoerceWidth(value);
                         if (width.IsStar != this.Width.IsStar || isDesignMode)
                         {
@@ -1168,9 +1154,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         // Is shallow copy correct?
                         Binding binding = new Binding();
                         binding.Converter = bindingData.BindingExpression.ParentBinding.Converter;
-#if WINDOWS_UWP
                         binding.ConverterLanguage = bindingData.BindingExpression.ParentBinding.ConverterLanguage;
-#endif
                         binding.ConverterParameter = bindingData.BindingExpression.ParentBinding.ConverterParameter;
                         binding.ElementName = bindingData.BindingExpression.ParentBinding.ElementName;
                         binding.FallbackValue = bindingData.BindingExpression.ParentBinding.FallbackValue;

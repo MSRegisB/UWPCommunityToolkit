@@ -16,17 +16,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
-#if !WINDOWS_UWP
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-#else
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {
@@ -85,11 +78,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// <returns>True if the currently focused element is within the visual tree of the parent</returns>
         internal static bool ContainsFocusedElement(this DependencyObject element)
         {
-#if WINDOWS_UWP
             return (element == null) ? false : element.ContainsChild(FocusManager.GetFocusedElement() as DependencyObject);
-#else
-            return (element == null) ? false : element.ContainsChild(FocusManager.GetFocusedElement(null /*TODO - correct parameter?*/) as DependencyObject);
-#endif
         }
 
         /// <summary>
@@ -122,19 +111,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             Type itemType = null;
             bool isICustomTypeProvider = false;
 
-            // if it's a generic enumerable, we get the generic type
+            // If it's a generic enumerable, we get the generic type.
 
             // Unfortunately, if data source is fed from a bare IEnumerable, TypeHelper will report an element type of object,
             // which is not particularly interesting.  We deal with it further on.
             if (listType.IsEnumerableType())
             {
                 itemType = listType.GetEnumerableItemType();
+#if !WINDOWS_UWP
                 if (itemType != null)
                 {
-#if !WINDOWS_UWP
                     isICustomTypeProvider = typeof(ICustomTypeProvider).IsAssignableFrom(itemType);
-#endif
                 }
+#endif
             }
 
             // Bare IEnumerables mean that result type will be object.  In that case, we try to get something more interesting.
@@ -204,11 +193,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             }
             else
             {
-#if WINDOWS_UWP
                 return fromElement.TransformToVisual(toElement).TransformPoint(fromPoint);
-#else
-                return fromElement.TransformToVisual(toElement).Transform(fromPoint);
-#endif
             }
         }
 

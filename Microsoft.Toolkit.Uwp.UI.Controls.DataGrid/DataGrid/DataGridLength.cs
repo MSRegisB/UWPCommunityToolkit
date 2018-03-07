@@ -13,9 +13,6 @@
 using System;
 using System.Globalization;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-#if !WINDOWS_UWP
-using System.ComponentModel;
-#endif
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
@@ -56,11 +53,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// <summary>
     /// Represents the lengths of elements within the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> control.
     /// </summary>
-#if WINDOWS_UWP
     [Windows.Foundation.Metadata.CreateFromString(MethodName = "Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength.ConvertFromString")]
-#else
-    [TypeConverter(typeof(DataGridLengthConverter))]
-#endif
     public struct DataGridLength : IEquatable<DataGridLength>
     {
         // static instances of value invariant DataGridLengths
@@ -321,7 +314,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if WINDOWS_UWP
         /// <summary>
         /// Converts a string into a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> instance.
         /// </summary>
@@ -331,7 +323,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             return ConvertFrom(null, value);
         }
-#endif
 
         /// <summary>
         /// Converts an object into a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> instance.
@@ -339,12 +330,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="culture">optional culture to use for conversion.</param>
         /// <param name="value">object to convert.</param>
         /// <returns>The result of the conversion.</returns>
-#if WINDOWS_UWP
-        public
-#else
-        internal
-#endif
-        static DataGridLength ConvertFrom(CultureInfo culture, object value)
+        public static DataGridLength ConvertFrom(CultureInfo culture, object value)
         {
             if (value == null)
             {
@@ -400,12 +386,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="culture">optional culture to use for conversion.</param>
         /// <param name="value">value to convert.</param>
         /// <returns>The result of the conversion.</returns>
-#if WINDOWS_UWP
-        public
-#else
-        internal
-#endif
-        static string ConvertToString(CultureInfo culture, DataGridLength value)
+        public static string ConvertToString(CultureInfo culture, DataGridLength value)
         {
                 // Convert dataGridLength to a string
                 switch (value.UnitType)
