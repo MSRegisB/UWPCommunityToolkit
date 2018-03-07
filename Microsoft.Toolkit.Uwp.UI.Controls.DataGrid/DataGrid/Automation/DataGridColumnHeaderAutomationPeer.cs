@@ -157,10 +157,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
 
         void IInvokeProvider.Invoke()
         {
-#if FEATURE_ICOLLECTIONVIEW_SORT
             this.OwningHeader.InvokeProcessSort();
-#endif
-            // TODO - Invoke sort through DataGrid.Sorting event.
         }
 
         void IScrollItemProvider.ScrollIntoView()

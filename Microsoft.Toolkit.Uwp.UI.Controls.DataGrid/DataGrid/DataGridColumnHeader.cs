@@ -304,7 +304,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.SetStyleWithType(style);
         }
 
-#if FEATURE_ICOLLECTIONVIEW_SORT
         internal void InvokeProcessSort()
         {
             Debug.Assert(this.OwningGrid != null, "Expected non-null owning DataGrid.");
@@ -316,31 +315,28 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             if (this.OwningGrid.CommitEdit(DataGridEditingUnit.Row, true /*exitEditingMode*/))
             {
-                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { ProcessSort(); }).AsTask();
+                Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { ProcessSort(); }).AsTask();
             }
         }
-#endif
 
-#if FEATURE_ICOLLECTIONVIEW_SORT
-        internal void ProcessSort()
+        private void ProcessSort()
         {
-            // if we can sort:
-            //  - DataConnection.AllowSort is true, and
-            //  - AllowUserToSortColumns and CanSort are true, and
-            //  - OwningColumn is bound, and
-            //  - SortDescriptionsCollection exists, and
-            //  - the column's data type is comparable
-            // then try to sort
             if (this.OwningColumn != null &&
                 this.OwningGrid != null &&
                 this.OwningGrid.EditingRow == null &&
                 this.OwningColumn != this.OwningGrid.ColumnsInternal.FillerColumn &&
-                this.OwningGrid.DataConnection.AllowSort &&
                 this.OwningGrid.CanUserSortColumns &&
                 this.OwningColumn.CanUserSort)
             {
-                if (this.OwningGrid.DataConnection.SortDescriptions != null)
+                DataGridColumnEventArgs ea = new DataGridColumnEventArgs(this.OwningColumn);
+                bool sortProcessed = this.OwningGrid.OnColumnSorting(ea);
+
+#if FEATURE_ICOLLECTIONVIEW_SORT
+                if (!ea.Handled && this.OwningGrid.DataConnection.AllowSort && this.OwningGrid.DataConnection.SortDescriptions != null)
                 {
+                    // - DataConnection.AllowSort is true, and
+                    // - SortDescriptionsCollection exists, and
+                    // - the column's data type is comparable
                     DataGrid owningGrid = this.OwningGrid;
                     ListSortDirection newSortDirection;
                     SortDescription newSort;
@@ -435,19 +431,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                         owningGrid.OnUserSorted();
                     }
 
-                    // We've completed the sort, so send the Invoked event for the column header's automation peer
-                    if (AutomationPeer.ListenerExists(AutomationEvents.InvokePatternOnInvoked))
+                    sortProcessed = true;
+                }
+#endif
+                if (sortProcessed && AutomationPeer.ListenerExists(AutomationEvents.InvokePatternOnInvoked))
+                {
+                    // Sort was performed, so send the Invoked event for the column header's automation peer.
+                    AutomationPeer peer = FrameworkElementAutomationPeer.FromElement(this);
+                    if (peer != null)
                     {
-                        AutomationPeer peer = FrameworkElementAutomationPeer.FromElement(this);
-                        if (peer != null)
-                        {
-                            peer.RaiseAutomationEvent(AutomationEvents.InvokePatternOnInvoked);
-                        }
+                        peer.RaiseAutomationEvent(AutomationEvents.InvokePatternOnInvoked);
                     }
                 }
             }
         }
-#endif
 
         internal void UpdateSeparatorVisibility(DataGridColumn lastVisibleColumn)
         {
@@ -702,21 +699,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     case DragMode.PointerPressed:
                     {
-                        if (this.OwningGrid.EditingRow == null &&
-                            this.OwningColumn != this.OwningGrid.ColumnsInternal.FillerColumn &&
-                            this.OwningGrid.CanUserSortColumns &&
-                            this.OwningColumn.CanUserSort)
-                        {
-                            // Completed a click or tap without dragging, so raise the DataGrid.Sorting event.
-                            DataGridColumnEventArgs ea = new DataGridColumnEventArgs(this.OwningColumn);
-                            this.OwningGrid.OnColumnSorting(ea);
-
-#if FEATURE_ICOLLECTIONVIEW_SORT
+                        // Completed a click or tap without dragging, so raise the DataGrid.Sorting event.
                         InvokeProcessSort();
-#endif
-                            handled = true;
-                        }
-
+                        handled = true;
                         break;
                     }
 

@@ -58,9 +58,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// OnColumnSorting
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected internal virtual void OnColumnSorting(DataGridColumnEventArgs e)
+        /// <returns>True when there is an event handler.</returns>
+        protected internal virtual bool OnColumnSorting(DataGridColumnEventArgs e)
         {
-            this.Sorting?.Invoke(this, e);
+            if (this.Sorting != null)
+            {
+                this.Sorting.Invoke(this, e);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
