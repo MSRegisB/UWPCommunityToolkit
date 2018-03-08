@@ -20,12 +20,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
     internal class DataGridDisplayData
     {
         private Stack<DataGridRow> _fullyRecycledRows; // list of Rows that have been fully recycled (Collapsed)
-        private Stack<DataGridRowGroupHeader> _fullyRecycledGroupHeaders; // list of GroupHeaders that have been fully recycled (Collapsed)
         private int _headScrollingElements; // index of the row in _scrollingRows that is the first displayed row
         private DataGrid _owner;
         private Stack<DataGridRow> _recyclableRows; // list of Rows which have not been fully recycled (avoids Measure in several cases)
-        private Stack<DataGridRowGroupHeader> _recyclableGroupHeaders; // list of GroupHeaders which have not been fully recycled (avoids Measure in several cases)
         private List<UIElement> _scrollingElements; // circular list of displayed elements
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+        private Stack<DataGridRowGroupHeader> _fullyRecycledGroupHeaders; // list of GroupHeaders that have been fully recycled (Collapsed)
+        private Stack<DataGridRowGroupHeader> _recyclableGroupHeaders; // list of GroupHeaders which have not been fully recycled (avoids Measure in several cases)
+#endif
 
         public DataGridDisplayData(DataGrid owner)
         {
@@ -38,8 +40,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             _scrollingElements = new List<UIElement>();
             _recyclableRows = new Stack<DataGridRow>();
             _fullyRecycledRows = new Stack<DataGridRow>();
+#if FEATURE_ICOLLECTIONVIEW_GROUP
             _recyclableGroupHeaders = new Stack<DataGridRowGroupHeader>();
             _fullyRecycledGroupHeaders = new Stack<DataGridRowGroupHeader>();
+#endif
         }
 
         public int FirstDisplayedScrollingCol
@@ -94,6 +98,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             _recyclableRows.Push(row);
         }
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
         internal void AddRecylableRowGroupHeader(DataGridRowGroupHeader groupHeader)
         {
             Debug.Assert(!_recyclableGroupHeaders.Contains(groupHeader), "Expected groupHeader parameter to be non-recyclable.");
@@ -101,6 +106,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             groupHeader.IsRecycled = true;
             _recyclableGroupHeaders.Push(groupHeader);
         }
+#endif
 
         internal void ClearElements(bool recycle)
         {
@@ -121,6 +127,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                             row.Clip = new RectangleGeometry();
                         }
                     }
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                     else
                     {
                         DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
@@ -129,14 +136,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                             AddRecylableRowGroupHeader(groupHeader);
                         }
                     }
+#endif
                 }
             }
             else
             {
                 _recyclableRows.Clear();
                 _fullyRecycledRows.Clear();
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 _recyclableGroupHeaders.Clear();
                 _fullyRecycledGroupHeaders.Clear();
+#endif
             }
 
             _scrollingElements.Clear();
@@ -204,7 +214,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 _fullyRecycledRows.Push(row);
             }
 
-            // Fully recycle Recycleable GroupHeaders and transfer them to Recycled GroupHeaders
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+            // Fully recycle recyclable GroupHeaders and transfer them to Recycled GroupHeaders
             while (_recyclableGroupHeaders.Count > 0)
             {
                 DataGridRowGroupHeader groupHeader = _recyclableGroupHeaders.Pop();
@@ -213,6 +224,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 Debug.Assert(!_fullyRecycledGroupHeaders.Contains(groupHeader), "Expected groupHeader not in _fullyRecycledGroupHeaders.");
                 _fullyRecycledGroupHeaders.Push(groupHeader);
             }
+#endif
         }
 
         internal UIElement GetDisplayedElement(int slot)
@@ -243,6 +255,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             }
         }
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
         internal DataGridRowGroupHeader GetUsedGroupHeader()
         {
             if (_recyclableGroupHeaders.Count > 0)
@@ -259,6 +272,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 
             return null;
         }
+#endif
 
         internal DataGridRow GetUsedRow()
         {
@@ -369,6 +383,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 {
                     Debug.WriteLine(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Slot: {0} Row: {1} ", row.Slot, row.Index));
                 }
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 else
                 {
                     DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
@@ -389,6 +404,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 #endif
                     }
                 }
+#endif
             }
         }
 #endif

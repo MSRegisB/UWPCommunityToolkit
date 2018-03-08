@@ -10,6 +10,8 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using Windows.UI.Xaml.Automation.Peers;
 
@@ -50,3 +52,5 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
     }
 }
+
+#endif

@@ -223,11 +223,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     return this.OwningRow.OwningGrid;
                 }
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 else if (this.OwningRowGroupHeader != null)
                 {
                     return this.OwningRowGroupHeader.OwningGrid;
                 }
-
+#endif
                 return null;
             }
         }
@@ -240,6 +241,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             }
         }
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
         private DataGridRowGroupHeader OwningRowGroupHeader
         {
             get
@@ -247,6 +249,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return this.Owner as DataGridRowGroupHeader;
             }
         }
+#endif
 
         internal Control Owner
         {
@@ -262,11 +265,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     return this.OwningRow.Slot;
                 }
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 else if (this.OwningRowGroupHeader != null)
                 {
                     return this.OwningRowGroupHeader.RowGroupInfo.Slot;
                 }
-
+#endif
                 return -1;
             }
         }
@@ -368,10 +372,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                         idealStateMappingIndex += 2;
                     }
                 }
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 else if (this.OwningRowGroupHeader != null && this.OwningGrid != null && this.OwningGrid.CurrentSlot == this.OwningRowGroupHeader.RowGroupInfo.Slot)
                 {
                     idealStateMappingIndex += 16;
                 }
+#endif
 
                 byte stateCode = _idealStateMapping[idealStateMappingIndex];
                 Debug.Assert(stateCode != DATAGRIDROWHEADER_stateNullCode, "Expected stateCode other than DATAGRIDROWHEADER_stateNullCode.");
@@ -399,11 +405,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <param name="previousStyle">Caller's previous associated Style</param>
         internal void EnsureStyle(Style previousStyle)
         {
-            if (this.Style != null
-                && (this.OwningRow != null && this.Style != this.OwningRow.HeaderStyle)
-                && (this.OwningRowGroupHeader != null && this.Style != this.OwningRowGroupHeader.HeaderStyle)
-                && (this.OwningGrid != null && this.Style != this.OwningGrid.RowHeaderStyle)
-                && (this.Style != previousStyle))
+            if (this.Style != null &&
+                this.OwningRow != null &&
+                this.Style != this.OwningRow.HeaderStyle &&
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+                this.OwningRowGroupHeader != null &&
+                this.Style != this.OwningRowGroupHeader.HeaderStyle &&
+#endif
+                this.OwningGrid != null &&
+                this.Style != this.OwningGrid.RowHeaderStyle &&
+                this.Style != previousStyle)
             {
                 return;
             }

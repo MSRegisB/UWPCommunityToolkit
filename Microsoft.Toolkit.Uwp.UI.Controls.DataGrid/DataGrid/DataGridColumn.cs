@@ -255,11 +255,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (this.OwningGrid != null && this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented)
                 {
                     return _displayIndexWithFiller - 1;
                 }
                 else
+#endif
                 {
                     return _displayIndexWithFiller;
                 }
@@ -274,11 +276,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 if (this.OwningGrid != null)
                 {
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                     if (this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented)
                     {
                         value++;
                     }
-
+#endif
                     if (_displayIndexWithFiller != value)
                     {
                         if (value < 0 || value >= this.OwningGrid.ColumnsItemsInternal.Count)

@@ -281,10 +281,12 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 this.OwningDataGrid.ScrollIntoView(item, this.OwningDataGrid.Columns[column]);
 
                 DataGridRow dgr = this.OwningDataGrid.DisplayData.GetDisplayedRow(row);
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (this.OwningDataGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented)
                 {
                     column++;
                 }
+#endif
 
                 Debug.Assert(column >= 0, "Expected positive column value.");
                 Debug.Assert(column < this.OwningDataGrid.ColumnsItemsInternal.Count, "Expected smaller column value.");
@@ -765,6 +767,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 column >= 0 && column < this.OwningDataGrid.ColumnsItemsInternal.Count &&
                 this.OwningDataGrid.IsSlotVisible(slot))
             {
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (this.OwningDataGrid.RowGroupHeadersTable.Contains(slot))
                 {
                     DataGridRowGroupHeader header = this.OwningDataGrid.DisplayData.GetDisplayedElement(slot) as DataGridRowGroupHeader;
@@ -778,6 +781,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                     }
                 }
                 else
+#endif
                 {
                     AutomationPeer cellPeer = GetCellPeer(slot, column);
                     if (cellPeer != null)

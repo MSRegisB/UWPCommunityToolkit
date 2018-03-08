@@ -58,16 +58,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// OnColumnSorting
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        /// <returns>True when there is an event handler.</returns>
-        protected internal virtual bool OnColumnSorting(DataGridColumnEventArgs e)
+        protected internal virtual void OnColumnSorting(DataGridColumnEventArgs e)
         {
-            if (this.Sorting != null)
-            {
-                this.Sorting.Invoke(this, e);
-                return true;
-            }
-
-            return false;
+            this.Sorting?.Invoke(this, e);
         }
 
         /// <summary>
@@ -292,11 +285,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void OnColumnDisplayIndexChanged(DataGridColumn dataGridColumn)
         {
-            Debug.Assert(dataGridColumn != null);
+            Debug.Assert(dataGridColumn != null, "Expected non-null dataGridColumn.");
             DataGridColumnEventArgs e = new DataGridColumnEventArgs(dataGridColumn);
 
             // Call protected method to raise event
+#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (dataGridColumn != this.ColumnsInternal.RowGroupSpacerColumn)
+#endif
             {
                 OnColumnDisplayIndexChanged(e);
             }
@@ -330,9 +325,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 InDisplayIndexAdjustments = true;
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 bool trackChange = targetColumn != this.ColumnsInternal.RowGroupSpacerColumn;
-
+#else
+                bool trackChange = true;
+#endif
                 DataGridColumn column;
+
                 // Move is legal - let's adjust the affected display indexes.
                 if (newDisplayIndex < targetColumn.DisplayIndexWithFiller)
                 {
@@ -362,11 +361,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         }
                     }
                 }
+
                 // Now let's actually change the order of the DisplayIndexMap
                 if (targetColumn.DisplayIndexWithFiller != -1)
                 {
                     this.ColumnsInternal.DisplayIndexMap.Remove(targetColumn.Index);
                 }
+
                 this.ColumnsInternal.DisplayIndexMap.Insert(newDisplayIndex, targetColumn.Index);
             }
             finally
@@ -643,19 +644,25 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         internal DataGridCellCoordinates OnInsertingColumn(int columnIndexInserted, DataGridColumn insertColumn)
         {
             DataGridCellCoordinates newCurrentCellCoordinates;
-            Debug.Assert(insertColumn != null);
+            Debug.Assert(insertColumn != null, "Expected non-null insertColumn.");
 
-            if (insertColumn.OwningGrid != null && insertColumn != this.ColumnsInternal.RowGroupSpacerColumn)
+            if (insertColumn.OwningGrid != null)
             {
-                throw DataGridError.DataGrid.ColumnCannotBeReassignedToDifferentDataGrid();
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+                if (insertColumn != this.ColumnsInternal.RowGroupSpacerColumn)
+#endif
+                {
+                    throw DataGridError.DataGrid.ColumnCannotBeReassignedToDifferentDataGrid();
+                }
             }
 
             // Reset current cell if there is one, no matter the relative position of the columns involved
             if (this.CurrentColumnIndex != -1)
             {
                 _temporarilyResetCurrentCell = true;
-                newCurrentCellCoordinates = new DataGridCellCoordinates(columnIndexInserted <= this.CurrentColumnIndex ? this.CurrentColumnIndex + 1 : this.CurrentColumnIndex,
-                     this.CurrentSlot);
+                newCurrentCellCoordinates = new DataGridCellCoordinates(
+                    columnIndexInserted <= this.CurrentColumnIndex ? this.CurrentColumnIndex + 1 : this.CurrentColumnIndex,
+                    this.CurrentSlot);
                 ResetCurrentCellCore();
             }
             else
@@ -1470,7 +1477,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     column.DisplayIndexHasChanged = false;
                     if (raiseEvent)
                     {
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                         Debug.Assert(column != this.ColumnsInternal.RowGroupSpacerColumn);
+#endif
                         OnColumnDisplayIndexChanged(column);
                     }
                 }

@@ -204,11 +204,12 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
             get
             {
                 int column = this.OwningCell.ColumnIndex;
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (column >= 0 && this.OwningGrid != null && this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented)
                 {
                     column--;
                 }
-
+#endif
                 return column;
             }
         }

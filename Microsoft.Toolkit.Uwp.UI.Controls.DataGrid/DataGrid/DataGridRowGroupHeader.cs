@@ -10,6 +10,8 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -563,3 +565,5 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
     }
 }
+
+#endif

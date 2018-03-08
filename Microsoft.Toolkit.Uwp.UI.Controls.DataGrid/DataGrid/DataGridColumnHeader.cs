@@ -329,7 +329,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 this.OwningColumn.CanUserSort)
             {
                 DataGridColumnEventArgs ea = new DataGridColumnEventArgs(this.OwningColumn);
-                bool sortProcessed = this.OwningGrid.OnColumnSorting(ea);
+                this.OwningGrid.OnColumnSorting(ea);
 
 #if FEATURE_ICOLLECTIONVIEW_SORT
                 if (!ea.Handled && this.OwningGrid.DataConnection.AllowSort && this.OwningGrid.DataConnection.SortDescriptions != null)
@@ -434,9 +434,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     sortProcessed = true;
                 }
 #endif
-                if (sortProcessed && AutomationPeer.ListenerExists(AutomationEvents.InvokePatternOnInvoked))
+                if (AutomationPeer.ListenerExists(AutomationEvents.InvokePatternOnInvoked))
                 {
-                    // Sort was performed, so send the Invoked event for the column header's automation peer.
+                    // Send the Invoked event for the column header's automation peer.
                     AutomationPeer peer = FrameworkElementAutomationPeer.FromElement(this);
                     if (peer != null)
                     {
@@ -812,7 +812,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private DataGridColumn GetReorderingTargetColumn(Point pointerPositionHeaders, bool scroll, out double scrollAmount)
         {
             scrollAmount = 0;
-            double leftEdge = this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented ? this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.ActualWidth : 0;
+            double leftEdge = 0;
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+            if (this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented)
+            {
+                leftEdge = this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.ActualWidth;
+            }
+#endif
             double rightEdge = this.OwningGrid.CellsWidth;
             if (this.OwningColumn.IsFrozen)
             {
