@@ -10,15 +10,26 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
+using Microsoft.Toolkit.Uwp.UI.Controls;
+using Microsoft.Toolkit.Uwp.UI.Extensions;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Microsoft.Toolkit.Uwp.SampleApp.SamplePages
 {
-    public sealed partial class DataGridPage : Page
+    public sealed partial class DataGridPage : Page, IXamlRenderListener
     {
+        private DataGrid dataGrid;
+
         public DataGridPage()
         {
             InitializeComponent();
+        }
+
+        public async void OnXamlRendered(FrameworkElement control)
+        {
+            dataGrid = control.FindDescendantByName("dataGrid") as DataGrid;
+            dataGrid.ItemsSource = await new Data.DataGridDataSource().GetDataAsync();
         }
     }
 }
