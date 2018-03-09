@@ -171,7 +171,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// </summary>
         public DataGridRowHeader()
         {
-            this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRowHeader_PointerPressed), true /*handledEventsToo*/);
+            this.IsTapEnabled = true;
+
+            this.AddHandler(UIElement.TappedEvent, new TappedEventHandler(DataGridRowHeader_Tapped), true /*handledEventsToo*/);
 
             DefaultStyleKey = typeof(DataGridRowHeader);
         }
@@ -432,7 +434,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.SetStyleWithType(style);
         }
 
-        private void DataGridRowHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void DataGridRowHeader_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (this.OwningGrid != null && !this.OwningGrid.HasColumnUserInteraction)
             {
@@ -447,8 +449,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     Debug.Assert(sender is DataGridRowHeader, "Expected sender is DataGridRowHeader.");
                     Debug.Assert(sender == this, "Expected sender is this.");
 
-                    e.Handled = this.OwningGrid.UpdateStateOnPointerPressed(e, -1, this.Slot, false /*allowEdit*/);
-                    this.OwningGrid.UpdatedStateOnPointerPressed = true;
+                    e.Handled = this.OwningGrid.UpdateStateOnTapped(e, -1, this.Slot, false /*allowEdit*/);
+                    this.OwningGrid.UpdatedStateOnTapped = true;
                 }
             }
         }

@@ -49,7 +49,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         public DataGridCell()
         {
-            this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridCell_PointerPressed), true /*handledEventsToo*/);
+            this.IsTapEnabled = true;
+            this.AddHandler(UIElement.TappedEvent, new TappedEventHandler(DataGridCell_PointerTapped), true /*handledEventsToo*/);
 
             DefaultStyleKey = typeof(DataGridCell);
         }
@@ -367,7 +368,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private void DataGridCell_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void DataGridCell_PointerTapped(object sender, TappedRoutedEventArgs e)
         {
             // OwningGrid is null for TopLeftHeaderCell and TopRightHeaderCell because they have no OwningRow
             if (this.OwningGrid != null && !this.OwningGrid.HasColumnUserInteraction)
@@ -382,8 +383,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     Debug.Assert(sender is DataGridCell, "Expected sender is DataGridCell.");
                     Debug.Assert(sender == this, "Expected sender is this.");
-                    e.Handled = this.OwningGrid.UpdateStateOnPointerPressed(e, this.ColumnIndex, this.OwningRow.Slot, !e.Handled /*allowEdit*/);
-                    this.OwningGrid.UpdatedStateOnPointerPressed = true;
+                    e.Handled = this.OwningGrid.UpdateStateOnTapped(e, this.ColumnIndex, this.OwningRow.Slot, !e.Handled /*allowEdit*/);
+                    this.OwningGrid.UpdatedStateOnTapped = true;
                 }
             }
         }
