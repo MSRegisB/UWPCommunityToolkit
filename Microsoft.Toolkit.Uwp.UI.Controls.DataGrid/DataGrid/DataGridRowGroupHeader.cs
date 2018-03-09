@@ -62,7 +62,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             DefaultStyleKey = typeof(DataGridRowGroupHeader);
 
-            this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRowGroupHeader_PointerPressed), true /*handledEventsToo*/);
+            this.AddHandler(UIElement.TappedEvent, new TappedEventHandler(DataGridRowGroupHeader_Tapped), true /*handledEventsToo*/);
+            this.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(DataGridRowGroupHeader_DoubleTapped), true /*handledEventsToo*/);
         }
 
         /// <summary>
@@ -369,27 +370,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private void DataGridRowGroupHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void DataGridRowGroupHeader_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
+            if (this.OwningGrid != null && !this.OwningGrid.HasColumnUserInteraction)
             {
-                bool isDoublePressedElement = this.OwningGrid.LastSinglePressedElement == this;
-                this.OwningGrid.LastSinglePressedElement = isDoublePressedElement ? null : this;
-                if (isDoublePressedElement && !e.Handled)
+                if (!e.Handled && this.OwningGrid.IsTabStop)
                 {
-                    ToggleExpandCollapse(this.RowGroupInfo.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible, true);
-                    e.Handled = true;
+                    bool success = this.OwningGrid.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                    Debug.Assert(success, "Expected successful focus change.");
                 }
-                else
-                {
-                    if (!e.Handled && this.OwningGrid.IsTabStop)
-                    {
-                        bool success = this.OwningGrid.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-                        Debug.Assert(success, "Expected successful focus change.");
-                    }
 
-                    e.Handled = this.OwningGrid.UpdateStateOnPointerPressed(e, this.OwningGrid.CurrentColumnIndex, this.RowGroupInfo.Slot, false /*allowEdit*/);
-                }
+                e.Handled = this.OwningGrid.UpdateStateOnTapped(e, this.OwningGrid.CurrentColumnIndex, this.RowGroupInfo.Slot, false /*allowEdit*/);
+            }
+        }
+
+        private void DataGridRowGroupHeader_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (this.OwningGrid != null && !this.OwningGrid.HasColumnUserInteraction && !e.Handled)
+            {
+                ToggleExpandCollapse(this.RowGroupInfo.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible, true);
+                e.Handled = true;
             }
         }
 

@@ -31,10 +31,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> row.
     /// </summary>
     [TemplatePart(Name = DATAGRIDROW_elementBottomGridLine, Type = typeof(Rectangle))]
-    [TemplatePart(Name = DATAGRIDROW_elementCells, Type = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridCellsPresenter))]
-    [TemplatePart(Name = DATAGRIDROW_elementDetails, Type = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridDetailsPresenter))]
+    [TemplatePart(Name = DATAGRIDROW_elementCells, Type = typeof(DataGridCellsPresenter))]
+    [TemplatePart(Name = DATAGRIDROW_elementDetails, Type = typeof(DataGridDetailsPresenter))]
     [TemplatePart(Name = DATAGRIDROW_elementRoot, Type = typeof(Panel))]
-    [TemplatePart(Name = DATAGRIDROW_elementRowHeader, Type = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
+    [TemplatePart(Name = DATAGRIDROW_elementRowHeader, Type = typeof(DataGridRowHeader))]
 
     [TemplateVisualState(Name = DATAGRIDROW_stateNormal, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = DATAGRIDROW_stateAlternate, GroupName = VisualStates.GroupCommon)]
@@ -52,7 +52,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
     [TemplateVisualState(Name = VisualStates.StateInvalid, GroupName = VisualStates.GroupValidation)]
     [TemplateVisualState(Name = VisualStates.StateValid, GroupName = VisualStates.GroupValidation)]
-    [StyleTypedProperty(Property = "HeaderStyle", StyleTargetType = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
+    [StyleTypedProperty(Property = "HeaderStyle", StyleTargetType = typeof(DataGridRowHeader))]
     public partial class DataGridRow : Control
     {
         private const byte DATAGRIDROW_defaultMinHeight = 0;
@@ -147,7 +147,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataTemplate _appliedDetailsTemplate;
         private Visibility? _appliedDetailsVisibility;
         private Rectangle _bottomGridLine;
-        private Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridCellsPresenter _cellsElement;
+        private DataGridCellsPresenter _cellsElement;
 
         // In the case where Details scales vertically when it's arranged at a different width, we
         // get the wrong height measurement so we need to check it again after arrange
@@ -161,11 +161,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DoubleAnimation _detailsHeightAnimation;
         private double? _detailsHeightAnimationToOverride;
         private FrameworkElement _detailsContent;
-        private Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridDetailsPresenter _detailsElement;
+        private DataGridDetailsPresenter _detailsElement;
         private DataGridCell _fillerCell;
-        private Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader _headerElement;
+        private DataGridRowHeader _headerElement;
         private double _lastHorizontalOffset;
-        private int? _pointerOverColumnIndex;    // TODO: -1 could be used for the column header later. Else make this an int.
+        private int? _pointerOverColumnIndex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/> class.
@@ -173,7 +173,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         public DataGridRow()
         {
             this.MinHeight = DATAGRIDROW_defaultMinHeight;
-
+            this.IsTapEnabled = true;
             this.Index = -1;
             this.IsValid = true;
             this.Slot = -1;
@@ -185,7 +185,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.Cells.CellAdded += new EventHandler<DataGridCellEventArgs>(DataGridCellCollection_CellAdded);
             this.Cells.CellRemoved += new EventHandler<DataGridCellEventArgs>(DataGridCellCollection_CellRemoved);
 
-            this.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(DataGridRow_PointerPressed), true /*handledEventsToo*/);
+            this.AddHandler(UIElement.TappedEvent, new TappedEventHandler(DataGridRow_Tapped), true /*handledEventsToo*/);
 
             DefaultStyleKey = typeof(DataGridRow);
         }
@@ -458,7 +458,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader HeaderCell
+        internal DataGridRowHeader HeaderCell
         {
             get
             {
@@ -863,7 +863,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _cellsElement.Children.Clear();
             }
 
-            _cellsElement = GetTemplateChild(DATAGRIDROW_elementCells) as Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridCellsPresenter;
+            _cellsElement = GetTemplateChild(DATAGRIDROW_elementCells) as DataGridCellsPresenter;
             if (_cellsElement != null)
             {
                 _cellsElement.OwningRow = this;
@@ -879,7 +879,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
-            _detailsElement = GetTemplateChild(DATAGRIDROW_elementDetails) as Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridDetailsPresenter;
+            _detailsElement = GetTemplateChild(DATAGRIDROW_elementDetails) as DataGridDetailsPresenter;
             if (_detailsElement != null && this.OwningGrid != null)
             {
                 _detailsElement.OwningRow = this;
@@ -894,7 +894,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             _bottomGridLine = GetTemplateChild(DATAGRIDROW_elementBottomGridLine) as Rectangle;
             EnsureGridLines();
 
-            _headerElement = GetTemplateChild(DATAGRIDROW_elementRowHeader) as Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader;
+            _headerElement = GetTemplateChild(DATAGRIDROW_elementRowHeader) as DataGridRowHeader;
             if (_headerElement != null)
             {
                 _headerElement.Owner = this;
@@ -1076,7 +1076,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _detailsDesiredHeight = double.NaN;
                 if (_detailsElement != null)
                 {
-                    _detailsElement.ClearValue(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridDetailsPresenter.ContentHeightProperty);
+                    _detailsElement.ClearValue(DataGridDetailsPresenter.ContentHeightProperty);
                 }
             }
 
@@ -1300,20 +1300,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private void DataGridRow_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void DataGridRow_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (this.OwningGrid != null && !this.OwningGrid.HasColumnUserInteraction)
             {
-                bool isDoublePressedElement = this.OwningGrid.LastSinglePressedElement == this;
-                this.OwningGrid.LastSinglePressedElement = isDoublePressedElement ? null : this;
-
-                if (this.OwningGrid.UpdatedStateOnPointerPressed)
+                if (this.OwningGrid.UpdatedStateOnTapped)
                 {
-                    this.OwningGrid.UpdatedStateOnPointerPressed = false;
+                    this.OwningGrid.UpdatedStateOnTapped = false;
                 }
                 else
                 {
-                    e.Handled = this.OwningGrid.UpdateStateOnPointerPressed(e, -1, this.Slot, false /*allowEdit*/);
+                    e.Handled = this.OwningGrid.UpdateStateOnTapped(e, -1, this.Slot, false /*allowEdit*/);
                 }
             }
         }

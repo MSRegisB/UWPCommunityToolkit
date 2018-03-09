@@ -2551,7 +2551,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             private set;
         }
 
-        internal bool UpdatedStateOnPointerPressed
+        internal bool UpdatedStateOnTapped
         {
             get;
             set;
@@ -3519,12 +3519,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal UIElement LastSinglePressedElement
-        {
-            get;
-            set;
-        }
-
         // Returns the item or the CollectionViewGroup that is used as the DataContext for a given slot.
         // If the DataContext is an item, rowIndex is set to the index of the item within the collection.
         internal object ItemFromSlot(int slot, ref int rowIndex)
@@ -4122,11 +4116,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal bool UpdateStateOnPointerPressed(PointerRoutedEventArgs args, int columnIndex, int slot, bool allowEdit)
+        internal bool UpdateStateOnTapped(TappedRoutedEventArgs args, int columnIndex, int slot, bool allowEdit)
         {
             bool ctrl, shift;
             KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
-            return this.UpdateStateOnPointerPressed(args, columnIndex, slot, allowEdit, shift, ctrl);
+            return this.UpdateStateOnTapped(args, columnIndex, slot, allowEdit, shift, ctrl);
         }
 
         internal void UpdateVerticalScrollBar()
@@ -7401,7 +7395,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private bool UpdateStateOnPointerPressed(PointerRoutedEventArgs args, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
+        private bool UpdateStateOnTapped(TappedRoutedEventArgs args, int columnIndex, int slot, bool allowEdit, bool shift, bool ctrl)
         {
             bool beginEdit;
 
@@ -7418,7 +7412,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             if (wasInEdit && (columnIndex != this.EditingColumnIndex || slot != this.CurrentSlot) &&
-                this.WaitForLostFocus(delegate { this.UpdateStateOnPointerPressed(args, columnIndex, slot, allowEdit, shift, ctrl); }))
+                this.WaitForLostFocus(delegate { this.UpdateStateOnTapped(args, columnIndex, slot, allowEdit, shift, ctrl); }))
             {
                 return true;
             }
