@@ -19,7 +19,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// Provides data for the <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.LoadingRowDetails" />, <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.UnloadingRowDetails" />, 
     /// and <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.RowDetailsVisibilityChanged" /> events.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public class DataGridRowDetailsEventArgs : EventArgs
     {
         /// <summary>

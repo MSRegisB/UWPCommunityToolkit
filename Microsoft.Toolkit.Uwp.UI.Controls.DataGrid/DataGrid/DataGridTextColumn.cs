@@ -25,7 +25,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// <summary>
     /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column that hosts textual content in its cells.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     [StyleTypedProperty(Property = "ElementStyle", StyleTargetType = typeof(TextBlock))]
     [StyleTypedProperty(Property = "EditingElementStyle", StyleTargetType = typeof(TextBox))]
     public class DataGridTextColumn : DataGridBoundColumn

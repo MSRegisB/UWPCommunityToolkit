@@ -17,7 +17,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// <summary>
     /// Provides information just before a row exits editing mode.
     /// </summary>
-    /// <QualityBand>Preview</QualityBand>
     public class DataGridRowEditEndingEventArgs : CancelEventArgs
     {
         /// <summary>

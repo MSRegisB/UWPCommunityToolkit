@@ -281,7 +281,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_ICOLLECTIONVIEW_GROUP
             int itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(startSlot - 1);
 #else
-            // TODO - correct value?
             int itemSlot = startSlot;
 #endif
             while (itemSlot <= endSlot)
@@ -290,8 +289,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_ICOLLECTIONVIEW_GROUP
                 int nextRowGroupHeaderSlot = this.OwningGrid.RowGroupHeadersTable.GetNextIndex(itemSlot);
 #else
-                // TODO - correct value?
-                int nextRowGroupHeaderSlot = itemSlot;
+                int nextRowGroupHeaderSlot = -1;
 #endif
                 int lastItemSlot = nextRowGroupHeaderSlot == -1 ? endSlot : Math.Min(endSlot, nextRowGroupHeaderSlot - 1);
                 if (!_selectedSlotsTable.ContainsAll(itemSlot, lastItemSlot))
@@ -302,7 +300,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_ICOLLECTIONVIEW_GROUP
                 itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(lastItemSlot);
 #else
-                // TODO - correct value?
                 itemSlot = lastItemSlot + 1;
 #endif
             }

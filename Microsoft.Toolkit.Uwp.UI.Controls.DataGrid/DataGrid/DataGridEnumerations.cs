@@ -40,7 +40,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// <summary>
     /// Used to specify action to take out of edit mode.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public enum DataGridEditAction
     {
         /// <summary>

@@ -18,7 +18,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// <summary>
     /// Provides information just before a cell exits editing mode.
     /// </summary>
-    /// <QualityBand>Preview</QualityBand>
     public class DataGridCellEditEndingEventArgs : CancelEventArgs
     {
         /// <summary>

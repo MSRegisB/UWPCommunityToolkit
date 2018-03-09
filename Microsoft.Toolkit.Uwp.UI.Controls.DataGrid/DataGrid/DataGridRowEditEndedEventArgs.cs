@@ -17,7 +17,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// <summary>
     /// Provides information just after a row has exited edit mode.
     /// </summary>
-    /// <QualityBand>Preview</QualityBand>
     public class DataGridRowEditEndedEventArgs : EventArgs
     {
         /// <summary>

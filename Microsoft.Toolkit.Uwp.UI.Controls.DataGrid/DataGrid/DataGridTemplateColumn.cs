@@ -19,7 +19,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column that hosts template-specified
     /// content in its cells.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public class DataGridTemplateColumn : DataGridColumn
     {
         private DataTemplate _cellTemplate;

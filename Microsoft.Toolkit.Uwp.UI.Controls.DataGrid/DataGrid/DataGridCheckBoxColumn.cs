@@ -24,7 +24,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column that hosts
     /// <see cref="T:System.Windows.Controls.CheckBox"/> controls in its cells.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     [StyleTypedProperty(Property = "ElementStyle", StyleTargetType = typeof(CheckBox))]
     [StyleTypedProperty(Property = "EditingElementStyle", StyleTargetType = typeof(CheckBox))]
     public class DataGridCheckBoxColumn : DataGridBoundColumn

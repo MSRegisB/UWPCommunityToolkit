@@ -25,7 +25,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
     /// Used within the template of a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> to specify the
     /// location in the control's visual tree where the rows are to be added.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public sealed class DataGridRowsPresenter : Panel
     {
         internal DataGrid OwningGrid

@@ -24,7 +24,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
     /// <summary>
     /// AutomationPeer for an item in a DataGrid
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public class DataGridItemAutomationPeer : FrameworkElementAutomationPeer,
         IInvokeProvider, IScrollItemProvider, ISelectionItemProvider, ISelectionProvider
     {
@@ -32,7 +31,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         private AutomationPeer _dataGridAutomationPeer;
 
         /// <summary>
-        /// AutomationPeer for an item in a DataGrid
+        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridItemAutomationPeer"/> class.
         /// </summary>
         public DataGridItemAutomationPeer(object item, DataGrid dataGrid)
             : base(dataGrid)

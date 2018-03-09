@@ -21,7 +21,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// Represents a <see cref="T:System.Windows.Controls.DataGrid" /> column that can
     /// bind to a property in the grid's data source.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     [StyleTypedProperty(Property = "ElementStyle", StyleTargetType = typeof(FrameworkElement))]
     [StyleTypedProperty(Property = "EditingElementStyle", StyleTargetType = typeof(FrameworkElement))]
     public abstract class DataGridBoundColumn : DataGridColumn

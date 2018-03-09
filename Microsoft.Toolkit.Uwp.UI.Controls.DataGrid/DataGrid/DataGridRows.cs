@@ -379,7 +379,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal bool GetRowSelection(int slot)
         {
-            Debug.Assert(slot != -1);
+            Debug.Assert(slot != -1, "Expected slot other than -1.");
             return _selectedItems.ContainsSlot(slot);
         }
 
@@ -392,7 +392,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #endif
             bool isCollapsed)
         {
-            Debug.Assert(slot >= 0 && slot <= this.SlotCount);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
+            Debug.Assert(slot <= this.SlotCount, "Expected slot smaller than or equal to SlotCount.");
 
             bool isRow = rowIndex != -1;
             if (isCollapsed || (this.IsReadOnly && rowIndex == this.DataConnection.NewItemPlaceholderIndex))
@@ -467,7 +468,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void OnRowDetailsVisibilityPropertyChanged(int rowIndex, Visibility visibility)
         {
-            Debug.Assert(rowIndex >= 0 && rowIndex < this.SlotCount);
+            Debug.Assert(rowIndex >= 0, "Expected positive rowIndex.");
+            Debug.Assert(rowIndex < this.SlotCount, "Expected rowIndex smaller than SlotCount.");
 
             _showDetailsTable.AddValue(rowIndex, visibility);
         }
@@ -877,7 +879,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 #endif
-            Debug.Assert(slot == this.SlotCount);
+            Debug.Assert(slot == this.SlotCount, "Expected slot equals this.SlotCount.");
 
             OnAddedElement_Phase1(slot, element);
             this.SlotCount++;
@@ -940,7 +942,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (firstSlot >= 0)
             {
-                Debug.Assert(lastSlot >= firstSlot);
+                Debug.Assert(lastSlot >= firstSlot, "lastSlot greater than or equal to firstSlot.");
                 int slot = GetNextVisibleSlot(firstSlot - 1);
                 while (slot <= lastSlot)
                 {
@@ -1206,7 +1208,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         private void CorrectSlotsAfterInsertion(int slotInserted, bool isCollapsed, bool rowInserted)
         {
-            Debug.Assert(slotInserted >= 0);
+            Debug.Assert(slotInserted >= 0, "Expected positive slotInserted.");
 
             // Take care of the non-visible loaded rows
             foreach (DataGridRow dataGridRow in _loadedRows)
@@ -1531,7 +1533,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private int GetDetailsCountInclusive(int lowerBound, int upperBound)
         {
             // Convert from slots to indexes.
-            // TODO - what are the correct lowerBound and upperBound values?
 #if FEATURE_ICOLLECTIONVIEW_GROUP
             lowerBound = this.RowGroupHeadersTable.GetNextGap(lowerBound - 1);
             upperBound = this.RowGroupHeadersTable.GetPreviousGap(upperBound + 1);
@@ -1561,7 +1562,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 return _selectedItems.GetIndexCount(lowerBound, upperBound);
             }
 
-            Debug.Assert(false); // Shouldn't ever happen
+            Debug.Assert(false, "Expected known RowDetailsVisibilityMode value."); // Shouldn't ever happen
             return 0;
         }
 
@@ -1739,7 +1740,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (this.EditingRow != null && this.EditingRow.Cells != null)
             {
-                Debug.Assert(this.EditingRow.Cells.Count == this.ColumnsItemsInternal.Count);
+                Debug.Assert(this.EditingRow.Cells.Count == this.ColumnsItemsInternal.Count, "Expected EditingRow.Cells.Count equals this.ColumnsItemsInternal.Count.");
                 foreach (DataGridColumn column in this.ColumnsInternal.GetDisplayedColumns(c => c.IsVisible && !c.IsReadOnly))
                 {
                     column.GenerateEditingElementInternal(this.EditingRow.Cells[column.Index], this.EditingRow.DataContext);
@@ -1750,7 +1751,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Returns a row for the provided index. The row gets first loaded through the LoadingRow event.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A row for the provided index.</returns>
         private DataGridRow GenerateRow(int rowIndex, int slot)
         {
             return GenerateRow(rowIndex, slot, this.DataConnection.GetDataItem(rowIndex));
@@ -1759,7 +1760,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Returns a row for the provided index. The row gets first loaded through the LoadingRow event.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A row for the provided index.</returns>
         private DataGridRow GenerateRow(int rowIndex, int slot, object dataContext)
         {
             Debug.Assert(rowIndex >= 0, "Expected positive rowIndex.");
@@ -1788,7 +1789,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_ICOLLECTIONVIEW_GROUP
         private DataGridRowGroupHeader GenerateRowGroupHeader(int slot, DataGridRowGroupInfo rowGroupInfo)
         {
-            // TODO - Can GenerateRowGroupHeader be commented out, as well as the entire DataGridRowGroupHeader class?
             Debug.Assert(slot >= 0, "Expected positive slot.");
             Debug.Assert(rowGroupInfo != null, "Expected non-null rowGroupInfo.");
 
@@ -1800,7 +1800,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #endif
             groupHeader.Level = rowGroupInfo.Level;
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             // Set the RowGroupHeader's PropertyName. Unfortunately, CollectionViewGroup doesn't have this
             // so we have to set it manually
             Debug.Assert(this.DataConnection.CollectionView != null && groupHeader.Level < this.DataConnection.CollectionView.GroupDescriptions.Count);
@@ -1816,7 +1815,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     groupHeader.PropertyName = this.DataConnection.DataType.GetDisplayName(propertyGroupDescription.PropertyName) ?? propertyGroupDescription.PropertyName;
                 }
             }
-#endif
 
 #if FEATURE_COLLECTIONVIEWGROUP
             // Listen for CollectionViewGroup.PropertyChanged in order to update Title when ItemCount changes
@@ -1839,13 +1837,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             OnLoadingRowGroup(new DataGridRowGroupHeaderEventArgs(groupHeader));
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             DataGridAutomationPeer peer = DataGridAutomationPeer.FromElement(this) as DataGridAutomationPeer;
             if (peer != null)
             {
                 peer.UpdateRowGroupHeaderPeerEventsSource(groupHeader);
             }
-#endif
 
             return groupHeader;
         }
@@ -1856,19 +1852,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// The row is generated and added to the displayed rows in case it is not already displayed.
         /// The horizontal gridlines thickness are added.
         /// </summary>
+        /// <returns>Exact row height with gridlines thickness.</returns>
         private double GetExactSlotElementHeight(int slot)
         {
-            Debug.Assert(slot >= 0 && slot < this.SlotCount);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
+            Debug.Assert(slot < this.SlotCount, "Expected slot  smaller than SlotCount.");
 
             if (this.IsSlotVisible(slot))
             {
-                Debug.Assert(this.DisplayData.GetDisplayedElement(slot) != null);
+                Debug.Assert(this.DisplayData.GetDisplayedElement(slot) != null, "Expected non-null DisplayData.GetDisplayedElement(slot).");
                 return this.DisplayData.GetDisplayedElement(slot).EnsureMeasured().DesiredSize.Height;
             }
 
             // InsertDisplayedElement automatically measures the element
             FrameworkElement slotElement = InsertDisplayedElement(slot, true /*updateSlotInformation*/);
-            Debug.Assert(slotElement != null);
+            Debug.Assert(slotElement != null, "Expected non-null slotElement.");
             return slotElement.DesiredSize.Height;
         }
 
@@ -1938,12 +1936,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// If the provided slot is displayed, returns the exact height.
         /// If the slot is not displayed, returns a default height.
         /// </summary>
+        /// <returns>Exact height of displayed slot, or default height otherwise.</returns>
         private double GetSlotElementHeight(int slot)
         {
-            Debug.Assert(slot >= 0 && slot < this.SlotCount);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
+            Debug.Assert(slot < this.SlotCount, "Expected slot  smaller than SlotCount.");
             if (this.IsSlotVisible(slot))
             {
-                Debug.Assert(this.DisplayData.GetDisplayedElement(slot) != null);
+                Debug.Assert(this.DisplayData.GetDisplayedElement(slot) != null, "Expected non-null DisplayData.GetDisplayedElement(slot).");
                 return this.DisplayData.GetDisplayedElement(slot).EnsureMeasured().DesiredSize.Height;
             }
             else
@@ -1964,9 +1964,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// Cumulates the approximate height of the non-collapsed slots from fromSlot to toSlot inclusive.
         /// Including the potential gridline thickness.
         /// </summary>
+        /// <returns>Cumulated approximate height of the non-collapsed slots from fromSlot to toSlot inclusive including the potential gridline thickness.</returns>
         private double GetSlotElementsHeight(int fromSlot, int toSlot)
         {
-            Debug.Assert(toSlot >= fromSlot);
+            Debug.Assert(toSlot >= fromSlot, "Expected toSlot greater or equal to fromSlot.");
 
             double height = 0;
             for (int slot = GetNextVisibleSlot(fromSlot - 1); slot <= toSlot; slot = GetNextVisibleSlot(slot))
@@ -1979,9 +1980,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         /// <summary>
         /// Checks if the row for the provided dataContext has been generated and is present
-        /// in either the loaded rows, pre-fetched rows, or editing row. 
+        /// in either the loaded rows, pre-fetched rows, or editing row.
         /// The displayed rows are *not* searched. Returns null if the row does not belong to those 3 categories.
         /// </summary>
+        /// <returns>Either a loaded, or pre-fetched or editing row.</returns>
         private DataGridRow GetGeneratedRow(object dataContext)
         {
             // Check the list of rows being loaded via the LoadingRow event.
@@ -2025,7 +2027,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_ICOLLECTIONVIEW_GROUP
             if (this.RowGroupHeadersTable.Contains(slot))
             {
-                slotElement = GenerateRowGroupHeader(slot, this.RowGroupHeadersTable.GetValueAt(slot)/*rowGroupInfo*/);
+                slotElement = GenerateRowGroupHeader(slot, this.RowGroupHeadersTable.GetValueAt(slot) /*rowGroupInfo*/);
             }
             else
 #endif
@@ -2045,7 +2047,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             // We can only support creating new rows that are adjacent to the currently visible rows
             // since they need to be added to the visual tree for us to Measure them.
             Debug.Assert(this.DisplayData.FirstScrollingSlot == -1 || slot >= GetPreviousVisibleSlot(this.DisplayData.FirstScrollingSlot) && slot <= GetNextVisibleSlot(this.DisplayData.LastScrollingSlot));
-            Debug.Assert(element != null);
+            Debug.Assert(element != null, "Expected non-null element.");
 
             if (_rowsPresenter != null)
             {
@@ -2061,14 +2063,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         if (!row.IsRecycled)
                         {
-                            Debug.Assert(!_rowsPresenter.Children.Contains(element));
+                            Debug.Assert(!_rowsPresenter.Children.Contains(element), "Expected element not contained in _rowsPresenter.Children.");
                             _rowsPresenter.Children.Add(row);
                         }
                     }
                     else
                     {
                         element.Clip = null;
-                        Debug.Assert(row.Index == RowIndexFromSlot(slot));
+                        Debug.Assert(row.Index == RowIndexFromSlot(slot), "Expected row.Index equals RowIndexFromSlot(slot).");
                         if (!_rowsPresenter.Children.Contains(row))
                         {
                             _rowsPresenter.Children.Add(row);
@@ -2125,7 +2127,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void InsertElement(int slot, UIElement element, bool updateVerticalScrollBarOnly, bool isCollapsed, bool isRow)
         {
-            Debug.Assert(slot >= 0 && slot <= this.SlotCount);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
+            Debug.Assert(slot <= this.SlotCount, "Expected slot smaller than or equal to SlotCount.");
 
             OnInsertingElement(slot, true /*firstInsertion*/, isCollapsed, isRow);   // will throw an exception if the insertion is illegal
 
@@ -2147,7 +2150,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void OnAddedElement_Phase1(int slot, UIElement element)
         {
-            Debug.Assert(slot >= 0);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
 
             // Row needs to be potentially added to the displayed rows
             if (SlotIsDisplayed(slot))
@@ -2195,7 +2198,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void OnInsertedElement_Phase1(int slot, UIElement element, bool isCollapsed, bool isRow)
         {
-            Debug.Assert(slot >= 0);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
 
             // Fix the Index of all following rows
             CorrectSlotsAfterInsertion(slot, isCollapsed, isRow);
@@ -2207,18 +2210,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 DataGridRow dataGridRow = element as DataGridRow;
                 if (dataGridRow != null)
                 {
-                    Debug.Assert(dataGridRow.Cells.Count == this.ColumnsItemsInternal.Count);
+                    Debug.Assert(dataGridRow.Cells.Count == this.ColumnsItemsInternal.Count, "Expected dataGridRow.Cells.Count equals ColumnsItemsInternal.Count.");
 
                     int columnIndex = 0;
                     foreach (DataGridCell dataGridCell in dataGridRow.Cells)
                     {
-                        Debug.Assert(dataGridCell.OwningRow == dataGridRow);
-                        Debug.Assert(dataGridCell.OwningColumn == this.ColumnsItemsInternal[columnIndex]);
+                        Debug.Assert(dataGridCell.OwningRow == dataGridRow, "Expected dataGridRow owns dataGridCell.");
+                        Debug.Assert(dataGridCell.OwningColumn == this.ColumnsItemsInternal[columnIndex], "Expected ColumnsItemsInternal[columnIndex] owns dataGridCell.");
                         columnIndex++;
                     }
                 }
 #endif
-                Debug.Assert(!isCollapsed);
+                Debug.Assert(!isCollapsed, "Expected isCollapsed is false.");
                 OnAddedElement_Phase1(slot, element);
             }
             else if ((slot <= this.DisplayData.FirstScrollingSlot) || (isCollapsed && (slot <= this.DisplayData.LastScrollingSlot)))
@@ -2229,7 +2232,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void OnInsertedElement_Phase2(int slot, bool updateVerticalScrollBarOnly, bool isCollapsed)
         {
-            Debug.Assert(slot >= 0);
+            Debug.Assert(slot >= 0, "Expected positve slot.");
 
             if (!isCollapsed)
             {
@@ -2248,7 +2251,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     // The underlying data was already added, therefore we need to avoid accessing any back-end data since we might be off by 1 row.
                     _temporarilyResetCurrentCell = true;
                     bool success = SetCurrentCellCore(-1, -1);
-                    Debug.Assert(success);
+                    Debug.Assert(success, "Expected successful SetCurrentCellCore call.");
                 }
             }
 
@@ -2394,7 +2397,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private void OnRemovingElement(int slotDeleted)
         {
             // Note that the row needs to be deleted no matter what. The underlying data row was already deleted.
-            Debug.Assert(slotDeleted >= 0 && slotDeleted < this.SlotCount);
+            Debug.Assert(slotDeleted >= 0, "Expected positive slotDeleted.");
+            Debug.Assert(slotDeleted < this.SlotCount, "Expected slotDeleted smaller than SlotCount.");
             _temporarilyResetCurrentCell = false;
 
             // Reset the current cell's address if it's on the deleted row, or after it.
@@ -2405,14 +2409,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     // No editing is committed since the underlying entity was already deleted.
                     bool success = SetCurrentCellCore(-1, -1, false /*commitEdit*/, false /*endRowEdit*/);
-                    Debug.Assert(success);
+                    Debug.Assert(success, "Expected successful SetCurrentCellCore call.");
                 }
                 else
                 {
                     // Underlying data of deleted row is gone. It cannot be accessed anymore. Skip the commit of the editing.
                     _temporarilyResetCurrentCell = true;
                     bool success = SetCurrentCellCore(-1, -1);
-                    Debug.Assert(success);
+                    Debug.Assert(success, "Expected successful SetCurrentCellCore call.");
                 }
             }
         }
@@ -2575,7 +2579,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void RemoveDisplayedElement(int slot, bool wasDeleted, bool updateSlotInformation)
         {
-            Debug.Assert(slot >= this.DisplayData.FirstScrollingSlot && slot <= this.DisplayData.LastScrollingSlot);
+            Debug.Assert(slot >= this.DisplayData.FirstScrollingSlot, "Expected slot larger or equal to DisplayData.FirstScrollingSlot.");
+            Debug.Assert(slot <= this.DisplayData.LastScrollingSlot, "Expected slot smaller or equal to DisplayData.LastScrollingSlot.");
 
             RemoveDisplayedElement(this.DisplayData.GetDisplayedElement(slot), slot, wasDeleted, updateSlotInformation);
         }
@@ -2631,7 +2636,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (this.EditingRow != null && this.EditingRow.Cells != null)
             {
-                Debug.Assert(this.EditingRow.Cells.Count == this.ColumnsItemsInternal.Count);
+                Debug.Assert(this.EditingRow.Cells.Count == this.ColumnsItemsInternal.Count, "Expected EditingRow.Cells.Count equals ColumnsItemsInternal.Count.");
                 foreach (DataGridColumn column in this.Columns)
                 {
                     column.RemoveEditingElement();
@@ -2641,7 +2646,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void RemoveElementAt(int slot, object item, bool isRow)
         {
-            Debug.Assert(slot >= 0 && slot < this.SlotCount);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
+            Debug.Assert(slot < this.SlotCount, "Expected slot  smaller than SlotCount.");
 
             OnRemovingElement(slot);
 
@@ -2705,9 +2711,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Determines whether the row at the provided index must be displayed or not.
         /// </summary>
+        /// <returns>True when the slot is displayed.</returns>
         private bool SlotIsDisplayed(int slot)
         {
-            Debug.Assert(slot >= 0);
+            Debug.Assert(slot >= 0, "Expected positive slot.");
 
             if (slot >= this.DisplayData.FirstScrollingSlot &&
                 slot <= this.DisplayData.LastScrollingSlot)
@@ -2736,8 +2743,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         // Updates display information and displayed rows after scrolling the given number of pixels
         private void ScrollSlotsByHeight(double height)
         {
-            Debug.Assert(this.DisplayData.FirstScrollingSlot >= 0);
-            Debug.Assert(!DoubleUtil.IsZero(height));
+            Debug.Assert(this.DisplayData.FirstScrollingSlot >= 0, "Expected positive DisplayData.FirstScrollingSlot.");
+            Debug.Assert(!DoubleUtil.IsZero(height), "DoubleUtil.IsZero(height) is false.");
 
             _scrollingByHeight = true;
             try
@@ -2915,7 +2922,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     if (newFirstScrollingSlot < this.SlotCount - 1)
                     {
                         newFirstScrollingSlot = GetNextVisibleSlot(newFirstScrollingSlot);
-                        Debug.Assert(newFirstScrollingSlot != -1);
+                        Debug.Assert(newFirstScrollingSlot != -1, "Expected newFirstScrollingSlot other than -1.");
                     }
 
                     this.NegVerticalOffset = 0;
@@ -2953,8 +2960,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
                 }
 
-                Debug.Assert(this.DisplayData.FirstScrollingSlot >= 0);
-                Debug.Assert(GetExactSlotElementHeight(this.DisplayData.FirstScrollingSlot) > this.NegVerticalOffset);
+                Debug.Assert(this.DisplayData.FirstScrollingSlot >= 0, "Expected positive DisplayData.FirstScrollingSlot.");
+                Debug.Assert(GetExactSlotElementHeight(this.DisplayData.FirstScrollingSlot) > this.NegVerticalOffset, "Expected GetExactSlotElementHeight(DisplayData.FirstScrollingSlot) larger than this.NegVerticalOffset.");
 
                 if (this.DisplayData.FirstScrollingSlot == 0)
                 {
@@ -2995,7 +3002,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void SelectDisplayedElement(int slot)
         {
-            Debug.Assert(IsSlotVisible(slot));
+            Debug.Assert(IsSlotVisible(slot), "Expected IsSlotVisible(slot) is true.");
             FrameworkElement element = this.DisplayData.GetDisplayedElement(slot) as FrameworkElement;
             DataGridRow row = this.DisplayData.GetDisplayedElement(slot) as DataGridRow;
             if (row != null)
@@ -3102,9 +3109,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void UnloadRow(DataGridRow dataGridRow)
         {
-            Debug.Assert(dataGridRow != null);
-            Debug.Assert(_rowsPresenter != null);
-            Debug.Assert(_rowsPresenter.Children.Contains(dataGridRow));
+            Debug.Assert(dataGridRow != null, "Expected non-null dataGridRow.");
+            Debug.Assert(_rowsPresenter != null, "Expected non-null _rowsPresenter.");
+            Debug.Assert(_rowsPresenter.Children.Contains(dataGridRow), "Expected dataGridRow contained in _rowsPresenter.Children.");
 
             if (_loadedRows.Contains(dataGridRow))
             {
@@ -3118,7 +3125,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             bool recycleRow = this.CurrentSlot != dataGridRow.Index;
 
             // Don't recycle if the row has a custom Style set
-            recycleRow &= (dataGridRow.Style == null || dataGridRow.Style == this.RowStyle);
+            recycleRow &= dataGridRow.Style == null || dataGridRow.Style == this.RowStyle;
 
             if (recycleRow)
             {
@@ -3134,7 +3141,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void UpdateDisplayedRows(int newFirstDisplayedSlot, double displayHeight)
         {
-            Debug.Assert(!_collapsedSlotsTable.Contains(newFirstDisplayedSlot));
+            Debug.Assert(!_collapsedSlotsTable.Contains(newFirstDisplayedSlot), "Expected newFirstDisplayedSlot not contained in _collapsedSlotsTable.");
 
             int firstDisplayedScrollingSlot = newFirstDisplayedSlot;
             int lastDisplayedScrollingSlot = -1;
@@ -3211,7 +3218,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         // when scrolling down to a full row
         private void UpdateDisplayedRowsFromBottom(int newLastDisplayedScrollingRow)
         {
-            Debug.Assert(!_collapsedSlotsTable.Contains(newLastDisplayedScrollingRow));
+            Debug.Assert(!_collapsedSlotsTable.Contains(newLastDisplayedScrollingRow), "Expected newLastDisplayedScrollingRow not contained in _collapsedSlotsTable.");
 
             int lastDisplayedScrollingRow = newLastDisplayedScrollingRow;
             int firstDisplayedScrollingRow = -1;
@@ -3241,7 +3248,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             this.DisplayData.NumTotallyDisplayedScrollingElements = deltaY > displayHeight ? visibleScrollingRows - 1 : visibleScrollingRows;
 
-            Debug.Assert(this.DisplayData.NumTotallyDisplayedScrollingElements >= 0);
+            Debug.Assert(this.DisplayData.NumTotallyDisplayedScrollingElements >= 0, "Expected positive DisplayData.NumTotallyDisplayedScrollingElements.");
             Debug.Assert(lastDisplayedScrollingRow < this.SlotCount, "lastDisplayedScrollingRow larger than number of rows");
 
             this.NegVerticalOffset = Math.Max(0, deltaY - displayHeight);

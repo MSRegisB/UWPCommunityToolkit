@@ -19,7 +19,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
     /// <summary>
     /// Represents a non-scrollable grid that contains <see cref="T:System.Windows.Controls.DataGrid"/> row headers.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public class DataGridFrozenGrid : Grid
     {
         /// <summary>

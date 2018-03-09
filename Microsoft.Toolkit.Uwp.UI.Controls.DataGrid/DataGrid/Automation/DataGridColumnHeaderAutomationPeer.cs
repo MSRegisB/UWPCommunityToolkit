@@ -22,12 +22,11 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
     /// <summary>
     /// AutomationPeer for DataGridColumnHeader
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public class DataGridColumnHeaderAutomationPeer : FrameworkElementAutomationPeer,
         IInvokeProvider, IScrollItemProvider, ITransformProvider
     {
         /// <summary>
-        /// AutomationPeer for DataGridColumnHeader
+        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridColumnHeaderAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">DataGridColumnHeader</param>
         public DataGridColumnHeaderAutomationPeer(DataGridColumnHeader owner)

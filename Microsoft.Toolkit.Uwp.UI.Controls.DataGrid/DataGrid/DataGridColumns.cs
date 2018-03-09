@@ -868,6 +868,23 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        private static DataGridBoundColumn GetDataGridColumnFromType(Type type)
+        {
+            Debug.Assert(type != null, "Expected non-null type.");
+            if (type == typeof(bool))
+            {
+                return new DataGridCheckBoxColumn();
+            }
+            else if (type == typeof(bool?))
+            {
+                DataGridCheckBoxColumn column = new DataGridCheckBoxColumn();
+                column.IsThreeState = true;
+                return column;
+            }
+
+            return new DataGridTextColumn();
+        }
+
         private bool AddGeneratedColumn(DataGridAutoGeneratingColumnEventArgs e)
         {
             // Raise the AutoGeneratingColumn event in case the user wants to Cancel or Replace the
@@ -1598,23 +1615,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             return x;
-        }
-
-        private static DataGridBoundColumn GetDataGridColumnFromType(Type type)
-        {
-            Debug.Assert(type != null, "Expected non-null type.");
-            if (type == typeof(bool))
-            {
-                return new DataGridCheckBoxColumn();
-            }
-            else if (type == typeof(bool?))
-            {
-                DataGridCheckBoxColumn column = new DataGridCheckBoxColumn();
-                column.IsThreeState = true;
-                return column;
-            }
-
-            return new DataGridTextColumn();
         }
 
         private double GetNegHorizontalOffsetFromHorizontalOffset(double horizontalOffset)

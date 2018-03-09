@@ -20,11 +20,10 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
     /// <summary>
     /// AutomationPeer for DataGridRowGroupHeader
     /// </summary>
-    /// <QualityBand>Preview</QualityBand>
     public class DataGridRowGroupHeaderAutomationPeer : FrameworkElementAutomationPeer
     {
         /// <summary>
-        /// AutomationPeer for DataGridRowGroupHeader
+        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridRowGroupHeaderAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">DataGridRowGroupHeader</param>
         public DataGridRowGroupHeaderAutomationPeer(DataGridRowGroupHeader owner)

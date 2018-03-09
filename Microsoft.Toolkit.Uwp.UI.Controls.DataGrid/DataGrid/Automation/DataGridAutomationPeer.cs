@@ -25,7 +25,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
     /// <summary>
     /// Exposes <see cref="T:System.Windows.Controls.DataGrid" /> types to UI Automation.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public class DataGridAutomationPeer :
         FrameworkElementAutomationPeer,
         IGridProvider,

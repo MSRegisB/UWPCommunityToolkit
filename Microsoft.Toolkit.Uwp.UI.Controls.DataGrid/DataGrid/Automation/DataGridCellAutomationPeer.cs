@@ -23,12 +23,11 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
     /// <summary>
     /// AutomationPeer for DataGridCell
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public class DataGridCellAutomationPeer : FrameworkElementAutomationPeer,
         IGridItemProvider, IInvokeProvider, IScrollItemProvider, ISelectionItemProvider, ITableItemProvider
     {
         /// <summary>
-        /// AutomationPeer for DataGridCell
+        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridCellAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">DataGridCell</param>
         public DataGridCellAutomationPeer(DataGridCell owner)

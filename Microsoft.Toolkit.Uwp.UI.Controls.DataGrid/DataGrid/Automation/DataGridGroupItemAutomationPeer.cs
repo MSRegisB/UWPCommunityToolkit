@@ -28,7 +28,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
     /// <summary>
     /// AutomationPeer for a group of items in a DataGrid
     /// </summary>
-    /// <QualityBand>Preview</QualityBand>
     public class DataGridGroupItemAutomationPeer : FrameworkElementAutomationPeer,
         IExpandCollapseProvider, IGridProvider, IScrollItemProvider, ISelectionProvider
     {
@@ -36,7 +35,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         private AutomationPeer _dataGridAutomationPeer;
 
         /// <summary>
-        /// AutomationPeer for a group of items in a DataGrid
+        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridGroupItemAutomationPeer"/> class.
         /// </summary>
         public DataGridGroupItemAutomationPeer(CollectionViewGroup group, DataGrid dataGrid)
             : base(dataGrid)

@@ -18,7 +18,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// <summary>
     /// Provides data for the <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.AutoGeneratingColumn" /> event.
     /// </summary>
-    /// <QualityBand>Mature</QualityBand>
     public class DataGridAutoGeneratingColumnEventArgs : CancelEventArgs
     {
         /// <summary>

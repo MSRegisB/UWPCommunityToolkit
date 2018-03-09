@@ -19,7 +19,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// <summary>
     /// EventArgs used for the DataGrid's LoadingRowGroup and UnloadingRowGroup events
     /// </summary>
-    /// <QualityBand>Preview</QualityBand>
     public class DataGridRowGroupHeaderEventArgs : EventArgs
     {
         /// <summary>
