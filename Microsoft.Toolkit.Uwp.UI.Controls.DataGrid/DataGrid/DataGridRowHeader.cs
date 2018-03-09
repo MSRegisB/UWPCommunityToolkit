@@ -13,7 +13,6 @@
 using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -435,7 +434,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void DataGridRowHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
+            if (this.OwningGrid != null && !this.OwningGrid.HasColumnUserInteraction)
             {
                 if (!e.Handled && this.OwningGrid.IsTabStop)
                 {

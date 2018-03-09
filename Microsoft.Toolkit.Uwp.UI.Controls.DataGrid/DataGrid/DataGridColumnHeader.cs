@@ -39,7 +39,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
     [TemplateVisualState(Name = VisualStates.StateSortDescending, GroupName = VisualStates.GroupSort)]
     public partial class DataGridColumnHeader : ContentControl
     {
-        private enum DragMode
+        internal enum DragMode
         {
             None = 0,
             PointerPressed = 1,
@@ -53,19 +53,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private const int DATAGRIDCOLUMNHEADER_resizeRegionWidthLoose = 9;
         private const double DATAGRIDCOLUMNHEADER_separatorThickness = 1;
 
-        private static CoreCursor _originalCursor;
-        private static DataGridColumn _dragColumn;
-        private static DragMode _dragMode;
-        private static Point? _dragStart;
-        private static Point? _pressedPointerPositionHeaders;
-        private static Point? _lastPointerPositionHeaders;
-        private static double _originalHorizontalOffset;
-        private static double _originalWidth;
-        private static double _frozenColumnsWidth;
-        private static uint _resizePointerId;
-        private static uint _dragPointerId;
-
-        private Pointer _capturedPointer;
         private Visibility _desiredSeparatorVisibility;
 
         /// <summary>
@@ -137,14 +124,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     columnHeader.UpdateSeparatorVisibility(null);
                 }
-            }
-        }
-
-        internal static bool HasUserInteraction
-        {
-            get
-            {
-                return _dragMode != DragMode.None;
             }
         }
 
@@ -244,12 +223,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         internal void ApplyState(bool useTransitions)
         {
+            DragMode dragMode = this.OwningGrid == null ? DragMode.None : this.OwningGrid.ColumnHeaderInteractionInfo.DragMode;
+
             // Common States
-            if (this.IsPressed && _dragMode != DragMode.Resize)
+            if (this.IsPressed && dragMode != DragMode.Resize)
             {
                 VisualStates.GoToState(this, useTransitions, VisualStates.StatePressed, VisualStates.StatePointerOver, VisualStates.StateNormal);
             }
-            else if (this.IsPointerOver && _dragMode != DragMode.Resize)
+            else if (this.IsPointerOver && dragMode != DragMode.Resize)
             {
                 VisualStates.GoToState(this, useTransitions, VisualStates.StatePointerOver, VisualStates.StateNormal);
             }
@@ -486,16 +467,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             return column.ActualCanUserResize;
         }
 
-        private static bool TrySetResizeColumn(uint pointerId, DataGridColumn column)
+        private bool TrySetResizeColumn(uint pointerId, DataGridColumn column)
         {
             // If Datagrid.CanUserResizeColumns == false, then the column can still override it
-            if (CanResizeColumn(column))
+            if (this.OwningGrid != null && CanResizeColumn(column))
             {
-                Debug.Assert(_dragMode != DragMode.None, "Expected _dragMode other than None.");
+                DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
 
-                _dragColumn = column;
-                _dragMode = DragMode.Resize;
-                _dragPointerId = pointerId;
+                Debug.Assert(interactionInfo.DragMode != DragMode.None, "Expected _dragMode other than None.");
+
+                interactionInfo.DragColumn = column;
+                interactionInfo.DragMode = DragMode.Resize;
+                interactionInfo.DragPointerId = pointerId;
 
                 return true;
             }
@@ -525,47 +508,51 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private void CancelPointer(PointerRoutedEventArgs e)
         {
             // When we stop interacting with the column headers, we need to reset the drag mode and close any popups if they are open.
-            bool setResizeCursor = false;
-
-            if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
+            if (this.OwningGrid != null)
             {
-                Point pointerPositionHeaders = e.GetCurrentPoint(this.OwningGrid.ColumnHeaders).Position;
-                setResizeCursor = _dragMode == DragMode.Resize && pointerPositionHeaders.X > 0 && pointerPositionHeaders.X < this.OwningGrid.ActualWidth;
-            }
+                DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
+                bool setResizeCursor = false;
 
-            if (!setResizeCursor)
-            {
-                SetOriginalCursor();
-            }
-
-            if (_dragPointerId == e.Pointer.PointerId)
-            {
-                _capturedPointer = null;
-                _dragMode = DragMode.None;
-                _dragPointerId = 0;
-                _dragColumn = null;
-                _dragStart = null;
-                _pressedPointerPositionHeaders = null;
-                _lastPointerPositionHeaders = null;
-
-                if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
+                if (this.OwningGrid.ColumnHeaders != null)
                 {
-                    this.OwningGrid.ColumnHeaders.DragColumn = null;
-                    this.OwningGrid.ColumnHeaders.DragIndicator = null;
-                    this.OwningGrid.ColumnHeaders.DropLocationIndicator = null;
+                    Point pointerPositionHeaders = e.GetCurrentPoint(this.OwningGrid.ColumnHeaders).Position;
+                    setResizeCursor = interactionInfo.DragMode == DragMode.Resize && pointerPositionHeaders.X > 0 && pointerPositionHeaders.X < this.OwningGrid.ActualWidth;
                 }
-            }
 
-            if (setResizeCursor)
-            {
-                SetResizeCursor(e.Pointer, e.GetCurrentPoint(this).Position);
+                if (!setResizeCursor)
+                {
+                    SetOriginalCursor();
+                }
+
+                if (interactionInfo.DragPointerId == e.Pointer.PointerId)
+                {
+                    interactionInfo.CapturedPointer = null;
+                    interactionInfo.DragMode = DragMode.None;
+                    interactionInfo.DragPointerId = 0;
+                    interactionInfo.DragColumn = null;
+                    interactionInfo.DragStart = null;
+                    interactionInfo.PressedPointerPositionHeaders = null;
+                    interactionInfo.LastPointerPositionHeaders = null;
+
+                    if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
+                    {
+                        this.OwningGrid.ColumnHeaders.DragColumn = null;
+                        this.OwningGrid.ColumnHeaders.DragIndicator = null;
+                        this.OwningGrid.ColumnHeaders.DropLocationIndicator = null;
+                    }
+                }
+
+                if (setResizeCursor)
+                {
+                    SetResizeCursor(e.Pointer, e.GetCurrentPoint(this).Position);
+                }
             }
         }
 
         private void DataGridColumnHeader_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerEntered");
-            if (!this.IsEnabled)
+            if (!this.IsEnabled || this.OwningGrid == null)
             {
                 return;
             }
@@ -578,12 +565,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private void DataGridColumnHeader_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerExited");
-            if (!this.IsEnabled)
+            if (!this.IsEnabled || this.OwningGrid == null)
             {
                 return;
             }
 
-            if (_dragMode == DragMode.None && _resizePointerId == e.Pointer.PointerId)
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
+
+            if (interactionInfo.DragMode == DragMode.None && interactionInfo.ResizePointerId == e.Pointer.PointerId)
             {
                 SetOriginalCursor();
             }
@@ -594,19 +583,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private void DataGridColumnHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerPressed");
-            if (this.OwningGrid == null || this.OwningColumn == null || e.Handled || !this.IsEnabled || _dragMode != DragMode.None)
+            if (this.OwningGrid == null || this.OwningColumn == null || e.Handled || !this.IsEnabled || this.OwningGrid.ColumnHeaderInteractionInfo.DragMode != DragMode.None)
             {
                 return;
             }
 
             PointerPoint pointerPoint = e.GetCurrentPoint(this);
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
 
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Mouse && !pointerPoint.Properties.IsLeftButtonPressed)
             {
                 return;
             }
 
-            Debug.Assert(_dragPointerId == 0, "Expected _dragPointerId is 0.");
+            Debug.Assert(interactionInfo.DragPointerId == 0, "Expected _dragPointerId is 0.");
 
             bool handled = e.Handled;
 
@@ -618,19 +608,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
                 if (this.CapturePointer(e.Pointer))
                 {
-                    _capturedPointer = e.Pointer;
+                    interactionInfo.CapturedPointer = e.Pointer;
                 }
                 else
                 {
-                    _capturedPointer = null;
+                    interactionInfo.CapturedPointer = null;
                 }
 
-                Debug.Assert(_dragMode == DragMode.None, "Expected _dragMode equals None.");
-                Debug.Assert(_dragColumn == null, "Expected _dragColumn is null.");
-                _dragMode = DragMode.PointerPressed;
-                _dragPointerId = e.Pointer.PointerId;
-                _frozenColumnsWidth = this.OwningGrid.ColumnsInternal.GetVisibleFrozenEdgedColumnsWidth();
-                _pressedPointerPositionHeaders = _lastPointerPositionHeaders = this.Translate(this.OwningGrid.ColumnHeaders, pointerPosition);
+                Debug.Assert(interactionInfo.DragMode == DragMode.None, "Expected _dragMode equals None.");
+                Debug.Assert(interactionInfo.DragColumn == null, "Expected _dragColumn is null.");
+                interactionInfo.DragMode = DragMode.PointerPressed;
+                interactionInfo.DragPointerId = e.Pointer.PointerId;
+                interactionInfo.FrozenColumnsWidth = this.OwningGrid.ColumnsInternal.GetVisibleFrozenEdgedColumnsWidth();
+                interactionInfo.PressedPointerPositionHeaders = interactionInfo.LastPointerPositionHeaders = this.Translate(this.OwningGrid.ColumnHeaders, pointerPosition);
 
                 double distanceFromLeft = pointerPosition.X;
                 double distanceFromRight = this.ActualWidth - distanceFromLeft;
@@ -652,11 +642,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     handled = TrySetResizeColumn(e.Pointer.PointerId, previousColumn);
                 }
 
-                if (_dragMode == DragMode.Resize && _dragColumn != null)
+                if (interactionInfo.DragMode == DragMode.Resize && interactionInfo.DragColumn != null)
                 {
-                    _dragStart = _lastPointerPositionHeaders;
-                    _originalWidth = _dragColumn.ActualWidth;
-                    _originalHorizontalOffset = this.OwningGrid.HorizontalOffset;
+                    interactionInfo.DragStart = interactionInfo.LastPointerPositionHeaders;
+                    interactionInfo.OriginalWidth = interactionInfo.DragColumn.ActualWidth;
+                    interactionInfo.OriginalHorizontalOffset = this.OwningGrid.HorizontalOffset;
 
                     handled = true;
                 }
@@ -682,7 +672,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return;
             }
 
-            if (_dragPointerId != 0 && _dragPointerId != e.Pointer.PointerId)
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
+
+            if (interactionInfo.DragPointerId != 0 && interactionInfo.DragPointerId != e.Pointer.PointerId)
             {
                 return;
             }
@@ -695,7 +687,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             if (this.OwningGrid.ColumnHeaders != null)
             {
-                switch (_dragMode)
+                switch (interactionInfo.DragMode)
                 {
                     case DragMode.PointerPressed:
                     {
@@ -719,7 +711,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                             this.OwningGrid.OnColumnReordered(ea);
                         }
 
-                        DragCompletedEventArgs dragCompletedEventArgs = new DragCompletedEventArgs(pointerPosition.X - _dragStart.Value.X, pointerPosition.Y - _dragStart.Value.Y, false);
+                        DragCompletedEventArgs dragCompletedEventArgs = new DragCompletedEventArgs(pointerPosition.X - interactionInfo.DragStart.Value.X, pointerPosition.Y - interactionInfo.DragStart.Value.Y, false);
                         this.OwningGrid.OnColumnHeaderDragCompleted(dragCompletedEventArgs);
                         break;
                     }
@@ -735,18 +727,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 SetResizeCursor(e.Pointer, pointerPosition);
 
                 // Variables that track drag mode states get reset in DataGridColumnHeader_LostPointerCapture
-                if (_capturedPointer != null)
+                if (interactionInfo.CapturedPointer != null)
                 {
-                    ReleasePointerCapture(_capturedPointer);
-                    _capturedPointer = null;
+                    ReleasePointerCapture(interactionInfo.CapturedPointer);
+                    interactionInfo.CapturedPointer = null;
                 }
 
-                _dragMode = DragMode.None;
-                _dragPointerId = 0;
-                _dragColumn = null;
-                _dragStart = null;
-                _pressedPointerPositionHeaders = null;
-                _lastPointerPositionHeaders = null;
+                interactionInfo.DragMode = DragMode.None;
+                interactionInfo.DragPointerId = 0;
+                interactionInfo.DragColumn = null;
+                interactionInfo.DragStart = null;
+                interactionInfo.PressedPointerPositionHeaders = null;
+                interactionInfo.LastPointerPositionHeaders = null;
                 handled = true;
             }
 
@@ -765,8 +757,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             PointerPoint pointerPoint = e.GetCurrentPoint(this);
             Point pointerPosition = pointerPoint.Position;
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
 
-            if (pointerPoint.IsInContact && (_dragPointerId == 0 || _dragPointerId == e.Pointer.PointerId))
+            if (pointerPoint.IsInContact && (interactionInfo.DragPointerId == 0 || interactionInfo.DragPointerId == e.Pointer.PointerId))
             {
                 Point pointerPositionHeaders = e.GetCurrentPoint(this.OwningGrid.ColumnHeaders).Position;
                 bool handled = false;
@@ -782,21 +775,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 // If we still haven't done anything about moving the pointer while
                 // the pointer is down, we remember that we're dragging, but we don't
                 // claim to have actually handled the event.
-                if (_dragMode == DragMode.PointerPressed &&
-                    _pressedPointerPositionHeaders.HasValue &&
-                    Math.Abs(_pressedPointerPositionHeaders.Value.X - pointerPositionHeaders.X) + Math.Abs(_pressedPointerPositionHeaders.Value.Y - pointerPositionHeaders.Y) > DATAGRIDCOLUMNHEADER_dragThreshold)
+                if (interactionInfo.DragMode == DragMode.PointerPressed &&
+                    interactionInfo.PressedPointerPositionHeaders.HasValue &&
+                    Math.Abs(interactionInfo.PressedPointerPositionHeaders.Value.X - pointerPositionHeaders.X) + Math.Abs(interactionInfo.PressedPointerPositionHeaders.Value.Y - pointerPositionHeaders.Y) > DATAGRIDCOLUMNHEADER_dragThreshold)
                 {
-                    _dragMode = DragMode.Drag;
-                    _dragPointerId = e.Pointer.PointerId;
+                    interactionInfo.DragMode = DragMode.Drag;
+                    interactionInfo.DragPointerId = e.Pointer.PointerId;
                 }
 
-                if (_dragMode == DragMode.Drag)
+                if (interactionInfo.DragMode == DragMode.Drag)
                 {
-                    DragDeltaEventArgs dragDeltaEventArgs = new DragDeltaEventArgs(pointerPositionHeaders.X - _lastPointerPositionHeaders.Value.X, pointerPositionHeaders.Y - _lastPointerPositionHeaders.Value.Y);
+                    DragDeltaEventArgs dragDeltaEventArgs = new DragDeltaEventArgs(pointerPositionHeaders.X - interactionInfo.LastPointerPositionHeaders.Value.X, pointerPositionHeaders.Y - interactionInfo.LastPointerPositionHeaders.Value.Y);
                     this.OwningGrid.OnColumnHeaderDragDelta(dragDeltaEventArgs);
                 }
 
-                _lastPointerPositionHeaders = pointerPositionHeaders;
+                interactionInfo.LastPointerPositionHeaders = pointerPositionHeaders;
             }
 
             SetResizeCursor(e.Pointer, pointerPosition);
@@ -811,6 +804,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <returns>The column against whose top-left the reordering caret should be positioned.</returns>
         private DataGridColumn GetReorderingTargetColumn(Point pointerPositionHeaders, bool scroll, out double scrollAmount)
         {
+            Debug.Assert(this.OwningGrid != null, "Expected non-null OwningGrid.");
+
             scrollAmount = 0;
             double leftEdge = 0;
 #if FEATURE_ICOLLECTIONVIEW_GROUP
@@ -819,14 +814,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 leftEdge = this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.ActualWidth;
             }
 #endif
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
             double rightEdge = this.OwningGrid.CellsWidth;
             if (this.OwningColumn.IsFrozen)
             {
-                rightEdge = Math.Min(rightEdge, _frozenColumnsWidth);
+                rightEdge = Math.Min(rightEdge, interactionInfo.FrozenColumnsWidth);
             }
             else if (this.OwningGrid.FrozenColumnCount > 0)
             {
-                leftEdge = _frozenColumnsWidth;
+                leftEdge = interactionInfo.FrozenColumnsWidth;
             }
 
             if (pointerPositionHeaders.X < leftEdge)
@@ -882,6 +878,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <returns>The display index to set the column to.</returns>
         private int GetReorderingTargetDisplayIndex(Point pointerPositionHeaders)
         {
+            Debug.Assert(this.OwningGrid != null, "Expected non-null OwningGrid.");
+
             double scrollAmount = 0;
             DataGridColumn targetColumn = GetReorderingTargetColumn(pointerPositionHeaders, false /*scroll*/, out scrollAmount);
             if (targetColumn != null)
@@ -896,6 +894,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void OnPointerMove_BeginReorder(uint pointerId, Point pointerPosition)
         {
+            Debug.Assert(this.OwningGrid != null, "Expected non-null OwningGrid.");
+
             DataGridColumnHeader dragIndicator = new DataGridColumnHeader();
             dragIndicator.OwningColumn = this.OwningColumn;
             dragIndicator.IsEnabled = false;
@@ -938,12 +938,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return;
             }
 
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
+
             // The app didn't cancel, so prepare for the reorder.
-            _dragColumn = this.OwningColumn;
-            Debug.Assert(_dragMode != DragMode.None, "Expected _dragMode other than None.");
-            _dragMode = DragMode.Reorder;
-            _dragPointerId = pointerId;
-            _dragStart = pointerPosition;
+            interactionInfo.DragColumn = this.OwningColumn;
+            Debug.Assert(interactionInfo.DragMode != DragMode.None, "Expected _dragMode other than None.");
+            interactionInfo.DragMode = DragMode.Reorder;
+            interactionInfo.DragPointerId = pointerId;
+            interactionInfo.DragStart = pointerPosition;
 
             // Display the reordering thumb.
             this.OwningGrid.ColumnHeaders.DragColumn = this.OwningColumn;
@@ -953,23 +955,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void OnPointerMove_Reorder(ref bool handled, Pointer pointer, Point pointerPosition, Point pointerPositionHeaders, double distanceFromLeft, double distanceFromRight)
         {
+            Debug.Assert(this.OwningGrid != null, "Expected non-null OwningGrid.");
+
             if (handled)
             {
                 return;
             }
 
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
             int resizeRegionWidth = pointer.PointerDeviceType == PointerDeviceType.Touch ? DATAGRIDCOLUMNHEADER_resizeRegionWidthLoose : DATAGRIDCOLUMNHEADER_resizeRegionWidthStrict;
 
             // Handle entry into reorder mode
-            if (_dragMode == DragMode.PointerPressed &&
-                _dragColumn == null &&
+            if (interactionInfo.DragMode == DragMode.PointerPressed &&
+                interactionInfo.DragColumn == null &&
                 distanceFromRight > resizeRegionWidth &&
                 distanceFromLeft > resizeRegionWidth &&
-                _pressedPointerPositionHeaders.HasValue &&
-                Math.Abs(_pressedPointerPositionHeaders.Value.X - pointerPositionHeaders.X) + Math.Abs(_pressedPointerPositionHeaders.Value.Y - pointerPositionHeaders.Y) > DATAGRIDCOLUMNHEADER_dragThreshold)
+                interactionInfo.PressedPointerPositionHeaders.HasValue &&
+                Math.Abs(interactionInfo.PressedPointerPositionHeaders.Value.X - pointerPositionHeaders.X) + Math.Abs(interactionInfo.PressedPointerPositionHeaders.Value.Y - pointerPositionHeaders.Y) > DATAGRIDCOLUMNHEADER_dragThreshold)
             {
                 DragStartedEventArgs dragStartedEventArgs =
-                    new DragStartedEventArgs(pointerPositionHeaders.X - _lastPointerPositionHeaders.Value.X, pointerPositionHeaders.Y - _lastPointerPositionHeaders.Value.Y);
+                    new DragStartedEventArgs(pointerPositionHeaders.X - interactionInfo.LastPointerPositionHeaders.Value.X, pointerPositionHeaders.Y - interactionInfo.LastPointerPositionHeaders.Value.Y);
                 this.OwningGrid.OnColumnHeaderDragStarted(dragStartedEventArgs);
 
                 handled = CanReorderColumn(this.OwningColumn);
@@ -981,16 +986,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             }
 
             // Handle reorder mode (eg, positioning of the popup)
-            if (_dragMode == DragMode.Reorder && this.OwningGrid.ColumnHeaders.DragIndicator != null)
+            if (interactionInfo.DragMode == DragMode.Reorder && this.OwningGrid.ColumnHeaders.DragIndicator != null)
             {
-                DragDeltaEventArgs dragDeltaEventArgs = new DragDeltaEventArgs(pointerPositionHeaders.X - _lastPointerPositionHeaders.Value.X, pointerPositionHeaders.Y - _lastPointerPositionHeaders.Value.Y);
+                DragDeltaEventArgs dragDeltaEventArgs = new DragDeltaEventArgs(pointerPositionHeaders.X - interactionInfo.LastPointerPositionHeaders.Value.X, pointerPositionHeaders.Y - interactionInfo.LastPointerPositionHeaders.Value.Y);
                 this.OwningGrid.OnColumnHeaderDragDelta(dragDeltaEventArgs);
 
                 // Find header we're hovering over
                 double scrollAmount = 0;
-                DataGridColumn targetColumn = this.GetReorderingTargetColumn(pointerPositionHeaders, !this.OwningColumn.IsFrozen /*scroll*/, out scrollAmount);
+                DataGridColumn targetColumn = GetReorderingTargetColumn(pointerPositionHeaders, !this.OwningColumn.IsFrozen /*scroll*/, out scrollAmount);
 
-                this.OwningGrid.ColumnHeaders.DragIndicatorOffset = pointerPosition.X - _dragStart.Value.X + scrollAmount;
+                this.OwningGrid.ColumnHeaders.DragIndicatorOffset = pointerPosition.X - interactionInfo.DragStart.Value.X + scrollAmount;
                 this.OwningGrid.ColumnHeaders.InvalidateArrange();
 
                 if (this.OwningGrid.ColumnHeaders.DropLocationIndicator != null)
@@ -1016,18 +1021,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void OnPointerMove_Resize(ref bool handled, Point pointerPositionHeaders)
         {
-            if (!handled && _dragMode == DragMode.Resize && _dragColumn != null && _dragStart.HasValue)
+            Debug.Assert(this.OwningGrid != null, "Expected non-null OwningGrid.");
+
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
+
+            if (!handled && interactionInfo.DragMode == DragMode.Resize && interactionInfo.DragColumn != null && interactionInfo.DragStart.HasValue)
             {
-                Debug.Assert(_resizePointerId != 0, "Expected _resizePointerId other than 0.");
+                Debug.Assert(interactionInfo.ResizePointerId != 0, "Expected interactionInfo.ResizePointerId other than 0.");
 
                 // Resize column
-                double pointerDelta = pointerPositionHeaders.X - _dragStart.Value.X;
-                double desiredWidth = _originalWidth + pointerDelta;
+                double pointerDelta = pointerPositionHeaders.X - interactionInfo.DragStart.Value.X;
+                double desiredWidth = interactionInfo.OriginalWidth + pointerDelta;
 
-                desiredWidth = Math.Max(_dragColumn.ActualMinWidth, Math.Min(_dragColumn.ActualMaxWidth, desiredWidth));
-                _dragColumn.Resize(_dragColumn.Width.Value, _dragColumn.Width.UnitType, _dragColumn.Width.DesiredValue, desiredWidth, true);
+                desiredWidth = Math.Max(interactionInfo.DragColumn.ActualMinWidth, Math.Min(interactionInfo.DragColumn.ActualMaxWidth, desiredWidth));
+                interactionInfo.DragColumn.Resize(interactionInfo.DragColumn.Width.Value, interactionInfo.DragColumn.Width.UnitType, interactionInfo.DragColumn.Width.DesiredValue, desiredWidth, true);
 
-                this.OwningGrid.UpdateHorizontalOffset(_originalHorizontalOffset);
+                this.OwningGrid.UpdateHorizontalOffset(interactionInfo.OriginalHorizontalOffset);
 
                 handled = true;
             }
@@ -1035,18 +1044,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void SetOriginalCursor()
         {
-            if (_resizePointerId != 0)
-            {
-                Debug.Assert(_originalCursor != null, "Expected non-null _originalCursor.");
+            Debug.Assert(this.OwningGrid != null, "Expected non-null OwningGrid.");
 
-                Window.Current.CoreWindow.PointerCursor = _originalCursor;
-                _resizePointerId = 0;
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
+
+            if (interactionInfo.ResizePointerId != 0)
+            {
+                Debug.Assert(interactionInfo.OriginalCursor != null, "Expected non-null interactionInfo.OriginalCursor.");
+
+                Window.Current.CoreWindow.PointerCursor = interactionInfo.OriginalCursor;
+                interactionInfo.ResizePointerId = 0;
             }
         }
 
         private void SetResizeCursor(Pointer pointer, Point pointerPosition)
         {
-            if (_dragMode != DragMode.None || this.OwningGrid == null || this.OwningColumn == null)
+            Debug.Assert(this.OwningGrid != null, "Expected non-null OwningGrid.");
+
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
+
+            if (interactionInfo.DragMode != DragMode.None || this.OwningGrid == null || this.OwningColumn == null)
             {
                 return;
             }
@@ -1071,14 +1088,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             {
                 if (Window.Current.CoreWindow.PointerCursor != null && Window.Current.CoreWindow.PointerCursor.Type != CoreCursorType.SizeWestEast)
                 {
-                    _originalCursor = Window.Current.CoreWindow.PointerCursor;
-                    _resizePointerId = pointer.PointerId;
+                    interactionInfo.OriginalCursor = Window.Current.CoreWindow.PointerCursor;
+                    interactionInfo.ResizePointerId = pointer.PointerId;
                     Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.SizeWestEast, 0);
                 }
             }
             else
             {
-                if (_resizePointerId == pointer.PointerId)
+                if (interactionInfo.ResizePointerId == pointer.PointerId)
                 {
                     SetOriginalCursor();
                 }

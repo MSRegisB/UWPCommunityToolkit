@@ -39,7 +39,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
 
         /// <summary>
-        /// Called by GetClassName that gets a human readable name that, in addition to AutomationControlType, 
+        /// Called by GetClassName that gets a human readable name that, in addition to AutomationControlType,
         /// differentiates the control represented by this AutomationPeer.
         /// </summary>
         /// <returns>The string that contains the name.</returns>

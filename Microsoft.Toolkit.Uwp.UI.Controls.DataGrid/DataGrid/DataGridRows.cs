@@ -653,7 +653,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (scrolledHorizontally && this.DisplayData.FirstScrollingSlot <= slot && this.DisplayData.LastScrollingSlot >= slot)
             {
                 // If the slot is displayed and we scrolled horizontally, column virtualization could cause the rows to grow.
-                // As a result we need to force measure on the rows we're displaying and recalculate our First and Last slots 
+                // As a result we need to force measure on the rows we're displaying and recalculate our First and Last slots
                 // so they're accurate
                 foreach (DataGridRow row in this.DisplayData.GetScrollingElements(true /*onlyRows*/))
                 {
@@ -2032,8 +2032,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             else
 #endif
             {
-                // If we're grouping, the GroupLevel needs to be fixed later by methods calling this 
-                // which end up inserting rows. We don't do it here because elements could be inserted 
+                // If we're grouping, the GroupLevel needs to be fixed later by methods calling this
+                // which end up inserting rows. We don't do it here because elements could be inserted
                 // from top to bottom or bottom to up so it's better to do in one pass
                 slotElement = GenerateRow(RowIndexFromSlot(slot), slot);
             }

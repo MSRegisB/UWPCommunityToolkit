@@ -16,8 +16,8 @@ using Windows.UI.Xaml;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Provides data for the <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.LoadingRowDetails" />, <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.UnloadingRowDetails" />, 
-    /// and <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.RowDetailsVisibilityChanged" /> events.
+    /// Provides data for the <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.LoadingRowDetails"/>, <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.UnloadingRowDetails"/>,
+    /// and <see cref="E:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.RowDetailsVisibilityChanged"/> events.
     /// </summary>
     public class DataGridRowDetailsEventArgs : EventArgs
     {
