@@ -450,7 +450,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
                 else if (column.Width.DisplayValue == oldValue && column.Width.DesiredValue > column.Width.DisplayValue)
                 {
-                    // If the column was previously limited by its maximum value but has more room now, 
+                    // If the column was previously limited by its maximum value but has more room now,
                     // attempt to resize the column to its desired width.
                     column.Resize(column.Width.Value,column.Width.UnitType,column.Width.DesiredValue, column.Width.DesiredValue, false);
                 }
@@ -480,7 +480,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
                 else if (column.Width.DisplayValue == oldValue && column.Width.DesiredValue < column.Width.DisplayValue)
                 {
-                    // If the column was previously limited by its minimum value but but can be smaller now, 
+                    // If the column was previously limited by its minimum value but but can be smaller now,
                     // attempt to resize the column to its desired width.
                     column.Resize(column.Width.Value, column.Width.UnitType, column.Width.DesiredValue, column.Width.DesiredValue, false);
                 }
@@ -512,7 +512,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             EnsureHorizontalLayout();
             InvalidateColumnHeadersMeasure();
 
-            if (updatedColumn.IsVisible && 
+            if (updatedColumn.IsVisible &&
                 this.ColumnsInternal.VisibleColumnCount == 1 && this.CurrentColumnIndex == -1)
             {
                 Debug.Assert(this.SelectedIndex == this.DataConnection.IndexOf(this.SelectedItem));
@@ -541,8 +541,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             Debug.Assert(targetColumn != null);
 
-            if (targetColumn.IsVisible && 
-                this.CurrentColumn == targetColumn)
+            if (targetColumn.IsVisible && this.CurrentColumn == targetColumn)
             {
                 // Column of the current cell is made invisible. Trying to move the current cell to a neighbor column. May throw an exception.
                 DataGridColumn dataGridColumn = this.ColumnsInternal.GetNextVisibleColumn(targetColumn);
@@ -591,9 +590,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (newCurrentCellCoordinates.ColumnIndex != -1)
             {
                 Debug.Assert(this.CurrentColumnIndex == -1);
-                SetAndSelectCurrentCell(newCurrentCellCoordinates.ColumnIndex, 
-                                        newCurrentCellCoordinates.Slot, 
-                                        this.ColumnsInternal.VisibleColumnCount == 1 /*forceCurrentCellSelection*/);
+                SetAndSelectCurrentCell(
+                    newCurrentCellCoordinates.ColumnIndex,
+                    newCurrentCellCoordinates.Slot,
+                    this.ColumnsInternal.VisibleColumnCount == 1 /*forceCurrentCellSelection*/);
 
                 if (newDisplayIndex < this.FrozenColumnCountWithFiller)
                 {
@@ -834,8 +834,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Called when a column property changes, and its cells need to 
-        /// adjust that that column change.
+        /// Called when a column property changes, and its cells need to adjust that that column change.
         /// </summary>
         internal void RefreshColumnElements(DataGridColumn dataGridColumn, string propertyName)
         {
@@ -1044,7 +1043,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (!_measured || (_autoGeneratingColumnOperationCount > 0))
             {
-                // Reading the DataType when we generate columns could cause the CollectionView to 
+                // Reading the DataType when we generate columns could cause the CollectionView to
                 // raise a Reset if its Enumeration changed.  In that case, we don't want to generate again.
                 return;
             }
@@ -1799,7 +1798,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         _negHorizontalOffset = 0;
                         double frozenColumnWidth = this.ColumnsInternal.GetVisibleFrozenEdgedColumnsWidth();
-                        // If the entire column cannot be displayed, we want to start showing it from its LeftEdge
+
+                        // If the entire column cannot be displayed, we want to start showing it from its LeftEdge.
                         if (newColumnWidth > (this.CellsWidth - frozenColumnWidth))
                         {
                             this.DisplayData.LastTotallyDisplayedScrollingCol = -1;
@@ -1809,8 +1809,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                     this.DisplayData.FirstDisplayedScrollingCol = newFirstDisplayedScrollingCol.Index;
 
-                    // At this point DisplayData.FirstDisplayedScrollingColumn and LastDisplayedScrollingColumn 
-                    // should be correct
+                    // At this point DisplayData.FirstDisplayedScrollingColumn and LastDisplayedScrollingColumn should be correct.
                     if (change != 0)
                     {
                         UpdateHorizontalOffset(this.HorizontalOffset + change);

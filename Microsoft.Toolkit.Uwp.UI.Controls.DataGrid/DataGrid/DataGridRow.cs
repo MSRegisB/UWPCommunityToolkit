@@ -16,7 +16,6 @@ using System.Reflection;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -1303,7 +1302,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void DataGridRow_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (this.OwningGrid != null && !DataGridColumnHeader.HasUserInteraction)
+            if (this.OwningGrid != null && !this.OwningGrid.HasColumnUserInteraction)
             {
                 bool isDoublePressedElement = this.OwningGrid.LastSinglePressedElement == this;
                 this.OwningGrid.LastSinglePressedElement = isDoublePressedElement ? null : this;

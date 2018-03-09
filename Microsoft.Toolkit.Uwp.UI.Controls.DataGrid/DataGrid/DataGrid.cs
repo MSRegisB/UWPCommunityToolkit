@@ -377,6 +377,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             _propertyValidationResults = new List<ValidationResult>();
             _indeiValidationResults = new List<ValidationResult>();
 
+            this.ColumnHeaderInteractionInfo = new DataGridColumnHeaderInteractionInfo();
             this.DisplayData = new DataGridDisplayData(this);
             this.ColumnsInternal = CreateColumnsInstance();
 
@@ -2200,6 +2201,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        internal DataGridColumnHeaderInteractionInfo ColumnHeaderInteractionInfo
+        {
+            get;
+            set;
+        }
+
         internal DataGridColumnHeadersPresenter ColumnHeaders
         {
             get
@@ -2285,6 +2292,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             get
             {
                 return _negHorizontalOffset;
+            }
+        }
+
+        internal bool HasColumnUserInteraction
+        {
+            get
+            {
+                return this.ColumnHeaderInteractionInfo.HasUserInteraction;
             }
         }
 
@@ -5438,7 +5453,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Exits editing mode without trying to commit or revert the editing, and 
+        /// Exits editing mode without trying to commit or revert the editing, and
         /// without repopulating the edited row's cell.
         /// </summary>
         private void ExitEdit(bool keepFocus)

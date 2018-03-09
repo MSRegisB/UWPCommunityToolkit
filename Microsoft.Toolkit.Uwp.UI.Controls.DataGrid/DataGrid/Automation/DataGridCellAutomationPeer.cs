@@ -363,7 +363,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
 
         IRawElementProviderSimple[] ITableItemProvider.GetRowHeaderItems()
         {
-            if (this.OwningGrid != null && 
+            if (this.OwningGrid != null &&
                 this.OwningGrid.AreRowHeadersVisible &&
                 this.OwningRow.HeaderCell != null)
             {

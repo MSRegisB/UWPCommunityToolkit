@@ -10,8 +10,6 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-using System.Runtime.InteropServices;
-
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
