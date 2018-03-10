@@ -20,6 +20,7 @@
         CanUserSortColumns="@[CanUserSortColumns:Bool:False]"
         CanUserReorderColumns="@[CanUserReorderColumns:Bool:True]"
         CanUserResizeColumns="@[CanUserResizeColumns:Bool:True]">
+      <controls:DataGrid.Columns>
         <controls:DataGridTextColumn Header="Rank" Binding="{Binding Rank}" />
         <controls:DataGridTextColumn Header="Mountain" Binding="{Binding Mountain}" />
         <controls:DataGridTextColumn Header="Height (m)" Binding="{Binding Height_m}" />
@@ -29,6 +30,7 @@
         <controls:DataGridTextColumn Header="Parent" Binding="{Binding Parent_mountain}" />
         <controls:DataGridTextColumn Header="First ascent" Binding="{Binding First_ascent}" />
         <controls:DataGridTextColumn Header="# of ascents" Binding="{Binding Ascents}" />
+      </controls:DataGrid.Columns>
     </controls:DataGrid>
   </Grid>
 </Page>
