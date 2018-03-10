@@ -48,8 +48,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_VALIDATION_SUMMARY
     [TemplatePart(Name = DataGrid.DATAGRID_elementValidationSummary, Type = typeof(ValidationSummary))]
 #endif
-    [TemplatePart(Name = DataGrid.DATAGRID_elementRowsPresenterName, Type = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowsPresenter))]
-    [TemplatePart(Name = DataGrid.DATAGRID_elementColumnHeadersPresenterName, Type = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeadersPresenter))]
+    [TemplatePart(Name = DataGrid.DATAGRID_elementRowsPresenterName, Type = typeof(DataGridRowsPresenter))]
+    [TemplatePart(Name = DataGrid.DATAGRID_elementColumnHeadersPresenterName, Type = typeof(DataGridColumnHeadersPresenter))]
     [TemplatePart(Name = DataGrid.DATAGRID_elementFrozenColumnScrollBarSpacerName, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = DataGrid.DATAGRID_elementHorizontalScrollbarName, Type = typeof(ScrollBar))]
     [TemplatePart(Name = DataGrid.DATAGRID_elementVerticalScrollbarName, Type = typeof(ScrollBar))]
@@ -64,10 +64,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [TemplateVisualState(Name = VisualStates.StateInvalid, GroupName = VisualStates.GroupValidation)]
     [TemplateVisualState(Name = VisualStates.StateValid, GroupName = VisualStates.GroupValidation)]
     [StyleTypedProperty(Property = "CellStyle", StyleTargetType = typeof(DataGridCell))]
-    [StyleTypedProperty(Property = "ColumnHeaderStyle", StyleTargetType = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeader))]
+    [StyleTypedProperty(Property = "ColumnHeaderStyle", StyleTargetType = typeof(DataGridColumnHeader))]
     [StyleTypedProperty(Property = "DragIndicatorStyle", StyleTargetType = typeof(ContentControl))]
     [StyleTypedProperty(Property = "DropLocationIndicatorStyle", StyleTargetType = typeof(Control))]
-    [StyleTypedProperty(Property = "RowHeaderStyle", StyleTargetType = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
+    [StyleTypedProperty(Property = "RowHeaderStyle", StyleTargetType = typeof(DataGridRowHeader))]
     [StyleTypedProperty(Property = "RowStyle", StyleTargetType = typeof(DataGridRow))]
     public partial class DataGrid : Control
     {
@@ -90,6 +90,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const bool DATAGRID_defaultCanUserSortColumns = true;
         private const DataGridRowDetailsVisibilityMode DATAGRID_defaultRowDetailsVisibility = DataGridRowDetailsVisibilityMode.VisibleWhenSelected;
         private const DataGridSelectionMode DATAGRID_defaultSelectionMode = DataGridSelectionMode.Extended;
+        private const ScrollBarVisibility DATAGRID_defaultScrollBarVisibility = ScrollBarVisibility.Auto;
 
         /// <summary>
         /// The default order to use for columns when there is no <see cref="DisplayAttribute.Order"/>
@@ -120,9 +121,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_VALIDATION_SUMMARY
         private ValidationSummary _validationSummary;
 #endif
-        private Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeadersPresenter _columnHeadersPresenter;
+        private UIElement _bottomRightCorner;
+        private DataGridColumnHeadersPresenter _columnHeadersPresenter;
         private ScrollBar _hScrollBar;
-        private Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowsPresenter _rowsPresenter;
+        private DataGridRowsPresenter _rowsPresenter;
         private ScrollBar _vScrollBar;
 
         private byte _autoGeneratingColumnOperationCount;
@@ -188,7 +190,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private bool _isUserSorting; // True if we're currently in a user invoked sorting operation
         private ContentControl _topLeftCornerHeader;
         private ContentControl _topRightCornerHeader;
-        private UIElement _bottomRightCorner;
         private object _uneditedValue; // Represents the original current cell value at the time it enters editing mode.
         private string _updateSourcePath;
         private Dictionary<INotifyDataErrorInfo, string> _validationItems;
@@ -962,37 +963,34 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // Rows
-            if (newValueRows != oldValueRows)
+            if (newValueRows != oldValueRows && dataGrid._rowsPresenter != null)
             {
-                if (dataGrid._rowsPresenter != null)
+                foreach (FrameworkElement element in dataGrid._rowsPresenter.Children)
                 {
-                    foreach (FrameworkElement element in dataGrid._rowsPresenter.Children)
+                    DataGridRow row = element as DataGridRow;
+                    if (row != null)
                     {
-                        DataGridRow row = element as DataGridRow;
-                        if (row != null)
+                        row.EnsureHeaderStyleAndVisibility(null);
+                        if (newValueRows)
                         {
-                            row.EnsureHeaderStyleAndVisibility(null);
-                            if (newValueRows)
-                            {
-                                row.ApplyState(false /*animate*/);
-                                row.EnsureHeaderVisibility();
-                            }
+                            row.ApplyState(false /*animate*/);
+                            row.EnsureHeaderVisibility();
                         }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-                        else
-                        {
-                            DataGridRowGroupHeader rowGroupHeader = element as DataGridRowGroupHeader;
-                            if (rowGroupHeader != null)
-                            {
-                                rowGroupHeader.EnsureHeaderStyleAndVisibility(null);
-                            }
-                        }
-#endif
                     }
-
-                    dataGrid.InvalidateRowHeightEstimate();
-                    dataGrid.InvalidateRowsMeasure(true /*invalidateIndividualElements*/);
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+                    else
+                    {
+                        DataGridRowGroupHeader rowGroupHeader = element as DataGridRowGroupHeader;
+                        if (rowGroupHeader != null)
+                        {
+                            rowGroupHeader.EnsureHeaderStyleAndVisibility(null);
+                        }
+                    }
+#endif
                 }
+
+                dataGrid.InvalidateRowHeightEstimate();
+                dataGrid.InvalidateRowsMeasure(true /*invalidateIndividualElements*/);
             }
 
             // TODO: This isn't necessary if the TopLeftCorner and the TopRightCorner Autosize to 0
@@ -1061,7 +1059,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "HorizontalScrollBarVisibility",
                 typeof(ScrollBarVisibility),
                 typeof(DataGrid),
-                new PropertyMetadata(ScrollBarVisibility.Auto, OnHorizontalScrollBarVisibilityPropertyChanged));
+                new PropertyMetadata(DATAGRID_defaultScrollBarVisibility, OnHorizontalScrollBarVisibilityPropertyChanged));
 
         /// <summary>
         /// HorizontalScrollBarVisibilityProperty property changed handler.
@@ -1070,12 +1068,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="e">DependencyPropertyChangedEventArgs.</param>
         private static void OnHorizontalScrollBarVisibilityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            DataGrid dataGrid = (DataGrid)d;
-            if (!dataGrid.IsHandlerSuspended(e.Property) &&
-                (ScrollBarVisibility)e.NewValue != (ScrollBarVisibility)e.OldValue &&
-                dataGrid._hScrollBar != null)
+            DataGrid dataGrid = d as DataGrid;
+            if (!dataGrid.IsHandlerSuspended(e.Property) && (ScrollBarVisibility)e.NewValue != (ScrollBarVisibility)e.OldValue)
             {
-                dataGrid.InvalidateMeasure();
+                dataGrid.UpdateRowsPresenterManipulationMode(true /*horizontalMode*/, false /*verticalMode*/);
+
+                if (!dataGrid.IsHorizontalScrollbarOverCells && dataGrid._hScrollBar != null)
+                {
+                    dataGrid.InvalidateMeasure();
+                }
             }
         }
 
@@ -1920,7 +1921,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "VerticalScrollBarVisibility",
                 typeof(ScrollBarVisibility),
                 typeof(DataGrid),
-                new PropertyMetadata(ScrollBarVisibility.Auto, OnVerticalScrollBarVisibilityPropertyChanged));
+                new PropertyMetadata(DATAGRID_defaultScrollBarVisibility, OnVerticalScrollBarVisibilityPropertyChanged));
 
         /// <summary>
         /// VerticalScrollBarVisibilityProperty property changed handler.
@@ -1929,12 +1930,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="e">DependencyPropertyChangedEventArgs.</param>
         private static void OnVerticalScrollBarVisibilityPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            DataGrid dataGrid = (DataGrid)d;
-            if (!dataGrid.IsHandlerSuspended(e.Property) &&
-                (ScrollBarVisibility)e.NewValue != (ScrollBarVisibility)e.OldValue &&
-                dataGrid._vScrollBar != null)
+            DataGrid dataGrid = d as DataGrid;
+            if (!dataGrid.IsHandlerSuspended(e.Property) && (ScrollBarVisibility)e.NewValue != (ScrollBarVisibility)e.OldValue)
             {
-                dataGrid.InvalidateMeasure();
+                dataGrid.UpdateRowsPresenterManipulationMode(false /*horizontalMode*/, true /*verticalMode*/);
+
+                if (!dataGrid.IsVerticalScrollbarOverCells && dataGrid._vScrollBar != null)
+                {
+                    dataGrid.InvalidateMeasure();
+                }
             }
         }
 
@@ -2576,6 +2580,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        internal double VerticalOffset
+        {
+            get
+            {
+                return _verticalOffset;
+            }
+        }
+
         internal ScrollBar VerticalScrollBar
         {
             get
@@ -3014,6 +3026,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _rowsPresenter.OwningGrid = this;
                 InvalidateRowHeightEstimate();
                 UpdateRowDetailsHeightEstimate();
+                UpdateRowsPresenterManipulationMode(true /*horizontalMode*/, true /*verticalMode*/);
             }
 
             _frozenColumnScrollBarSpacer = GetTemplateChild(DATAGRID_elementFrozenColumnScrollBarSpacerName) as FrameworkElement;
@@ -3259,7 +3272,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (!e.Handled)
             {
                 PointerPoint pointerPoint = e.GetCurrentPoint(this);
-                e.Handled = ProcessMouseWheelScroll(pointerPoint.Properties.MouseWheelDelta, pointerPoint.Properties.IsHorizontalMouseWheel);
+                bool isForHorizontalScroll = pointerPoint.Properties.IsHorizontalMouseWheel;
+
+                if ((isForHorizontalScroll && this.HorizontalScrollBarVisibility == ScrollBarVisibility.Disabled) ||
+                    (!isForHorizontalScroll && this.VerticalScrollBarVisibility == ScrollBarVisibility.Disabled))
+                {
+                    return;
+                }
+
+                double offsetDelta = -pointerPoint.Properties.MouseWheelDelta / DATAGRID_mouseWheelDeltaDivider;
+                if (isForHorizontalScroll)
+                {
+                    offsetDelta *= -1.0;
+                }
+
+                e.Handled = ProcessScrollOffsetDelta(offsetDelta, isForHorizontalScroll);
             }
         }
 
@@ -3677,6 +3704,61 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
             return this.ProcessRightKey(shift, ctrl);
+        }
+
+        internal bool ProcessScrollOffsetDelta(double offsetDelta, bool isForHorizontalScroll)
+        {
+            if (this.IsEnabled && this.DisplayData.NumDisplayedScrollingElements > 0)
+            {
+                if (isForHorizontalScroll)
+                {
+                    double newHorizontalOffset = this.HorizontalOffset + offsetDelta;
+                    if (newHorizontalOffset < 0)
+                    {
+                        newHorizontalOffset = 0;
+                    }
+
+                    double maxHorizontalOffset = Math.Max(0, this.ColumnsInternal.VisibleEdgedColumnsWidth - this.CellsWidth);
+                    if (newHorizontalOffset > maxHorizontalOffset)
+                    {
+                        newHorizontalOffset = maxHorizontalOffset;
+                    }
+
+                    if (newHorizontalOffset != this.HorizontalOffset)
+                    {
+                        UpdateHorizontalOffset(newHorizontalOffset);
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (offsetDelta < 0)
+                    {
+                        offsetDelta = Math.Max(-_verticalOffset, offsetDelta);
+                    }
+                    else if (offsetDelta > 0)
+                    {
+                        if (_vScrollBar != null && this.VerticalScrollBarVisibility == ScrollBarVisibility.Visible)
+                        {
+                            offsetDelta = Math.Min(Math.Max(0, _vScrollBar.Maximum - _verticalOffset), offsetDelta);
+                        }
+                        else
+                        {
+                            double maximum = this.EdgedRowsHeightCalculated - this.CellsHeight;
+                            offsetDelta = Math.Min(Math.Max(0, maximum - _verticalOffset), offsetDelta);
+                        }
+                    }
+
+                    if (offsetDelta != 0)
+                    {
+                        this.DisplayData.PendingVerticalScrollHeight = offsetDelta;
+                        InvalidateRowsMeasure(false /*invalidateIndividualRows*/);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -4882,7 +4964,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // We need to focus the DataGrid in case the focused element gets removed when we end edit.
-            if ((_editingColumnIndex == -1 || (Focus() && EndCellEdit(DataGridEditAction.Commit, true, true, true)))
+            if ((_editingColumnIndex == -1 || (this.Focus(Windows.UI.Xaml.FocusState.Programmatic) && EndCellEdit(DataGridEditAction.Commit, true, true, true)))
                 && e.Item != null && e.Target != null && _validationSummary.Errors.Contains(e.Item))
             {
                 DataGridCell cell = e.Target.Control as DataGridCell;
@@ -6384,63 +6466,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return _successfullyUpdatedSelection;
         }
 
-        private bool ProcessMouseWheelScroll(int delta, bool isForHorizontalScroll)
-        {
-            if (this.IsEnabled && this.DisplayData.NumDisplayedScrollingElements > 0)
-            {
-                double offsetDelta = -delta / DATAGRID_mouseWheelDeltaDivider;
-
-                if (isForHorizontalScroll)
-                {
-                    double newHorizontalOffset = this.HorizontalOffset - offsetDelta;
-                    if (newHorizontalOffset < 0)
-                    {
-                        newHorizontalOffset = 0;
-                    }
-
-                    double maxHorizontalOffset = Math.Max(0, this.ColumnsInternal.VisibleEdgedColumnsWidth - this.CellsWidth);
-                    if (newHorizontalOffset > maxHorizontalOffset)
-                    {
-                        newHorizontalOffset = maxHorizontalOffset;
-                    }
-
-                    if (newHorizontalOffset != this.HorizontalOffset)
-                    {
-                        UpdateHorizontalOffset(newHorizontalOffset);
-                        return true;
-                    }
-                }
-                else
-                {
-                    if (offsetDelta < 0)
-                    {
-                        offsetDelta = Math.Max(-_verticalOffset, offsetDelta);
-                    }
-                    else if (offsetDelta > 0)
-                    {
-                        if (_vScrollBar != null && this.VerticalScrollBarVisibility == ScrollBarVisibility.Visible)
-                        {
-                            offsetDelta = Math.Min(Math.Max(0, _vScrollBar.Maximum - _verticalOffset), offsetDelta);
-                        }
-                        else
-                        {
-                            double maximum = this.EdgedRowsHeightCalculated - this.CellsHeight;
-                            offsetDelta = Math.Min(Math.Max(0, maximum - _verticalOffset), offsetDelta);
-                        }
-                    }
-
-                    if (offsetDelta != 0)
-                    {
-                        this.DisplayData.PendingVerticalScrollHeight = offsetDelta;
-                        InvalidateRowsMeasure(false /*invalidateIndividualRows*/);
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
         private bool ProcessNextKey(bool shift, bool ctrl)
         {
             DataGridColumn dataGridColumn = this.ColumnsInternal.FirstVisibleNonFillerColumn;
@@ -7379,6 +7404,51 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     UpdateDisplayedRows(this.DisplayData.FirstScrollingSlot, this.CellsHeight);
                     InvalidateRowsMeasure(false /*invalidateIndividualElements*/);
                 }
+            }
+        }
+
+        private void UpdateRowsPresenterManipulationMode(bool horizontalMode, bool verticalMode)
+        {
+            if (_rowsPresenter != null)
+            {
+                ManipulationModes manipulationMode = _rowsPresenter.ManipulationMode;
+
+                if (horizontalMode)
+                {
+                    if (this.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled)
+                    {
+                        manipulationMode |= ManipulationModes.TranslateX | ManipulationModes.TranslateInertia;
+                    }
+                    else
+                    {
+                        manipulationMode &= ~(ManipulationModes.TranslateX | ManipulationModes.TranslateRailsX);
+                    }
+                }
+
+                if (verticalMode)
+                {
+                    if (this.VerticalScrollBarVisibility != ScrollBarVisibility.Disabled)
+                    {
+                        manipulationMode |= ManipulationModes.TranslateY | ManipulationModes.TranslateInertia;
+                    }
+                    else
+                    {
+                        manipulationMode &= ~(ManipulationModes.TranslateY | ManipulationModes.TranslateRailsY);
+                    }
+                }
+
+                if ((manipulationMode & (ManipulationModes.TranslateX | ManipulationModes.TranslateY)) == (ManipulationModes.TranslateX | ManipulationModes.TranslateY))
+                {
+                    manipulationMode |= ManipulationModes.TranslateRailsX | ManipulationModes.TranslateRailsY;
+                }
+
+                if ((manipulationMode & (ManipulationModes.TranslateX | ManipulationModes.TranslateRailsX | ManipulationModes.TranslateY | ManipulationModes.TranslateRailsY)) ==
+                    ManipulationModes.None)
+                {
+                    manipulationMode &= ~ManipulationModes.TranslateInertia;
+                }
+
+                _rowsPresenter.ManipulationMode = manipulationMode;
             }
         }
 

@@ -17,6 +17,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
@@ -27,6 +28,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
     /// </summary>
     public sealed class DataGridRowsPresenter : Panel
     {
+        private double _preManipulationHorizontalOffset;
+        private double _preManipulationVerticalOffset;
+
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="DataGridRowsPresenter"/> class.
+        /// </summary>
+        public DataGridRowsPresenter()
+        {
+            this.ManipulationStarting += new ManipulationStartingEventHandler(DataGridRowsPresenter_ManipulationStarting);
+            this.ManipulationStarted += new ManipulationStartedEventHandler(DataGridRowsPresenter_ManipulationStarted);
+            this.ManipulationDelta += new ManipulationDeltaEventHandler(DataGridRowsPresenter_ManipulationDelta);
+        }
+
         internal DataGrid OwningGrid
         {
             get;
@@ -170,6 +184,35 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new DataGridRowsPresenterAutomationPeer(this);
+        }
+
+        private void DataGridRowsPresenter_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
+        {
+            if (this.OwningGrid != null)
+            {
+                Debug.Assert(this.OwningGrid.IsEnabled, "Expected OwningGrid.IsEnabled is true.");
+
+                _preManipulationHorizontalOffset = this.OwningGrid.HorizontalOffset;
+                _preManipulationVerticalOffset = this.OwningGrid.VerticalOffset;
+            }
+        }
+
+        private void DataGridRowsPresenter_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType != Windows.Devices.Input.PointerDeviceType.Touch)
+            {
+                e.Complete();
+            }
+        }
+
+        private void DataGridRowsPresenter_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (this.OwningGrid != null)
+            {
+                e.Handled =
+                    this.OwningGrid.ProcessScrollOffsetDelta(_preManipulationHorizontalOffset - e.Cumulative.Translation.X - this.OwningGrid.HorizontalOffset, true /*isForHorizontalScroll*/) ||
+                    this.OwningGrid.ProcessScrollOffsetDelta(_preManipulationVerticalOffset - e.Cumulative.Translation.Y - this.OwningGrid.VerticalOffset, false /*isForHorizontalScroll*/);
+            }
         }
 
 #if DEBUG
