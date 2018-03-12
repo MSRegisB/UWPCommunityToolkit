@@ -5360,10 +5360,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #if FEATURE_VALIDATION
                     bindingData.Element.BindingValidationError += new EventHandler<ValidationErrorEventArgs>(EditingElement_BindingValidationError);
 #endif
-                    bindingData.BindingExpression.UpdateSource();
+                    try
+                    {
+                        bindingData.BindingExpression.UpdateSource();
+                    }
+                    finally
+                    {
 #if FEATURE_VALIDATION
                     bindingData.Element.BindingValidationError -= new EventHandler<ValidationErrorEventArgs>(EditingElement_BindingValidationError);
 #endif
+                    }
                 }
 
                 // Re-validate

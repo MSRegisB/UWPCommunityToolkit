@@ -277,8 +277,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 string uneditedText = textBox.Text;
                 int len = uneditedText.Length;
                 KeyRoutedEventArgs keyEventArgs = editingEventArgs as KeyRoutedEventArgs;
-                bool isF2Key = keyEventArgs.Key == Windows.System.VirtualKey.F2;
-                if (keyEventArgs != null && isF2Key)
+                if (keyEventArgs != null && keyEventArgs.Key == Windows.System.VirtualKey.F2)
                 {
                     // Put caret at the end of the text
                     textBox.Select(len, len);
