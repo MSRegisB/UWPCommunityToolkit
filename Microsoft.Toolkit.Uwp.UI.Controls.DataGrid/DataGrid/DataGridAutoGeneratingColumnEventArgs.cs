@@ -21,7 +21,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     public class DataGridAutoGeneratingColumnEventArgs : CancelEventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridAutoGeneratingColumnEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridAutoGeneratingColumnEventArgs"/> class.
         /// </summary>
         /// <param name="propertyName">
         /// The name of the property bound to the generated column.

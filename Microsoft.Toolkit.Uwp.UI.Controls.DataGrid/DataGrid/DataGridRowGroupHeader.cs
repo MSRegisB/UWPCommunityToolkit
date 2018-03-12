@@ -30,7 +30,7 @@ using Windows.UI.Xaml.Media;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Represents the header of a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> row group.
+    /// Represents the header of a <see cref="DataGrid"/> row group.
     /// </summary>
     [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRoot, Type = typeof(Panel))]
     [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRowHeader, Type = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
@@ -56,7 +56,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private double _totalIndent;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRowGroupHeader"/> class.
+        /// Initializes a new instance of the <see cref="DataGridRowGroupHeader"/> class.
         /// </summary>
         public DataGridRowGroupHeader()
         {

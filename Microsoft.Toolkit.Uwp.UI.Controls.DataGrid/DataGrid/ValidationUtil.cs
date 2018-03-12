@@ -66,7 +66,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// </summary>
         /// <param name="collection">ValidationResults to search through</param>
         /// <param name="target">ValidationResult to search for</param>
-        /// <returns></returns>
+        /// <returns>True when the collection contains an equivalent ValidationResult.</returns>
         public static bool ContainsEqualValidationResult(this ICollection<ValidationResult> collection, ValidationResult target)
         {
             return collection.FindEqualValidationResult(target) != null;
@@ -140,7 +140,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// <param name="dataItem">Only return Bindings with a context element equal to this object</param>
         /// <param name="twoWayOnly">If true, only returns TwoWay Bindings</param>
         /// <param name="useBlockList">If true, ignores elements not typically used for input</param>
-        /// <param name="searchChildren">If true, only returns TwoWay Bindings</param>
+        /// <param name="searchChildren">If true, searches through the children</param>
         /// <param name="excludedTypes">The Binding search will skip all of these Types</param>
         /// <returns>List of BindingInfo for every Binding found</returns>
         public static List<BindingInfo> GetBindingInfo(this FrameworkElement element, object dataItem, bool twoWayOnly, bool useBlockList, bool searchChildren, params Type[] excludedTypes)
@@ -269,7 +269,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         /// <param name="dataItem">Target DomainContext</param>
         /// <param name="twoWayOnly">If true, only returns TwoWay Bindings</param>
         /// <param name="useBlockList">If true, ignores elements not typically used for input</param>
-        /// <returns></returns>
+        /// <returns>List of active bindings on the specified FrameworkElement.</returns>
         private static List<BindingInfo> GetBindingInfoOfSingleElement(this FrameworkElement element, object inheritedDataContext, object dataItem, bool twoWayOnly, bool useBlockList)
         {
             // Now see which of the possible dependency properties are being used

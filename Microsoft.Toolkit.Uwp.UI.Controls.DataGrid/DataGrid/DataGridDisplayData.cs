@@ -302,7 +302,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             else
             {
                 // The slot should be adjacent to the other slots being displayed
-                Debug.Assert(slot >= _owner.GetPreviousVisibleSlot(this.FirstScrollingSlot) && slot <= _owner.GetNextVisibleSlot(this.LastScrollingSlot));
+                Debug.Assert(slot >= _owner.GetPreviousVisibleSlot(this.FirstScrollingSlot), "Expected slot greater than or equal to _owner.GetPreviousVisibleSlot(this.FirstScrollingSlot).");
+                Debug.Assert(slot <= _owner.GetNextVisibleSlot(this.LastScrollingSlot), "Expected slot smaller than or equal to _owner.GetNextVisibleSlot(this.LastScrollingSlot).");
                 if (updateSlotInformation)
                 {
                     if (slot < this.FirstScrollingSlot)

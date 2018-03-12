@@ -167,7 +167,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private FrameworkElement _rootElement;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader"/> class.
+        /// Initializes a new instance of the <see cref="Primitives.DataGridRowHeader"/> class.
         /// </summary>
         public DataGridRowHeader()
         {

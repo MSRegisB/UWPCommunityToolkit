@@ -21,7 +21,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     public class DataGridBeginningEditEventArgs : CancelEventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridBeginningEditEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridBeginningEditEventArgs"/> class.
         /// </summary>
         /// <param name="column">
         /// The column that contains the cell to be edited.

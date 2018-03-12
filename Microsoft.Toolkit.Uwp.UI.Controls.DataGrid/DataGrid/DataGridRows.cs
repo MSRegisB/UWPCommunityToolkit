@@ -29,6 +29,9 @@ using Windows.UI.Xaml.Media;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
+    /// <summary>
+    /// Control to represent data in columns and rows.
+    /// </summary>
     public partial class DataGrid
     {
         internal bool AreRowBottomGridLinesRequired
@@ -85,9 +88,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     return 0;
                 }
 
-                Debug.Assert(this.DisplayData.LastScrollingSlot >= 0);
-                Debug.Assert(_verticalOffset >= 0);
-                Debug.Assert(this.NegVerticalOffset >= 0);
+                Debug.Assert(this.DisplayData.LastScrollingSlot >= 0, "Expected positive DisplayData.LastScrollingSlot.");
+                Debug.Assert(_verticalOffset >= 0, "Expected positive _verticalOffset.");
+                Debug.Assert(this.NegVerticalOffset >= 0, "Expected positive NegVerticalOffset.");
 
                 // Height of all rows above the viewport
                 double totalRowsHeight = _verticalOffset - this.NegVerticalOffset;
@@ -123,7 +126,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 // Calculate estimates for what's beyond the viewport
                 if (this.VisibleSlotCount > this.DisplayData.NumDisplayedScrollingElements)
                 {
-                    int remainingRowCount = (this.SlotCount - this.DisplayData.LastScrollingSlot - _collapsedSlotsTable.GetIndexCount(this.DisplayData.LastScrollingSlot, this.SlotCount - 1) - 1);
+                    int remainingRowCount = this.SlotCount - this.DisplayData.LastScrollingSlot - _collapsedSlotsTable.GetIndexCount(this.DisplayData.LastScrollingSlot, this.SlotCount - 1) - 1;
 
                     // Add estimation for the cell heights of all rows beyond our viewport
                     totalRowsHeight += this.RowHeightEstimate * remainingRowCount;
@@ -147,7 +150,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="collapseAllSubgroups">Set to true to collapse all Subgroups</param>
         public void CollapseRowGroup(CollectionViewGroup collectionViewGroup, bool collapseAllSubgroups)
         {
-            if (this.WaitForLostFocus(delegate { this.CollapseRowGroup(collectionViewGroup, collapseAllSubgroups); }) ||
+            if (this.WaitForLostFocus(() => { this.CollapseRowGroup(collectionViewGroup, collapseAllSubgroups); }) ||
                 collectionViewGroup == null || !this.CommitEdit())
             {
                 return;
@@ -175,7 +178,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="expandAllSubgroups">Set to true to expand all Subgroups</param>
         public void ExpandRowGroup(CollectionViewGroup collectionViewGroup, bool expandAllSubgroups)
         {
-            if (this.WaitForLostFocus(delegate { this.ExpandRowGroup(collectionViewGroup, expandAllSubgroups); }) ||
+            if (this.WaitForLostFocus(() => { this.ExpandRowGroup(collectionViewGroup, expandAllSubgroups); }) ||
                 collectionViewGroup == null || !this.CommitEdit())
             {
                 if (collectionViewGroup == null || !this.CommitEdit())
@@ -479,7 +482,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             Debug.Assert(groupHeader.RowGroupInfo.CollectionViewGroup.ItemCount > 0);
 
-            if (this.WaitForLostFocus(delegate { this.OnRowGroupHeaderToggled(groupHeader, newVisibility, setCurrent); }) || !this.CommitEdit())
+            if (this.WaitForLostFocus(() => { this.OnRowGroupHeaderToggled(groupHeader, newVisibility, setCurrent); }) || !this.CommitEdit())
             {
                 return;
             }
@@ -648,7 +651,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal bool ScrollSlotIntoView(int slot, bool scrolledHorizontally)
         {
-            Debug.Assert(_collapsedSlotsTable.Contains(slot) || !IsSlotOutOfBounds(slot));
+            Debug.Assert(_collapsedSlotsTable.Contains(slot) || !IsSlotOutOfBounds(slot), "Expected _collapsedSlotsTable.Contains(slot) is true or IsSlotOutOfBounds(slot) is false.");
 
             if (scrolledHorizontally && this.DisplayData.FirstScrollingSlot <= slot && this.DisplayData.LastScrollingSlot >= slot)
             {
@@ -695,7 +698,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 if (this.DisplayData.FirstScrollingSlot - slot > 1)
                 {
                     // TODO: This will likely discard and create a small number of the same rows so we could probably
-                    // optimize this.  The optimization would only affect the PageUp key
+                    // optimize this.  The optimization would only affect the PageUp key.
                     ResetDisplayedRows();
                 }
 
@@ -706,21 +709,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 // Scroll down to the new row so it's entirely displayed.  If the height of the row
                 // is greater than the height of the DataGrid, then show the top of the row at the top
-                // of the grid
+                // of the grid.
                 firstFullSlot = this.DisplayData.LastScrollingSlot;
-                // Figure out how much of the last row is cut off
+
+                // Figure out how much of the last row is cut off.
                 double rowHeight = GetExactSlotElementHeight(this.DisplayData.LastScrollingSlot);
                 double availableHeight = this.AvailableSlotElementRoom + rowHeight;
                 if (DoubleUtil.AreClose(rowHeight, availableHeight))
                 {
                     if (this.DisplayData.LastScrollingSlot == slot)
                     {
-                        // We're already at the very bottom so we don't need to scroll down further
+                        // We're already at the very bottom so we don't need to scroll down further.
                         return true;
                     }
                     else
                     {
-                        // We're already showing the entire last row so don't count it as part of the delta
+                        // We're already showing the entire last row so don't count it as part of the delta.
                         firstFullSlot++;
                     }
                 }
@@ -730,14 +734,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     deltaY += rowHeight - availableHeight;
                 }
 
-                // sum up the height of the rest of the full rows
+                // sum up the height of the rest of the full rows.
                 if (slot >= firstFullSlot)
                 {
                     deltaY += GetSlotElementsHeight(firstFullSlot, slot);
                 }
 
                 // If the first row we're displaying is no longer adjacent to the rows we have
-                // simply discard the ones we have
+                // simply discard the ones we have.
                 if (slot - this.DisplayData.LastScrollingSlot > 1)
                 {
                     ResetDisplayedRows();
@@ -745,7 +749,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 if (DoubleUtil.GreaterThanOrClose(GetExactSlotElementHeight(slot), this.CellsHeight))
                 {
-                    // The entire row won't fit in the DataGrid so we start showing it from the top
+                    // The entire row won't fit in the DataGrid so we start showing it from the top.
                     this.NegVerticalOffset = 0;
                     UpdateDisplayedRows(slot, this.CellsHeight);
                 }
@@ -758,12 +762,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             _verticalOffset += deltaY;
             if (_verticalOffset < 0 || this.DisplayData.FirstScrollingSlot == 0)
             {
-                // We scrolled too far because a row's height was larger than its approximation
+                // We scrolled too far because a row's height was larger than its approximation.
                 _verticalOffset = this.NegVerticalOffset;
             }
 
-            // TODO in certain cases (eg, variable row height), this may not be true
-            Debug.Assert(DoubleUtil.LessThanOrClose(this.NegVerticalOffset, _verticalOffset));
+            // TODO: in certain cases (eg, variable row height), this may not be true
+            Debug.Assert(DoubleUtil.LessThanOrClose(this.NegVerticalOffset, _verticalOffset), "Expected NegVerticalOffset is less than or close to _verticalOffset.");
 
             SetVerticalOffset(_verticalOffset);
 
@@ -775,14 +779,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void SetRowSelection(int slot, bool isSelected, bool setAnchorSlot)
         {
-            Debug.Assert(!(!isSelected && setAnchorSlot));
-            Debug.Assert(!IsSlotOutOfSelectionBounds(slot));
+            Debug.Assert(isSelected || !setAnchorSlot, "Expected isSelected is true or setAnchorSlot is false.");
+            Debug.Assert(!IsSlotOutOfSelectionBounds(slot), "Expected IsSlotOutOfSelectionBounds(slot) is false.");
             _noSelectionChangeCount++;
             try
             {
                 if (this.SelectionMode == DataGridSelectionMode.Single && isSelected)
                 {
-                    Debug.Assert(_selectedItems.Count <= 1);
+                    Debug.Assert(_selectedItems.Count <= 1, "Expected _selectedItems.Count smaller than or equal to 1.");
                     if (_selectedItems.Count > 0)
                     {
                         int currentlySelectedSlot = _selectedItems.GetIndexes().First();
@@ -812,16 +816,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         // For now, all scenarios are for isSelected == true.
-        internal void SetRowsSelection(int startSlot, int endSlot /*, bool isSelected*/)
+        internal void SetRowsSelection(int startSlot, int endSlot, bool isSelected = true)
         {
-            Debug.Assert(startSlot >= 0 && startSlot < this.SlotCount);
-            Debug.Assert(endSlot >= 0 && endSlot < this.SlotCount);
-            Debug.Assert(startSlot <= endSlot);
+            Debug.Assert(startSlot >= 0, "Expected startSlot is positive.");
+            Debug.Assert(startSlot < this.SlotCount, "Expected startSlot is smaller than SlotCount.");
+            Debug.Assert(endSlot >= 0, "Expected endSlot is positive.");
+            Debug.Assert(endSlot < this.SlotCount, "Expected endSlot is smaller than SlotCount.");
+            Debug.Assert(startSlot <= endSlot, "Expected startSlot is smaller than or equal to endSlot.");
 
             _noSelectionChangeCount++;
             try
             {
-                if (/*isSelected &&*/ !_selectedItems.ContainsAll(startSlot, endSlot))
+                if (isSelected && !_selectedItems.ContainsAll(startSlot, endSlot))
                 {
                     // At least one row gets selected
                     SelectSlots(startSlot, endSlot, true);
@@ -867,14 +873,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridRow row = element as DataGridRow;
             if (row != null)
             {
-                Debug.Assert(row.OwningGrid == this);
-                Debug.Assert(row.Cells.Count == this.ColumnsItemsInternal.Count);
+                Debug.Assert(row.OwningGrid == this, "Expected row.OwningGrid equals this DataGrid.");
+                Debug.Assert(row.Cells.Count == this.ColumnsItemsInternal.Count, "Expected row.Cells.Count equals this.ColumnsItemsInternal.Count.");
 
                 int columnIndex = 0;
                 foreach (DataGridCell dataGridCell in row.Cells)
                 {
-                    Debug.Assert(dataGridCell.OwningRow == row);
-                    Debug.Assert(dataGridCell.OwningColumn == this.ColumnsItemsInternal[columnIndex]);
+                    Debug.Assert(dataGridCell.OwningRow == row, "Expected dataGridCell.OwningRow equals row.");
+                    Debug.Assert(dataGridCell.OwningColumn == this.ColumnsItemsInternal[columnIndex], "Expected dataGridCell.OwningColumn equals this.ColumnsItemsInternal[columnIndex].");
                     columnIndex++;
                 }
             }
@@ -2046,7 +2052,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             // We can only support creating new rows that are adjacent to the currently visible rows
             // since they need to be added to the visual tree for us to Measure them.
-            Debug.Assert(this.DisplayData.FirstScrollingSlot == -1 || slot >= GetPreviousVisibleSlot(this.DisplayData.FirstScrollingSlot) && slot <= GetNextVisibleSlot(this.DisplayData.LastScrollingSlot));
+            Debug.Assert(
+                this.DisplayData.FirstScrollingSlot == -1 || (slot >= GetPreviousVisibleSlot(this.DisplayData.FirstScrollingSlot) && slot <= GetNextVisibleSlot(this.DisplayData.LastScrollingSlot)),
+                "Expected DisplayData.FirstScrollingSlot equals -1 or (slot greater than or equal to GetPreviousVisibleSlot(DisplayData.FirstScrollingSlot) and slot smaller than or equal to GetNextVisibleSlot(DisplayData.LastScrollingSlot)).");
             Debug.Assert(element != null, "Expected non-null element.");
 
             if (_rowsPresenter != null)
@@ -2979,14 +2987,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     _verticalOffset = newVerticalOffset;
                 }
 
-                Debug.Assert(!(_verticalOffset == 0 && this.NegVerticalOffset == 0 && this.DisplayData.FirstScrollingSlot > 0));
+                Debug.Assert(
+                    _verticalOffset != 0 || this.NegVerticalOffset != 0 || this.DisplayData.FirstScrollingSlot <= 0,
+                    "Expected _verticalOffset other than 0 or this.NegVerticalOffset other than 0 or this.DisplayData.FirstScrollingSlot smaller than or equal to 0.");
 
                 SetVerticalOffset(_verticalOffset);
 
                 this.DisplayData.FullyRecycleElements();
 
-                Debug.Assert(DoubleUtil.GreaterThanOrClose(this.NegVerticalOffset, 0));
-                Debug.Assert(DoubleUtil.GreaterThanOrClose(_verticalOffset, this.NegVerticalOffset));
+                Debug.Assert(DoubleUtil.GreaterThanOrClose(this.NegVerticalOffset, 0), "Expected NegVerticalOffset greater than or close to 0.");
+                Debug.Assert(DoubleUtil.GreaterThanOrClose(_verticalOffset, this.NegVerticalOffset), "Expected _verticalOffset greater than or close to NegVerticalOffset.");
 
                 DataGridAutomationPeer peer = DataGridAutomationPeer.FromElement(this) as DataGridAutomationPeer;
                 if (peer != null)
@@ -3061,7 +3071,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (_focusedRow != null)
             {
                 ResetFocusedRow();
-                Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                Focus(FocusState.Programmatic);
             }
 
             if (_rowsPresenter != null)

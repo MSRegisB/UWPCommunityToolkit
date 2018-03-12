@@ -28,7 +28,7 @@ using Windows.UI.Xaml.Shapes;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> row.
+    /// Represents a <see cref="DataGrid"/> row.
     /// </summary>
     [TemplatePart(Name = DATAGRIDROW_elementBottomGridLine, Type = typeof(Rectangle))]
     [TemplatePart(Name = DATAGRIDROW_elementCells, Type = typeof(DataGridCellsPresenter))]
@@ -168,7 +168,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private int? _pointerOverColumnIndex;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/> class.
+        /// Initializes a new instance of the <see cref="DataGridRow"/> class.
         /// </summary>
         public DataGridRow()
         {
@@ -728,10 +728,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Arranges the content of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/>.
+        /// Arranges the content of the <see cref="DataGridRow"/>.
         /// </summary>
         /// <returns>
-        /// The actual size used by the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/>.
+        /// The actual size used by the <see cref="DataGridRow"/>.
         /// </returns>
         /// <param name="finalSize">
         /// The final area within the parent that this element should use to arrange itself and its children.
@@ -785,14 +785,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Measures the children of a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/> to
+        /// Measures the children of a <see cref="DataGridRow"/> to
         /// prepare for arranging them during the <see cref="M:System.Windows.FrameworkElement.ArrangeOverride(System.Windows.Size)"/> pass.
         /// </summary>
         /// <param name="availableSize">
         /// The available size that this element can give to child elements. Indicates an upper limit that child elements should not exceed.
         /// </param>
         /// <returns>
-        /// The size that the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRow"/> determines it needs during layout, based on its calculations of child object allocated sizes.
+        /// The size that the <see cref="DataGridRow"/> determines it needs during layout, based on its calculations of child object allocated sizes.
         /// </returns>
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -910,7 +910,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Creates AutomationPeer (<see cref="UIElement.OnCreateAutomationPeer"/>)
         /// </summary>
-        /// <returns>An automation peer for this <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRow"/>.</returns>
+        /// <returns>An automation peer for this <see cref="DataGridRow"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new DataGridRowAutomationPeer(this);

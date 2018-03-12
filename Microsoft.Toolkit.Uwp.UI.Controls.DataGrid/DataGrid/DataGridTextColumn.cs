@@ -23,7 +23,7 @@ using Windows.UI.Xaml.Media;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column that hosts textual content in its cells.
+    /// Represents a <see cref="DataGrid"/> column that hosts textual content in its cells.
     /// </summary>
     [StyleTypedProperty(Property = "ElementStyle", StyleTargetType = typeof(TextBlock))]
     [StyleTypedProperty(Property = "EditingElementStyle", StyleTargetType = typeof(TextBox))]
@@ -41,7 +41,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private Brush _foreground;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridTextColumn"/> class.
+        /// Initializes a new instance of the <see cref="DataGridTextColumn"/> class.
         /// </summary>
         public DataGridTextColumn()
         {

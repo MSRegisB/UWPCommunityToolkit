@@ -51,7 +51,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     }
 
     /// <summary>
-    /// Represents the lengths of elements within the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> control.
+    /// Represents the lengths of elements within the <see cref="DataGrid"/> control.
     /// </summary>
     [Windows.Foundation.Metadata.CreateFromString(MethodName = "Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength.ConvertFromString")]
     public struct DataGridLength : IEquatable<DataGridLength>
@@ -73,7 +73,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         internal const double DATAGRIDLENGTH_DefaultValue = 1.0;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> struct based on a numerical value.
+        /// Initializes a new instance of the <see cref="DataGridLength"/> struct based on a numerical value.
         /// </summary>
         /// <param name="value">numerical length</param>
         public DataGridLength(double value)
@@ -82,7 +82,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> struct based on a numerical value and a type.
+        /// Initializes a new instance of the <see cref="DataGridLength"/> struct based on a numerical value and a type.
         /// </summary>
         /// <param name="value">The value to hold.</param>
         /// <param name="type">The unit of <c>value</c>.</param>
@@ -102,7 +102,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> struct based on a numerical value and a unit.
+        /// Initializes a new instance of the <see cref="DataGridLength"/> struct based on a numerical value and a unit.
         /// </summary>
         /// <param name="value">The value to hold.</param>
         /// <param name="type">The unit of <c>value</c>.</param>
@@ -171,10 +171,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> structure that represents the standard automatic sizing mode.
+        /// Gets a <see cref="DataGridLength"/> structure that represents the standard automatic sizing mode.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> structure that represents the standard automatic sizing mode.
+        /// A <see cref="DataGridLength"/> structure that represents the standard automatic sizing mode.
         /// </returns>
         public static DataGridLength Auto
         {
@@ -185,10 +185,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> structure that represents the cell-based automatic sizing mode.
+        /// Gets a <see cref="DataGridLength"/> structure that represents the cell-based automatic sizing mode.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> structure that represents the cell-based automatic sizing mode.
+        /// A <see cref="DataGridLength"/> structure that represents the cell-based automatic sizing mode.
         /// </returns>
         public static DataGridLength SizeToCells
         {
@@ -199,10 +199,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> structure that represents the header-based automatic sizing mode.
+        /// Gets a <see cref="DataGridLength"/> structure that represents the header-based automatic sizing mode.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> structure that represents the header-based automatic sizing mode.
+        /// A <see cref="DataGridLength"/> structure that represents the header-based automatic sizing mode.
         /// </returns>
         public static DataGridLength SizeToHeader
         {
@@ -290,7 +290,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLengthUnitType"/> that represents the current sizing mode.
+        /// Gets the <see cref="DataGridLengthUnitType"/> that represents the current sizing mode.
         /// </summary>
         public DataGridLengthUnitType UnitType
         {
@@ -301,10 +301,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets the absolute value of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> in pixels.
+        /// Gets the absolute value of the <see cref="DataGridLength"/> in pixels.
         /// </summary>
         /// <returns>
-        /// The absolute value of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> in pixels.
+        /// The absolute value of the <see cref="DataGridLength"/> in pixels.
         /// </returns>
         public double Value
         {
@@ -315,7 +315,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Converts a string into a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> instance.
+        /// Converts a string into a <see cref="DataGridLength"/> instance.
         /// </summary>
         /// <param name="value">string to convert.</param>
         /// <returns>The result of the conversion.</returns>
@@ -325,7 +325,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Converts an object into a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> instance.
+        /// Converts an object into a <see cref="DataGridLength"/> instance.
         /// </summary>
         /// <param name="culture">optional culture to use for conversion.</param>
         /// <param name="value">object to convert.</param>
@@ -381,7 +381,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Converts a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridLength"/> instance into a string.
+        /// Converts a <see cref="DataGridLength"/> instance into a string.
         /// </summary>
         /// <param name="culture">optional culture to use for conversion.</param>
         /// <param name="value">value to convert.</param>

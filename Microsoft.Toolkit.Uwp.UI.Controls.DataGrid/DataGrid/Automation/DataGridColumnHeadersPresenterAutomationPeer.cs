@@ -21,7 +21,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
     public class DataGridColumnHeadersPresenterAutomationPeer : FrameworkElementAutomationPeer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridColumnHeadersPresenterAutomationPeer"/> class.
+        /// Initializes a new instance of the <see cref="DataGridColumnHeadersPresenterAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">DataGridColumnHeadersPresenter</param>
         public DataGridColumnHeadersPresenterAutomationPeer(DataGridColumnHeadersPresenter owner)

@@ -26,7 +26,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         IInvokeProvider, IScrollItemProvider, ITransformProvider
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridColumnHeaderAutomationPeer"/> class.
+        /// Initializes a new instance of the <see cref="DataGridColumnHeaderAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">DataGridColumnHeader</param>
         public DataGridColumnHeaderAutomationPeer(DataGridColumnHeader owner)

@@ -29,7 +29,7 @@ using Windows.UI.Xaml.Media;
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 {
     /// <summary>
-    /// Represents an individual <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column header.
+    /// Represents an individual <see cref="DataGrid"/> column header.
     /// </summary>
     [TemplateVisualState(Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StatePointerOver, GroupName = VisualStates.GroupCommon)]
@@ -56,7 +56,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private Visibility _desiredSeparatorVisibility;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeader"/> class.
+        /// Initializes a new instance of the <see cref="Primitives.DataGridColumnHeader"/> class.
         /// </summary>
         public DataGridColumnHeader()
         {
@@ -210,7 +210,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <summary>
         /// Creates AutomationPeer (<see cref="UIElement.OnCreateAutomationPeer"/>)
         /// </summary>
-        /// <returns>An automation peer for this <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridColumnHeader"/>.</returns>
+        /// <returns>An automation peer for this <see cref="Primitives.DataGridColumnHeader"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             if (this.OwningGrid != null && this.OwningColumn != this.OwningGrid.ColumnsInternal.FillerColumn)
@@ -289,7 +289,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             Debug.Assert(this.OwningGrid != null, "Expected non-null owning DataGrid.");
 
-            if (this.OwningGrid.WaitForLostFocus(delegate { this.InvokeProcessSort(); }))
+            if (this.OwningGrid.WaitForLostFocus(() => { this.InvokeProcessSort(); }))
             {
                 return;
             }

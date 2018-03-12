@@ -17,12 +17,12 @@ using Windows.UI.Xaml.Automation.Peers;
 namespace Microsoft.Toolkit.Uwp.Automation.Peers
 {
     /// <summary>
-    /// AutomationPeer for the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRowsPresenter"/> class.
+    /// AutomationPeer for the <see cref="DataGridRowsPresenter"/> class.
     /// </summary>
     public class DataGridRowsPresenterAutomationPeer : FrameworkElementAutomationPeer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridRowsPresenterAutomationPeer"/> class.
+        /// Initializes a new instance of the <see cref="DataGridRowsPresenterAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">Owning DataGridRowsPresenter</param>
         public DataGridRowsPresenterAutomationPeer(DataGridRowsPresenter owner)

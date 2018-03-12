@@ -22,7 +22,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private object _item;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridClipboardCellContent"/> struct.
+        /// Initializes a new instance of the <see cref="DataGridClipboardCellContent"/> struct.
         /// </summary>
         /// <param name="item">DataGrid row item containing the cell.</param>
         /// <param name="column">DataGridColumn containing the cell.</param>
@@ -35,7 +35,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn"/> column containing the cell.
+        /// Gets the <see cref="DataGridColumn"/> column containing the cell.
         /// </summary>
         public DataGridColumn Column
         {
@@ -46,7 +46,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridCell"/> cell content.
+        /// Gets the <see cref="DataGridCell"/> cell content.
         /// </summary>
         public object Content
         {
@@ -57,7 +57,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRow"/> row item containing the cell.
+        /// Gets the <see cref="DataGridRow"/> row item containing the cell.
         /// </summary>
         public object Item
         {

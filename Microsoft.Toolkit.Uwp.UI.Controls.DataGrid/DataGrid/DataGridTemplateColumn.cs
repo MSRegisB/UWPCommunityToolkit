@@ -16,7 +16,7 @@ using Windows.UI.Xaml;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column that hosts template-specified
+    /// Represents a <see cref="DataGrid"/> column that hosts template-specified
     /// content in its cells.
     /// </summary>
     public class DataGridTemplateColumn : DataGridColumn
@@ -25,7 +25,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataTemplate _cellEditingTemplate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridTemplateColumn"/> class.
+        /// Initializes a new instance of the <see cref="DataGridTemplateColumn"/> class.
         /// </summary>
         public DataGridTemplateColumn()
         {

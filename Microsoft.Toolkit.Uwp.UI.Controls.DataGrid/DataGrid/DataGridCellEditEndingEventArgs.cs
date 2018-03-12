@@ -21,7 +21,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     public class DataGridCellEditEndingEventArgs : CancelEventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridCellEditEndingEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridCellEditEndingEventArgs"/> class.
         /// </summary>
         /// <param name="column">The column of the cell that is about to exit edit mode.</param>
         /// <param name="row">The row container of the cell container that is about to exit edit mode.</param>

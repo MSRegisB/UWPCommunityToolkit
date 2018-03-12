@@ -25,7 +25,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private object _item;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRowClipboardEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridRowClipboardEventArgs"/> class.
         /// </summary>
         /// <param name="item">The row's associated data item.</param>
         /// <param name="isColumnHeadersRow">Whether or not this EventArgs is for the column headers.</param>
@@ -63,7 +63,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> row item used for preparing the ClipboardRowContent.
+        /// Gets the <see cref="DataGrid"/> row item used for preparing the ClipboardRowContent.
         /// </summary>
         public object Item
         {

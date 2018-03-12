@@ -22,7 +22,7 @@ using Windows.UI.Xaml.Shapes;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Represents an individual <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> cell.
+    /// Represents an individual <see cref="DataGrid"/> cell.
     /// </summary>
     [TemplatePart(Name = DATAGRIDCELL_elementRightGridLine, Type = typeof(Rectangle))]
 
@@ -45,7 +45,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private Rectangle _rightGridLine;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridCell"/> class.
+        /// Initializes a new instance of the <see cref="DataGridCell"/> class.
         /// </summary>
         public DataGridCell()
         {

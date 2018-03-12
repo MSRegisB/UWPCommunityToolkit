@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Input;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column that hosts
+    /// Represents a <see cref="DataGrid"/> column that hosts
     /// <see cref="T:System.Windows.Controls.CheckBox"/> controls in its cells.
     /// </summary>
     [StyleTypedProperty(Property = "ElementStyle", StyleTargetType = typeof(CheckBox))]
@@ -36,7 +36,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataGrid _owningGrid;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridCheckBoxColumn"/> class.
+        /// Initializes a new instance of the <see cref="DataGridCheckBoxColumn"/> class.
         /// </summary>
         public DataGridCheckBoxColumn()
         {
@@ -165,13 +165,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (editingCheckBox != null)
             {
                 bool? uneditedValue = editingCheckBox.IsChecked;
-                // TODO - mouseButtonEventArgs ==> pointerEventArgs
-                PointerRoutedEventArgs mouseButtonEventArgs = editingEventArgs as PointerRoutedEventArgs;
+
+                PointerRoutedEventArgs pointerEventArgs = editingEventArgs as PointerRoutedEventArgs;
                 bool editValue = false;
-                if (mouseButtonEventArgs != null)
+                if (pointerEventArgs != null)
                 {
                     // Editing was triggered by a mouse click
-                    Point position = mouseButtonEventArgs.GetCurrentPoint(editingCheckBox).Position;
+                    Point position = pointerEventArgs.GetCurrentPoint(editingCheckBox).Position;
                     Rect rect = new Rect(0, 0, editingCheckBox.ActualWidth, editingCheckBox.ActualHeight);
                     editValue = rect.Contains(position);
                 }

@@ -23,7 +23,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 namespace Microsoft.Toolkit.Uwp.Automation.Peers
 {
     /// <summary>
-    /// Exposes <see cref="T:System.Windows.Controls.DataGrid" /> types to UI Automation.
+    /// Exposes <see cref="DataGrid" /> types to UI Automation.
     /// </summary>
     public class DataGridAutomationPeer :
         FrameworkElementAutomationPeer,
@@ -44,7 +44,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         private double _oldVerticalViewSize;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridAutomationPeer"/> class.
+        /// Initializes a new instance of the <see cref="DataGridAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">
         /// The <see cref="T:System.Windows.Controls.DataGrid" /> that is associated with this <see cref="T:Windows.UI.Xaml.Automation.Peers.DataGridAutomationPeer" />.

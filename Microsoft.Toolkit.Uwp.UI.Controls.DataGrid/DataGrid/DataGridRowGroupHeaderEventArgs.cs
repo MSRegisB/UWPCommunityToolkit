@@ -22,7 +22,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     public class DataGridRowGroupHeaderEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRowGroupHeaderEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridRowGroupHeaderEventArgs"/> class.
         /// </summary>
         /// <param name="rowGroupHeader">The row group header that the event occurs for.</param>
         public DataGridRowGroupHeaderEventArgs(DataGridRowGroupHeader rowGroupHeader)
@@ -31,7 +31,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRowGroupHeader"/> associated with this instance.
+        /// Gets the <see cref="DataGridRowGroupHeader"/> associated with this instance.
         /// </summary>
         public DataGridRowGroupHeader RowGroupHeader
         {

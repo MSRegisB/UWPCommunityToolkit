@@ -20,7 +20,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     public class DataGridRowEditEndedEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRowEditEndedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridRowEditEndedEventArgs"/> class.
         /// </summary>
         /// <param name="row">The row container of the cell container that has just exited edit mode.</param>
         /// <param name="editAction">The editing action that has been taken.</param>

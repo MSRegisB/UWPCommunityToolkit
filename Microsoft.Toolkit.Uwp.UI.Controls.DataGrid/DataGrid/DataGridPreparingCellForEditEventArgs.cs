@@ -21,7 +21,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     public class DataGridPreparingCellForEditEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridPreparingCellForEditEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridPreparingCellForEditEventArgs"/> class.
         /// </summary>
         /// <param name="column">The column that contains the cell to be edited.</param>
         /// <param name="row">The row that contains the cell to be edited.</param>

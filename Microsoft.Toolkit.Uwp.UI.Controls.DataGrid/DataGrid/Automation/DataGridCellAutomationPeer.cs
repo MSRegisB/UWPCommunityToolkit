@@ -27,7 +27,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         IGridItemProvider, IInvokeProvider, IScrollItemProvider, ISelectionItemProvider, ITableItemProvider
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridCellAutomationPeer"/> class.
+        /// Initializes a new instance of the <see cref="DataGridCellAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">DataGridCell</param>
         public DataGridCellAutomationPeer(DataGridCell owner)
@@ -251,7 +251,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
 
             if (this.OwningGrid != null)
             {
-                if (this.OwningGrid.WaitForLostFocus(delegate { ((IInvokeProvider)this).Invoke(); }))
+                if (this.OwningGrid.WaitForLostFocus(() => { ((IInvokeProvider)this).Invoke(); }))
                 {
                     return;
                 }
@@ -334,7 +334,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
 
             if (this.OwningGrid != null)
             {
-                if (this.OwningGrid.WaitForLostFocus(delegate { ((ISelectionItemProvider)this).Select(); }))
+                if (this.OwningGrid.WaitForLostFocus(() => { ((ISelectionItemProvider)this).Select(); }))
                 {
                     return;
                 }

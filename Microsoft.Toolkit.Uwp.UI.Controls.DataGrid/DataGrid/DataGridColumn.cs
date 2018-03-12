@@ -11,9 +11,8 @@
 // ******************************************************************
 
 using System;
-using System.Diagnostics;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
 using Windows.UI.Xaml;
@@ -24,7 +23,7 @@ using Windows.UI.Xaml.Media;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Represents a <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> column.
+    /// Represents a <see cref="DataGrid"/> column.
     /// </summary>
     [StyleTypedProperty(Property = "CellStyle", StyleTargetType = typeof(DataGridCell))]
     [StyleTypedProperty(Property = "DragIndicatorStyle", StyleTargetType = typeof(ContentControl))]
@@ -55,7 +54,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataGridSortDirection? _sortDirection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn"/> class.
+        /// Initializes a new instance of the <see cref="DataGridColumn"/> class.
         /// </summary>
         protected internal DataGridColumn()
         {

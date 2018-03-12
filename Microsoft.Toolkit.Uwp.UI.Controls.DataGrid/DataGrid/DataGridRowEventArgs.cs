@@ -15,12 +15,12 @@ using System;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Provides data for <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGrid"/> row-related events.
+    /// Provides data for <see cref="DataGrid"/> row-related events.
     /// </summary>
     public class DataGridRowEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridRowEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridRowEventArgs"/> class.
         /// </summary>
         /// <param name="dataGridRow">The row that the event occurs for.</param>
         public DataGridRowEventArgs(DataGridRow dataGridRow)

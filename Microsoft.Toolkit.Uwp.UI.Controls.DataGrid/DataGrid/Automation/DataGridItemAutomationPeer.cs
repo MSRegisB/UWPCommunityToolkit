@@ -31,7 +31,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         private AutomationPeer _dataGridAutomationPeer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridItemAutomationPeer"/> class.
+        /// Initializes a new instance of the <see cref="DataGridItemAutomationPeer"/> class.
         /// </summary>
         public DataGridItemAutomationPeer(object item, DataGrid dataGrid)
             : base(dataGrid)
@@ -72,7 +72,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 }
 
                 return null;
-
             }
         }
 
@@ -366,7 +365,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
             bool success = false;
             if (this.OwningRow != null)
             {
-                if (this.OwningDataGrid.WaitForLostFocus(delegate { ((IInvokeProvider)this).Invoke(); }))
+                if (this.OwningDataGrid.WaitForLostFocus(() => { ((IInvokeProvider)this).Invoke(); }))
                 {
                     return;
                 }
@@ -434,7 +433,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 bool success = true;
                 if (this.OwningDataGrid.EditingRow != null && this.OwningDataGrid.EditingRow.Index == index)
                 {
-                    if (this.OwningDataGrid.WaitForLostFocus(delegate { ((ISelectionItemProvider)this).RemoveFromSelection(); }))
+                    if (this.OwningDataGrid.WaitForLostFocus(() => { ((ISelectionItemProvider)this).RemoveFromSelection(); }))
                     {
                         return;
                     }
@@ -462,7 +461,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 bool success = true;
                 if (this.OwningDataGrid.EditingRow != null && this.OwningDataGrid.EditingRow.Index != index)
                 {
-                    if (this.OwningDataGrid.WaitForLostFocus(delegate { ((ISelectionItemProvider)this).Select(); }))
+                    if (this.OwningDataGrid.WaitForLostFocus(() => { ((ISelectionItemProvider)this).Select(); }))
                     {
                         return;
                     }

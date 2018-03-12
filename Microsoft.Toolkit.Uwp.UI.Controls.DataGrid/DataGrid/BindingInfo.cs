@@ -21,14 +21,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
     internal class BindingInfo
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals.BindingInfo"/> class.
+        /// Initializes a new instance of the <see cref="DataGridInternals.BindingInfo"/> class.
         /// </summary>
         public BindingInfo()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals.BindingInfo"/> class
+        /// Initializes a new instance of the <see cref="DataGridInternals.BindingInfo"/> class
         /// with the specified BindingExpression, DependencyProperty and FrameworkElement.
         /// </summary>
         /// <param name="bindingExpression">BindingExpression</param>

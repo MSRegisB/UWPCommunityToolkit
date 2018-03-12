@@ -35,7 +35,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         private AutomationPeer _dataGridAutomationPeer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.Automation.Peers.DataGridGroupItemAutomationPeer"/> class.
+        /// Initializes a new instance of the <see cref="DataGridGroupItemAutomationPeer"/> class.
         /// </summary>
         public DataGridGroupItemAutomationPeer(CollectionViewGroup group, DataGrid dataGrid)
             : base(dataGrid)

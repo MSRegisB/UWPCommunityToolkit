@@ -21,7 +21,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     public class DataGridColumnReorderingEventArgs : CancelEventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumnReorderingEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="DataGridColumnReorderingEventArgs"/> class.
         /// </summary>
         /// <param name="dataGridColumn">The column that the event occurs for.</param>
         public DataGridColumnReorderingEventArgs(DataGridColumn dataGridColumn)
