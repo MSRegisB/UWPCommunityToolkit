@@ -314,6 +314,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         {
             // Clear out the cached desired height so it is not reused for other rows
             this.DesiredHeight = 0;
+
+            if (this.OwningGrid != null && this.OwningRow != null)
+            {
+                foreach (DataGridColumn column in this.OwningGrid.ColumnsInternal)
+                {
+                    this.OwningRow.Cells[column.Index].Recycle();
+                }
+            }
         }
 
         private bool ShouldDisplayCell(DataGridColumn column, double frozenLeftEdge, double scrollingLeftEdge)

@@ -1148,12 +1148,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 // Setup all of the active input bindings to support validation
                 foreach (BindingInfo bindingData in _inputBindings)
                 {
-                    if (bindingData.BindingExpression != null
-                        && bindingData.BindingExpression.ParentBinding != null
-                        && bindingData.BindingExpression.ParentBinding.UpdateSourceTrigger != UpdateSourceTrigger.Explicit)
+                    if (bindingData.BindingExpression != null &&
+                        bindingData.BindingExpression.ParentBinding != null &&
+                        bindingData.BindingExpression.ParentBinding.UpdateSourceTrigger != UpdateSourceTrigger.Explicit)
                     {
-                        // TODO - SL5 code is: Binding binding = new Binding(bindingData.BindingExpression.ParentBinding);
-                        // Is shallow copy correct?
                         Binding binding = new Binding();
                         binding.Converter = bindingData.BindingExpression.ParentBinding.Converter;
                         binding.ConverterLanguage = bindingData.BindingExpression.ParentBinding.ConverterLanguage;

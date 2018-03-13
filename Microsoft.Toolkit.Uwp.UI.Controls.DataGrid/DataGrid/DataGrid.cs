@@ -161,7 +161,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private Queue<Action> _lostFocusActions;
         private bool _makeFirstDisplayedCellCurrentCellPending;
         private bool _measured;
-        private int? _pointerOverRowIndex;    // -1 is used for the 'new row'
         // the number of pixels of the firstDisplayedScrollingCol which are not displayed
         private double _negHorizontalOffset;
 
@@ -392,7 +391,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.AnchorSlot = -1;
             _lastEstimatedRow = -1;
             _editingColumnIndex = -1;
-            _pointerOverRowIndex = null;
             this.CurrentCellCoordinates = new DataGridCellCoordinates(-1, -1);
 
             this.RowGroupHeaderHeightEstimate = DATAGRID_defaultRowHeight;
@@ -950,8 +948,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     dataGrid.EnsureColumnHeadersVisibility();
                     if (!newValueCols)
                     {
-                        // TODO - is Size.Empty correct or should it be new Size(0.0, 0.0)?
-                        dataGrid._columnHeadersPresenter.Measure(Size.Empty);
+                        dataGrid._columnHeadersPresenter.Measure(new Size(0.0, 0.0));
                     }
                     else
                     {
@@ -997,11 +994,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             // see if their templates can be changed to do that
             if (dataGrid._topLeftCornerHeader != null)
             {
-                dataGrid._topLeftCornerHeader.Visibility = newValueRows && newValueCols ? Visibility.Visible : Visibility.Collapsed;
+                dataGrid._topLeftCornerHeader.Visibility = (newValueRows && newValueCols) ? Visibility.Visible : Visibility.Collapsed;
                 if (dataGrid._topLeftCornerHeader.Visibility == Visibility.Collapsed)
                 {
-                    // TODO - is Size.Empty correct or should it be new Size(0.0, 0.0)?
-                    dataGrid._topLeftCornerHeader.Measure(Size.Empty);
+                    dataGrid._topLeftCornerHeader.Measure(new Size(0.0, 0.0));
                 }
             }
         }
@@ -2375,52 +2371,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get;
             set;
-        }
-
-        internal int? PointerOverRowIndex
-        {
-            get
-            {
-                return _pointerOverRowIndex;
-            }
-
-            set
-            {
-                if (_pointerOverRowIndex != value)
-                {
-                    DataGridRow oldPointerOverRow = null;
-                    if (_pointerOverRowIndex.HasValue)
-                    {
-                        int oldSlot = SlotFromRowIndex(_pointerOverRowIndex.Value);
-                        if (IsSlotVisible(oldSlot))
-                        {
-                            oldPointerOverRow = this.DisplayData.GetDisplayedElement(oldSlot) as DataGridRow;
-                        }
-                    }
-
-                    _pointerOverRowIndex = value;
-
-                    // State for the old row needs to be applied after setting the new value
-                    if (oldPointerOverRow != null)
-                    {
-                        oldPointerOverRow.ApplyState(true /*animate*/);
-                    }
-
-                    if (_pointerOverRowIndex.HasValue)
-                    {
-                        int newSlot = SlotFromRowIndex(_pointerOverRowIndex.Value);
-                        if (IsSlotVisible(newSlot))
-                        {
-                            DataGridRow newPointerOverRow = this.DisplayData.GetDisplayedElement(newSlot) as DataGridRow;
-                            Debug.Assert(newPointerOverRow != null, "Expected non-null newPointerOverRow.");
-                            if (newPointerOverRow != null)
-                            {
-                                newPointerOverRow.ApplyState(true /*animate*/);
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         internal double NegVerticalOffset
@@ -4004,6 +3954,29 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 PopulateRowGroupHeadersTable();
 #endif
                 RefreshSlotCounts();
+            }
+        }
+
+        internal void ResetColumnHeaderInteractionInfo()
+        {
+            DataGridColumnHeaderInteractionInfo interactionInfo = this.ColumnHeaderInteractionInfo;
+
+            if (interactionInfo != null)
+            {
+                interactionInfo.CapturedPointer = null;
+                interactionInfo.DragMode = DataGridColumnHeader.DragMode.None;
+                interactionInfo.DragPointerId = 0;
+                interactionInfo.DragColumn = null;
+                interactionInfo.DragStart = null;
+                interactionInfo.PressedPointerPositionHeaders = null;
+                interactionInfo.LastPointerPositionHeaders = null;
+            }
+
+            if (this.ColumnHeaders != null)
+            {
+                this.ColumnHeaders.DragColumn = null;
+                this.ColumnHeaders.DragIndicator = null;
+                this.ColumnHeaders.DropLocationIndicator = null;
             }
         }
 

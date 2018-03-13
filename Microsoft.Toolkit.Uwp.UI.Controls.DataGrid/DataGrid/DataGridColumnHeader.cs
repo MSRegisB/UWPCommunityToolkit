@@ -56,7 +56,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         private Visibility _desiredSeparatorVisibility;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Primitives.DataGridColumnHeader"/> class.
+        /// Initializes a new instance of the <see cref="DataGridColumnHeader"/> class.
         /// </summary>
         public DataGridColumnHeader()
         {
@@ -67,6 +67,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             this.PointerMoved += new PointerEventHandler(DataGridColumnHeader_PointerMoved);
             this.PointerEntered += new PointerEventHandler(DataGridColumnHeader_PointerEntered);
             this.PointerExited += new PointerEventHandler(DataGridColumnHeader_PointerExited);
+            this.IsEnabledChanged += new DependencyPropertyChangedEventHandler(DataGridColumnHeader_IsEnabledChanged);
 
             DefaultStyleKey = typeof(DataGridColumnHeader);
         }
@@ -210,7 +211,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <summary>
         /// Creates AutomationPeer (<see cref="UIElement.OnCreateAutomationPeer"/>)
         /// </summary>
-        /// <returns>An automation peer for this <see cref="Primitives.DataGridColumnHeader"/>.</returns>
+        /// <returns>An automation peer for this <see cref="DataGridColumnHeader"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             if (this.OwningGrid != null && this.OwningColumn != this.OwningGrid.ColumnsInternal.FillerColumn)
@@ -495,13 +496,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void DataGridColumnHeader_PointerCanceled(object sender, PointerRoutedEventArgs e)
         {
-            // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerCanceled");
             CancelPointer(e);
         }
 
         private void DataGridColumnHeader_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
         {
-            // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerCaptureLost");
             CancelPointer(e);
         }
 
@@ -510,6 +509,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             // When we stop interacting with the column headers, we need to reset the drag mode and close any popups if they are open.
             if (this.OwningGrid != null)
             {
+                this.IsPressed = false;
+                this.IsPointerOver = false;
+
                 DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
                 bool setResizeCursor = false;
 
@@ -526,36 +528,44 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
                 if (interactionInfo.DragPointerId == e.Pointer.PointerId)
                 {
-                    interactionInfo.CapturedPointer = null;
-                    interactionInfo.DragMode = DragMode.None;
-                    interactionInfo.DragPointerId = 0;
-                    interactionInfo.DragColumn = null;
-                    interactionInfo.DragStart = null;
-                    interactionInfo.PressedPointerPositionHeaders = null;
-                    interactionInfo.LastPointerPositionHeaders = null;
-
-                    if (this.OwningGrid != null && this.OwningGrid.ColumnHeaders != null)
-                    {
-                        this.OwningGrid.ColumnHeaders.DragColumn = null;
-                        this.OwningGrid.ColumnHeaders.DragIndicator = null;
-                        this.OwningGrid.ColumnHeaders.DropLocationIndicator = null;
-                    }
+                    this.OwningGrid.ResetColumnHeaderInteractionInfo();
                 }
 
                 if (setResizeCursor)
                 {
                     SetResizeCursor(e.Pointer, e.GetCurrentPoint(this).Position);
                 }
+
+                ApplyState(false /*useTransitions*/);
+            }
+        }
+
+        private void DataGridColumnHeader_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (this.OwningGrid != null && !(bool)e.NewValue)
+            {
+                this.IsPressed = false;
+                this.IsPointerOver = false;
+
+                DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
+
+                if (interactionInfo.CapturedPointer != null)
+                {
+                    ReleasePointerCapture(interactionInfo.CapturedPointer);
+                }
+
+                ApplyState(false /*useTransitions*/);
             }
         }
 
         private void DataGridColumnHeader_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerEntered");
             if (!this.IsEnabled || this.OwningGrid == null)
             {
                 return;
             }
+
+            this.IsPointerOver = true;
 
             SetResizeCursor(e.Pointer, e.GetCurrentPoint(this).Position);
 
@@ -564,11 +574,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void DataGridColumnHeader_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerExited");
             if (!this.IsEnabled || this.OwningGrid == null)
             {
                 return;
             }
+
+            this.IsPointerOver = false;
 
             DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
 
@@ -582,7 +593,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void DataGridColumnHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerPressed");
             if (this.OwningGrid == null || this.OwningColumn == null || e.Handled || !this.IsEnabled || this.OwningGrid.ColumnHeaderInteractionInfo.DragMode != DragMode.None)
             {
                 return;
@@ -659,7 +669,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void DataGridColumnHeader_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerReleased");
             if (this.OwningGrid == null || this.OwningColumn == null || e.Handled || !this.IsEnabled)
             {
                 return;
@@ -730,15 +739,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 if (interactionInfo.CapturedPointer != null)
                 {
                     ReleasePointerCapture(interactionInfo.CapturedPointer);
-                    interactionInfo.CapturedPointer = null;
                 }
 
-                interactionInfo.DragMode = DragMode.None;
-                interactionInfo.DragPointerId = 0;
-                interactionInfo.DragColumn = null;
-                interactionInfo.DragStart = null;
-                interactionInfo.PressedPointerPositionHeaders = null;
-                interactionInfo.LastPointerPositionHeaders = null;
+                this.OwningGrid.ResetColumnHeaderInteractionInfo();
                 handled = true;
             }
 
@@ -749,7 +752,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void DataGridColumnHeader_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            // Debug.WriteLine("DataGridColumnHeader.DataGridColumnHeader_PointerMoved");
             if (this.OwningColumn == null || this.OwningGrid == null || this.OwningGrid.ColumnHeaders == null || !this.IsEnabled)
             {
                 return;
@@ -793,6 +795,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             }
 
             SetResizeCursor(e.Pointer, pointerPosition);
+
+            if (!this.IsPointerOver)
+            {
+                this.IsPointerOver = true;
+                ApplyState(true /*useTransitions*/);
+            }
         }
 
         /// <summary>
@@ -1084,7 +1092,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             bool nearCurrentResizableColumnRightEdge = distanceFromRight <= resizeRegionWidth && currentColumn != null && CanResizeColumn(currentColumn) && distanceFromTop < this.ActualHeight;
             bool nearPreviousResizableColumnLeftEdge = distanceFromLeft <= resizeRegionWidth && previousColumn != null && CanResizeColumn(previousColumn) && distanceFromTop < this.ActualHeight;
 
-            if (nearCurrentResizableColumnRightEdge || nearPreviousResizableColumnLeftEdge)
+            if (this.OwningGrid.IsEnabled && (nearCurrentResizableColumnRightEdge || nearPreviousResizableColumnLeftEdge))
             {
                 if (Window.Current.CoreWindow.PointerCursor != null && Window.Current.CoreWindow.PointerCursor.Type != CoreCursorType.SizeWestEast)
                 {
@@ -1093,12 +1101,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.SizeWestEast, 0);
                 }
             }
-            else
+            else if (interactionInfo.ResizePointerId == pointer.PointerId)
             {
-                if (interactionInfo.ResizePointerId == pointer.PointerId)
-                {
-                    SetOriginalCursor();
-                }
+                SetOriginalCursor();
             }
         }
     }

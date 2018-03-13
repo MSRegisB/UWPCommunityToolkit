@@ -64,6 +64,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             this.AddHandler(UIElement.TappedEvent, new TappedEventHandler(DataGridRowGroupHeader_Tapped), true /*handledEventsToo*/);
             this.AddHandler(UIElement.DoubleTappedEvent, new DoubleTappedEventHandler(DataGridRowGroupHeader_DoubleTapped), true /*handledEventsToo*/);
+
+            this.PointerCanceled += new PointerEventHandler(DataGridRowGroupHeader_PointerCanceled);
+            this.PointerEntered += new PointerEventHandler(DataGridRowGroupHeader_PointerEntered);
+            this.PointerExited += new PointerEventHandler(DataGridRowGroupHeader_PointerExited);
+            this.PointerMoved += new PointerEventHandler(DataGridRowGroupHeader_PointerMoved);
         }
 
         /// <summary>
@@ -562,6 +567,37 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     this.RowGroupInfo.CollectionViewGroup.ItemCount);
             }
 #endif
+        }
+
+        private void DataGridRowGroupHeader_PointerCanceled(object sender, PointerRoutedEventArgs e)
+        {
+            UpdateIsPointerOver(false);
+        }
+
+        private void DataGridRowGroupHeader_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            UpdateIsPointerOver(true);
+        }
+
+        private void DataGridRowGroupHeader_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            UpdateIsPointerOver(false);
+        }
+
+        private void DataGridRowGroupHeader_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            UpdateIsPointerOver(true);
+        }
+
+        private void UpdateIsPointerOver(bool isPointerOver)
+        {
+            if (!this.IsEnabled || isPointerOver == this.IsPointerOver)
+            {
+                return;
+            }
+
+            this.IsMouseOver = isPointerOver;
+            ApplyState(true /*useTransitions*/);
         }
     }
 }

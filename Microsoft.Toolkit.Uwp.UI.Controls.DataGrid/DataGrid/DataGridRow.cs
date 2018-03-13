@@ -165,7 +165,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataGridCell _fillerCell;
         private DataGridRowHeader _headerElement;
         private double _lastHorizontalOffset;
-        private int? _pointerOverColumnIndex;
+        private bool _isPointerOver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataGridRow"/> class.
@@ -177,7 +177,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.Index = -1;
             this.IsValid = true;
             this.Slot = -1;
-            _pointerOverColumnIndex = null;
+            _isPointerOver = false;
             _detailsDesiredHeight = double.NaN;
             _detailsLoaded = false;
             _appliedDetailsVisibility = Visibility.Collapsed;
@@ -186,6 +186,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.Cells.CellRemoved += new EventHandler<DataGridCellEventArgs>(DataGridCellCollection_CellRemoved);
 
             this.AddHandler(UIElement.TappedEvent, new TappedEventHandler(DataGridRow_Tapped), true /*handledEventsToo*/);
+
+            this.PointerCanceled += new PointerEventHandler(DataGridRow_PointerCanceled);
+            this.PointerEntered += new PointerEventHandler(DataGridRow_PointerEntered);
+            this.PointerExited += new PointerEventHandler(DataGridRow_PointerExited);
+            this.PointerMoved += new PointerEventHandler(DataGridRow_PointerMoved);
 
             DefaultStyleKey = typeof(DataGridRow);
         }
@@ -496,21 +501,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return this.OwningGrid != null && this.OwningGrid.PointerOverRowIndex == this.Index;
+                return _isPointerOver;
             }
 
             set
             {
-                if (this.OwningGrid != null && value != this.IsPointerOver)
+                if (_isPointerOver != value)
                 {
-                    if (value)
-                    {
-                        this.OwningGrid.PointerOverRowIndex = this.Index;
-                    }
-                    else
-                    {
-                        this.OwningGrid.PointerOverRowIndex = null;
-                    }
+                    _isPointerOver = value;
+                    ApplyState(true /*animate*/);
                 }
             }
         }
@@ -547,43 +546,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 Debug.Assert(this.Index != -1, "Expected Index other than -1.");
                 return this.OwningGrid.GetRowSelection(this.Slot);
-            }
-        }
-
-        internal int? PointerOverColumnIndex
-        {
-            get
-            {
-                return _pointerOverColumnIndex;
-            }
-
-            set
-            {
-                if (_pointerOverColumnIndex != value)
-                {
-                    DataGridCell oldPointerOverCell = null;
-                    if (_pointerOverColumnIndex != null && this.OwningGrid.IsSlotVisible(this.Slot))
-                    {
-                        if (_pointerOverColumnIndex > -1)
-                        {
-                            oldPointerOverCell = this.Cells[(int)_pointerOverColumnIndex];
-                        }
-                    }
-
-                    _pointerOverColumnIndex = value;
-                    if (oldPointerOverCell != null && this.Visibility == Visibility.Visible)
-                    {
-                        oldPointerOverCell.ApplyCellState(true /*animate*/);
-                    }
-
-                    if (_pointerOverColumnIndex != null && this.OwningGrid != null && this.OwningGrid.IsSlotVisible(this.Slot))
-                    {
-                        if (_pointerOverColumnIndex > -1)
-                        {
-                            this.Cells[(int)_pointerOverColumnIndex].ApplyCellState(true /*animate*/);
-                        }
-                    }
-                }
             }
         }
 
@@ -1063,7 +1025,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (recycle)
             {
-                this.IsRecycled = true;
+                Recycle();
 
                 if (_cellsElement != null)
                 {
@@ -1300,6 +1262,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        private void DataGridRow_PointerCanceled(object sender, PointerRoutedEventArgs e)
+        {
+            this.IsPointerOver = false;
+        }
+
+        private void DataGridRow_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.IsPointerOver = true;
+        }
+
+        private void DataGridRow_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.IsPointerOver = false;
+        }
+
+        private void DataGridRow_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            this.IsPointerOver = true;
+        }
+
         private void DataGridRow_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (this.OwningGrid != null && !this.OwningGrid.HasColumnUserInteraction)
@@ -1377,7 +1359,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal void EnsureDetailsContentHeight()
+        private void EnsureDetailsContentHeight()
         {
             if (_detailsElement != null &&
                 _detailsContent != null &&
@@ -1448,6 +1430,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 this.OwningGrid.OnRowDetailsChanged();
             }
+        }
+
+        private void Recycle()
+        {
+            _isPointerOver = false;
+
+            this.IsRecycled = true;
         }
 
 #if DEBUG

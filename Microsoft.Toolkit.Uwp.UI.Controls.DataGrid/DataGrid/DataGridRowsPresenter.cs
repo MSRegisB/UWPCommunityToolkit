@@ -48,10 +48,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         }
 
         /// <summary>
-        /// Arranges the content of the <see cref="Primitives.DataGridRowsPresenter"/>.
+        /// Arranges the content of the <see cref="DataGridRowsPresenter"/>.
         /// </summary>
         /// <returns>
-        /// The actual size used by the <see cref="Primitives.DataGridRowsPresenter"/>.
+        /// The actual size used by the <see cref="DataGridRowsPresenter"/>.
         /// </returns>
         /// <param name="finalSize">
         /// The final area within the parent that this element should use to arrange itself and its children.
@@ -104,14 +104,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         }
 
         /// <summary>
-        /// Measures the children of a <see cref="Primitives.DataGridRowsPresenter"/> to
+        /// Measures the children of a <see cref="DataGridRowsPresenter"/> to
         /// prepare for arranging them during the <see cref="M:System.Windows.FrameworkElement.ArrangeOverride(System.Windows.Size)"/> pass.
         /// </summary>
         /// <param name="availableSize">
         /// The available size that this element can give to child elements. Indicates an upper limit that child elements should not exceed.
         /// </param>
         /// <returns>
-        /// The size that the <see cref="Primitives.DataGridRowsPresenter"/> determines it needs during layout, based on its calculations of child object allocated sizes.
+        /// The size that the <see cref="DataGridRowsPresenter"/> determines it needs during layout, based on its calculations of child object allocated sizes.
         /// </returns>
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -180,7 +180,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
         /// <summary>
         /// Creates AutomationPeer (<see cref="UIElement.OnCreateAutomationPeer"/>)
         /// </summary>
-        /// <returns>An automation peer for this <see cref="Primitives.DataGridRowsPresenter"/>.</returns>
+        /// <returns>An automation peer for this <see cref="DataGridRowsPresenter"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new DataGridRowsPresenterAutomationPeer(this);

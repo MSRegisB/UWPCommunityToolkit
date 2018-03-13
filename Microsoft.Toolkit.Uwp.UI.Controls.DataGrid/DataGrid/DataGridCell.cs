@@ -43,14 +43,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const string DATAGRIDCELL_elementRightGridLine = "RightGridLine";
 
         private Rectangle _rightGridLine;
+        private bool _isPointerOver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataGridCell"/> class.
         /// </summary>
         public DataGridCell()
         {
+            _isPointerOver = false;
             this.IsTapEnabled = true;
             this.AddHandler(UIElement.TappedEvent, new TappedEventHandler(DataGridCell_PointerTapped), true /*handledEventsToo*/);
+
+            this.PointerCanceled += new PointerEventHandler(DataGridCell_PointerCanceled);
+            this.PointerEntered += new PointerEventHandler(DataGridCell_PointerEntered);
+            this.PointerExited += new PointerEventHandler(DataGridCell_PointerExited);
+            this.PointerMoved += new PointerEventHandler(DataGridCell_PointerMoved);
 
             DefaultStyleKey = typeof(DataGridCell);
         }
@@ -133,6 +140,23 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        internal bool IsPointerOver
+        {
+            get
+            {
+                return _isPointerOver;
+            }
+
+            set
+            {
+                if (value != _isPointerOver)
+                {
+                    _isPointerOver = value;
+                    ApplyCellState(true /*animate*/);
+                }
+            }
+        }
+
         internal DataGridColumn OwningColumn
         {
             get;
@@ -184,31 +208,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 return this.OwningGrid.EditingRow == this.OwningRow &&
                        this.OwningGrid.EditingColumnIndex == this.ColumnIndex;
-            }
-        }
-
-        private bool IsPointerOver
-        {
-            get
-            {
-                return this.OwningRow != null && this.OwningRow.PointerOverColumnIndex == this.ColumnIndex;
-            }
-
-            set
-            {
-                Debug.Assert(this.OwningRow != null, "Expected non-null owning DataGridRow.");
-
-                if (value != this.IsPointerOver)
-                {
-                    if (value)
-                    {
-                        this.OwningRow.PointerOverColumnIndex = this.ColumnIndex;
-                    }
-                    else
-                    {
-                        this.OwningRow.PointerOverColumnIndex = null;
-                    }
-                }
             }
         }
 
@@ -323,10 +322,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <param name="previousStyle">Caller's previous associated Style</param>
         internal void EnsureStyle(Style previousStyle)
         {
-            if (this.Style != null
-                && (this.OwningColumn == null || this.Style != this.OwningColumn.CellStyle)
-                && (this.OwningGrid == null || this.Style != this.OwningGrid.CellStyle)
-                && (this.Style != previousStyle))
+            if (this.Style != null &&
+                (this.OwningColumn == null || this.Style != this.OwningColumn.CellStyle) &&
+                (this.OwningGrid == null || this.Style != this.OwningGrid.CellStyle) &&
+                this.Style != previousStyle)
             {
                 return;
             }
@@ -366,6 +365,31 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     _rightGridLine.Visibility = newVisibility;
                 }
             }
+        }
+
+        internal void Recycle()
+        {
+            _isPointerOver = false;
+        }
+
+        private void DataGridCell_PointerCanceled(object sender, PointerRoutedEventArgs e)
+        {
+            this.IsPointerOver = false;
+        }
+
+        private void DataGridCell_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.IsPointerOver = true;
+        }
+
+        private void DataGridCell_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.IsPointerOver = false;
+        }
+
+        private void DataGridCell_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            this.IsPointerOver = true;
         }
 
         private void DataGridCell_PointerTapped(object sender, TappedRoutedEventArgs e)
