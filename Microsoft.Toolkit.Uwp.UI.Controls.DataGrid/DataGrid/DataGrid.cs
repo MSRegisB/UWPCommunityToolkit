@@ -161,6 +161,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private Queue<Action> _lostFocusActions;
         private bool _makeFirstDisplayedCellCurrentCellPending;
         private bool _measured;
+
         // the number of pixels of the firstDisplayedScrollingCol which are not displayed
         private double _negHorizontalOffset;
 
@@ -2099,6 +2100,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
 
                 return 0;
+            }
+        }
+
+        internal bool AllowsManipulation
+        {
+            get
+            {
+                return _rowsPresenter != null &&
+                    (_rowsPresenter.ManipulationMode & (ManipulationModes.TranslateX | ManipulationModes.TranslateY)) != ManipulationModes.None;
             }
         }
 

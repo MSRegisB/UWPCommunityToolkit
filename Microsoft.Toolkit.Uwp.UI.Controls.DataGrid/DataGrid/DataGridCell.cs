@@ -13,6 +13,7 @@
 using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
+using Windows.Devices.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -43,18 +44,19 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const string DATAGRIDCELL_elementRightGridLine = "RightGridLine";
 
         private Rectangle _rightGridLine;
-        private bool _isPointerOver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataGridCell"/> class.
         /// </summary>
         public DataGridCell()
         {
-            _isPointerOver = false;
             this.IsTapEnabled = true;
             this.AddHandler(UIElement.TappedEvent, new TappedEventHandler(DataGridCell_PointerTapped), true /*handledEventsToo*/);
 
             this.PointerCanceled += new PointerEventHandler(DataGridCell_PointerCanceled);
+            this.PointerCaptureLost += new PointerEventHandler(DataGridCell_PointerCaptureLost);
+            this.PointerPressed += new PointerEventHandler(DataGridCell_PointerPressed);
+            this.PointerReleased += new PointerEventHandler(DataGridCell_PointerReleased);
             this.PointerEntered += new PointerEventHandler(DataGridCell_PointerEntered);
             this.PointerExited += new PointerEventHandler(DataGridCell_PointerExited);
             this.PointerMoved += new PointerEventHandler(DataGridCell_PointerMoved);
@@ -144,16 +146,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return _isPointerOver;
+                return this.InteractionInfo != null && this.InteractionInfo.IsPointerOver;
             }
 
             set
             {
-                if (value != _isPointerOver)
+                if (value && this.InteractionInfo == null)
                 {
-                    _isPointerOver = value;
-                    ApplyCellState(true /*animate*/);
+                    this.InteractionInfo = new DataGridInteractionInfo();
                 }
+
+                if (this.InteractionInfo != null)
+                {
+                    this.InteractionInfo.IsPointerOver = value;
+                }
+
+                ApplyCellState(true /*animate*/);
             }
         }
 
@@ -198,6 +206,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 return this.OwningRow.Index;
             }
+        }
+
+        private DataGridInteractionInfo InteractionInfo
+        {
+            get;
+            set;
         }
 
         private bool IsEdited
@@ -369,27 +383,67 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void Recycle()
         {
-            _isPointerOver = false;
+            this.InteractionInfo = null;
+        }
+
+        private void CancelPointer(PointerRoutedEventArgs e)
+        {
+            if (this.InteractionInfo != null && this.InteractionInfo.CapturedPointerId == e.Pointer.PointerId)
+            {
+                this.InteractionInfo.CapturedPointerId = 0u;
+            }
+
+            this.IsPointerOver = false;
         }
 
         private void DataGridCell_PointerCanceled(object sender, PointerRoutedEventArgs e)
         {
-            this.IsPointerOver = false;
+            CancelPointer(e);
+        }
+
+        private void DataGridCell_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        {
+            CancelPointer(e);
+        }
+
+        private void DataGridCell_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch &&
+                this.OwningGrid != null &&
+                this.OwningGrid.AllowsManipulation &&
+                (this.InteractionInfo == null || this.InteractionInfo.CapturedPointerId == 0u) &&
+                this.CapturePointer(e.Pointer))
+            {
+                if (this.InteractionInfo == null)
+                {
+                    this.InteractionInfo = new DataGridInteractionInfo();
+                }
+
+                this.InteractionInfo.CapturedPointerId = e.Pointer.PointerId;
+            }
+        }
+
+        private void DataGridCell_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (this.InteractionInfo != null && this.InteractionInfo.CapturedPointerId == e.Pointer.PointerId)
+            {
+                ReleasePointerCapture(e.Pointer);
+            }
         }
 
         private void DataGridCell_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            this.IsPointerOver = true;
+            UpdateIsPointerOver(true);
         }
 
         private void DataGridCell_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            this.IsPointerOver = false;
+            UpdateIsPointerOver(false);
         }
 
         private void DataGridCell_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            this.IsPointerOver = true;
+            UpdateIsPointerOver(true);
         }
 
         private void DataGridCell_PointerTapped(object sender, TappedRoutedEventArgs e)
@@ -411,6 +465,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     this.OwningGrid.UpdatedStateOnTapped = true;
                 }
             }
+        }
+
+        private void UpdateIsPointerOver(bool isPointerOver)
+        {
+            if (this.InteractionInfo != null && this.InteractionInfo.CapturedPointerId != 0u)
+            {
+                return;
+            }
+
+            this.IsPointerOver = isPointerOver;
         }
     }
 }
