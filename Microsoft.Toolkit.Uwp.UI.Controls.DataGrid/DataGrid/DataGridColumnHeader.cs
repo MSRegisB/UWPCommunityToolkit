@@ -25,7 +25,6 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
-// TODO - Handle IsEnabledChanged to reset the drag variables.
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 {
     /// <summary>
@@ -336,7 +335,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                         owningGrid.OnUserSorting();
                         using (collectionView.DeferRefresh())
                         {
-                            // if shift is held down, we multi-sort, therefore if it isn't, we'll clear the sorts beforehand
+                            // If shift is held down, we multi-sort, therefore if it isn't, we'll clear the sorts beforehand
                             if (!shift || owningGrid.DataConnection.SortDescriptions.Count == 0)
                             {
                                 if (collectionView.CanGroup && collectionView.GroupDescriptions != null)
@@ -506,7 +505,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
         private void CancelPointer(PointerRoutedEventArgs e)
         {
-            // When we stop interacting with the column headers, we need to reset the drag mode and close any popups if they are open.
+            // When the user stops interacting with the column headers, the drag mode needs to be reset and any open popups closed.
             if (this.OwningGrid != null)
             {
                 this.IsPressed = false;
@@ -774,9 +773,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 OnPointerMove_Resize(ref handled, pointerPositionHeaders);
                 OnPointerMove_Reorder(ref handled, e.Pointer, pointerPosition, pointerPositionHeaders, distanceFromLeft, distanceFromRight);
 
-                // If we still haven't done anything about moving the pointer while
-                // the pointer is down, we remember that we're dragging, but we don't
-                // claim to have actually handled the event.
+                // If nothing was done about moving the pointer while the pointer is down, remember the dragging, but do not
+                // claim the event was actually handled.
                 if (interactionInfo.DragMode == DragMode.PointerPressed &&
                     interactionInfo.PressedPointerPositionHeaders.HasValue &&
                     Math.Abs(interactionInfo.PressedPointerPositionHeaders.Value.X - pointerPositionHeaders.X) + Math.Abs(interactionInfo.PressedPointerPositionHeaders.Value.Y - pointerPositionHeaders.Y) > DATAGRIDCOLUMNHEADER_dragThreshold)
@@ -1076,7 +1074,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return;
             }
 
-            // Set mouse cursor if we can resize column.
+            // Set mouse cursor if the column can be resized.
             double distanceFromLeft = pointerPosition.X;
             double distanceFromTop = pointerPosition.Y;
             double distanceFromRight = this.ActualWidth - distanceFromLeft;

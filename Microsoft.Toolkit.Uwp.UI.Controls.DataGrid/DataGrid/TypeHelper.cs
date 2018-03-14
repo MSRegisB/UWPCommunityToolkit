@@ -292,23 +292,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 indexer = FindIndexerInMembers(typeof(System.Collections.IList).GetDefaultMembers(), stringIndex, out index);
             }
 
-            // TODO - Added in WINDOWS_UWP. Is this correct?
-            else if (typeof(Windows.UI.Xaml.Interop.IBindableVectorView).IsAssignableFrom(type))
-            {
-                // If the object is of type IBindableVectorView, try to use its default indexer.
-                indexer = FindIndexerInMembers(typeof(Windows.UI.Xaml.Interop.IBindableVectorView).GetDefaultMembers(), stringIndex, out index);
-            }
-
-#if !WINDOWS_UWP
-            // TODO - Should internal IBindableVector also be handled instead of IList? 
-            //#else
-            //if (typeof(Windows.UI.Xaml.Interop.IBindableVector).IsAssignableFrom(type))
-            //{
-            //    // If the object is of type IBindableVector, try to use its default indexer.
-            //    indexer = FindIndexerInMembers(typeof(Windows.UI.Xaml.Interop.IBindableVector).GetDefaultMembers(), stringIndex, out index);
-            //}
-#endif
-
             return indexer;
         }
 
@@ -322,12 +305,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             return type != null && type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
+        /* Unused for now
         internal static bool IsNullableEnum(this Type type)
         {
             return type.IsNullableType() &&
                  type.GenericTypeArguments.Length == 1 &&
                  type.GenericTypeArguments[0].GetTypeInfo().IsEnum;
         }
+        */
 
         /// <summary>
         /// If the specified property is an indexer, this method will prepend the object's

@@ -14,8 +14,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
-
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
@@ -49,8 +49,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                         return true;
                     }
 
-                    // Walk up the visual tree.  If we hit the root, try using the framework element's
-                    // parent.  We do this because Popups behave differently with respect to the visual tree,
+                    // Walk up the visual tree.  If the root is hit, try using the framework element's
+                    // parent.  This is done because Popups behave differently with respect to the visual tree,
                     // and it could have a parent even if the VisualTreeHelper doesn't find it.
                     DependencyObject parent = VisualTreeHelper.GetParent(child);
                     if (parent == null)
@@ -111,10 +111,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             Type itemType = null;
             bool isICustomTypeProvider = false;
 
-            // If it's a generic enumerable, we get the generic type.
+            // If it's a generic enumerable, get the generic type.
 
             // Unfortunately, if data source is fed from a bare IEnumerable, TypeHelper will report an element type of object,
-            // which is not particularly interesting.  We deal with it further on.
+            // which is not particularly interesting.  It is dealt with it further on.
             if (listType.IsEnumerableType())
             {
                 itemType = listType.GetEnumerableItemType();
@@ -126,41 +126,37 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 #endif
             }
 
-            // Bare IEnumerables mean that result type will be object.  In that case, we try to get something more interesting.
-            // Or, if the itemType implements ICustomTypeProvider, we try to retrieve the custom type from one of the object
-            // instances.
+            // Bare IEnumerables mean that result type will be object.  In that case, try to get something more interesting.
+            // Or, if the itemType implements ICustomTypeProvider, try to retrieve the custom type from one of the object instances.
             if (itemType == null || itemType == typeof(object) || isICustomTypeProvider)
             {
-                // We haven't located a type yet. Does the list have anything in it?
+                // No type was located yet. Does the list have anything in it?
+                Type firstItemType = null;
                 IEnumerator en = list.GetEnumerator();
                 if (en.MoveNext() && en.Current != null)
                 {
-                    Type firstItemType = en.Current.GetCustomOrCLRType();
-                    if (firstItemType != typeof(object))
-                    {
-                        return firstItemType;
-                    }
+                    firstItemType = en.Current.GetCustomOrCLRType();
+                }
+                else
+                {
+                    firstItemType = list
+                        .Cast<object>() // cast to convert IEnumerable to IEnumerable<object>
+                        .Select(x => x.GetType()) // get the type
+                        .FirstOrDefault(); // get only the first thing to come out of the sequence, or null if empty
                 }
 
-                /* TODO - use this code instead?
-                itemType = list
-                    .Cast<object>() // cast to convert IEnumerable to IEnumerable<object>
-                    .Select(x => x.GetType()) // get the type
-                    .FirstOrDefault(); // get only the first thing to come out of the sequence, or null if empty
-
-                // TODO if result != null, then we want to verify that each item in the sequence is castable to that type, or find a better type
-                // though it would be better if the user just used a strongly-typed data source to begin with
-                */
+                if (firstItemType != typeof(object))
+                {
+                    return firstItemType;
+                }
             }
 
-            // We couldn't get the CustomType because there were no items.  Fail here so we try again
-            // once items are added to the DataGrid
+            // Couldn't get the CustomType because there were no items.  Fail here so try again once items are added to the DataGrid.
             if (isICustomTypeProvider)
             {
                 return null;
             }
 
-            // if we're null at this point, give up
             return itemType;
         }
 
@@ -195,14 +191,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             {
                 return fromElement.TransformToVisual(toElement).TransformPoint(fromPoint);
             }
-        }
-
-        internal static bool Within(this Point referencePoint, UIElement referenceElement, FrameworkElement targetElement, bool ignoreVertical)
-        {
-            Point position = referenceElement.Translate(targetElement, referencePoint);
-
-            return position.X > 0 && position.X < targetElement.ActualWidth &&
-                   (ignoreVertical || (position.Y > 0 && position.Y < targetElement.ActualHeight));
         }
 
         // If the DataGrid goes into a background tab, the elements need to be remeasured

@@ -625,10 +625,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 #if FEATURE_PAGEDCOLLECTIONVIEW
             if (collectionView == null)
             {
-                // If we still do not have a collection view, default to a PagedCollectionView.
                 collectionView = new PagedCollectionView(source);
             }
 #endif
+
+            if (collectionView == null)
+            {
+                collectionView = new AdvancedCollectionView(source);
+            }
 
             return collectionView;
         }
@@ -806,7 +810,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 !_owner.CommitEdit())
             {
                 // If CommitEdit failed, then the user has most likely input invalid data.
-                // We should cancel the current change if we can, otherwise we have to abort the edit.
+                // Cancel the current change if possible, otherwise abort the edit.
                 if (e.IsCancelable)
                 {
                     e.Cancel = true;
@@ -847,13 +851,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                     Debug.Assert(e.NewItems != null, "Unexpected NotifyCollectionChangedAction.Add notification");
                     if (ShouldAutoGenerateColumns)
                     {
-                        // The columns are also affected (not just rows) in this case so we need to reset everything
+                        // The columns are also affected (not just rows) in this case, so reset everything
                         _owner.InitializeElements(false /*recycleRows*/);
                     }
                     else if (!this.IsGrouping)
                     {
                         // If we're grouping then we handle this through the CollectionViewGroup notifications
-                        // According to WPF, Add is a single item operation
+                        // According to WPF, Add is a single item operation.
                         Debug.Assert(e.NewItems.Count == 1, "Expected NewItems.Count equals 1.");
                         _owner.InsertRowAt(e.NewStartingIndex);
                     }
@@ -870,7 +874,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                     if (!this.IsGrouping)
                     {
                         // If we're grouping then we handle this through the CollectionViewGroup notifications
-                        // According to WPF, Remove is a single item operation
+                        // According to WPF, Remove is a single item operation.
                         foreach (object item in e.OldItems)
                         {
                             Debug.Assert(item != null, "Expected non-null item.");
@@ -880,7 +884,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    throw new NotSupportedException(); // TODO REGISB
+                    throw new NotSupportedException();
 
                 case NotifyCollectionChangedAction.Reset:
                     // Did the data type change during the reset?  If not, we can recycle
