@@ -14,7 +14,7 @@ using System.Diagnostics;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
+namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
 {
     /// <summary>
     /// Names and helpers for visual states in the control.

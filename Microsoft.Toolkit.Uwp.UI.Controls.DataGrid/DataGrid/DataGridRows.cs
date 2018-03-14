@@ -19,10 +19,9 @@ using System.Diagnostics;
 using System.Linq;
 #if FEATURE_ICOLLECTIONVIEW_GROUP
 using System.Collections.Specialized;
-using Microsoft.Toolkit.Uwp.Helpers;
 #endif
 using Microsoft.Toolkit.Uwp.Automation.Peers;
-using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
+using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;

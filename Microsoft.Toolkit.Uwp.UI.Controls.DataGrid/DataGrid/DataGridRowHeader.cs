@@ -12,7 +12,7 @@
 
 using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
-using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
+using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;

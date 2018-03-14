@@ -10,7 +10,7 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
+namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
 {
     internal class Range<T>
     {

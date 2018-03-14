@@ -12,7 +12,7 @@
 
 using System;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
+namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
 {
     internal static class DoubleUtil
     {

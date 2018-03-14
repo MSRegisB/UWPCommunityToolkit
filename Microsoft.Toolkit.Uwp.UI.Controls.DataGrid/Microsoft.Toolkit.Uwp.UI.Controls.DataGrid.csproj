@@ -5,12 +5,8 @@
     <Description>This library provides a XAML DataGrid control. It is part of the UWP Community Toolkit.</Description>
     <PackageTags>UWP Toolkit Windows Controls XAML DataGrid</PackageTags>
     <RootNamespace>Microsoft.Toolkit.Uwp.UI.Controls</RootNamespace>
+    <UseUwpMetaPackage>true</UseUwpMetaPackage>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Toolkit.Uwp\Microsoft.Toolkit.Uwp.csproj" />
-    <ProjectReference Include="..\Microsoft.Toolkit.Uwp.UI\Microsoft.Toolkit.Uwp.UI.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="VisualStudioToolsManifest.xml" Pack="true" PackagePath="tools" />

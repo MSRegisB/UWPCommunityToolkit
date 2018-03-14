@@ -19,7 +19,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Toolkit.Uwp.Helpers;
+using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
 using Windows.UI.Xaml.Data;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
@@ -629,10 +629,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             }
 #endif
 
-            if (collectionView == null)
-            {
-                collectionView = new AdvancedCollectionView(source);
-            }
+            //if (collectionView == null)
+            //{
+            //    collectionView = new AdvancedCollectionView(source);
+            //}
 
             return collectionView;
         }

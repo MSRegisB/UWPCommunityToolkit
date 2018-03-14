@@ -21,7 +21,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
+namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
 {
     internal static class Extensions
     {
@@ -151,7 +151,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 }
             }
 
-            // Couldn't get the CustomType because there were no items.  Fail here so try again once items are added to the DataGrid.
+            // Couldn't get the CustomType because there were no items.
             if (isICustomTypeProvider)
             {
                 return null;
@@ -193,7 +193,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
             }
         }
 
-        // If the DataGrid goes into a background tab, the elements need to be remeasured
+        // If the parent element goes into a background tab, the elements need to be remeasured
         // or they will report 0 height.
         internal static UIElement EnsureMeasured(this UIElement element)
         {

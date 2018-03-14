@@ -13,7 +13,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
+namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
 {
     /// <summary>
     /// Stores information about a Binding, including the BindingExpression, BindingTarget and associated Element.
@@ -21,14 +21,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
     internal class BindingInfo
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataGridInternals.BindingInfo"/> class.
+        /// Initializes a new instance of the <see cref="BindingInfo"/> class.
         /// </summary>
         public BindingInfo()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataGridInternals.BindingInfo"/> class
+        /// Initializes a new instance of the <see cref="BindingInfo"/> class
         /// with the specified BindingExpression, DependencyProperty and FrameworkElement.
         /// </summary>
         /// <param name="bindingExpression">BindingExpression</param>

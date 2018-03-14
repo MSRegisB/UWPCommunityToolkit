@@ -16,6 +16,7 @@ using System.Reflection;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
+using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml;

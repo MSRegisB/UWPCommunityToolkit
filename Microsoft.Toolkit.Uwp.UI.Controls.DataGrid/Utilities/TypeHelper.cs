@@ -17,7 +17,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
+namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
 {
     internal static class TypeHelper
     {
