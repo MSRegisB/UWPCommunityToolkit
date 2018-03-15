@@ -33,9 +33,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
             {
                 return new InvalidOperationException("This value cannot be accessed while changes are deferred.");
             }
+
+            public static InvalidOperationException ItemNotAtIndex(string paramName)
+            {
+                return new InvalidOperationException(Format("The {0} item is not in the collection.", paramName));
+            }
         }
 
-        internal const string MemberNotAllowedForView = "'{0}' is not allowed for this view.";
+        public static class EnumerableCollectionView
+        {
+            public static InvalidOperationException RemovedItemNotFound()
+            {
+                return new InvalidOperationException("The removed item is not found in the source collection.");
+            }
+        }
 
         public static class ListCollectionView
         {
@@ -44,16 +55,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
                 return new InvalidOperationException("The collection change is out of bounds of the original collection.");
             }
 
-            public static InvalidOperationException AddedItemNotAtIndex()
-            {
-                return new InvalidOperationException("The added item is not in the collection.");
-            }
-
             public static InvalidOperationException AddedItemNotInCollection()
             {
                 return new InvalidOperationException("The added item is not in the collection.");
             }
 
+#if FEATURE_IEDITABLECOLLECTIONVIEW
             public static InvalidOperationException CancelEditNotSupported()
             {
                 return new InvalidOperationException("CancelEdit is not supported for the current edit item.");
@@ -68,6 +75,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
             {
                 return new InvalidOperationException(Format("'{0}' is not allowed for this view.", paramName));
             }
+#endif
         }
 
         private static string Format(string formatString, params object[] args)

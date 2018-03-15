@@ -638,6 +638,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                 {
                     collectionView = new ListCollectionView(sourceAsList);
                 }
+                else
+                {
+                    collectionView = new EnumerableCollectionView(source);
+                }
             }
 
             return collectionView;

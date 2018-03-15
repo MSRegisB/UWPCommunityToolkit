@@ -2032,7 +2032,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
                 {
                     if (!object.Equals(item, ilFull[index]))
                     {
-                        throw CollectionViewsError.ListCollectionView.AddedItemNotAtIndex();
+                        throw CollectionViewsError.CollectionView.ItemNotAtIndex("added");
                     }
                 }
                 else

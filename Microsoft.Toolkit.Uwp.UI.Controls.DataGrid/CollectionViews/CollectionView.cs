@@ -88,8 +88,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
         {
             _sourceCollection = collection ?? throw new ArgumentNullException("collection");
 
-            _sourceWeakEventListener?.Detach();
-
             // forward collection change events from underlying collection to our listeners.
             INotifyCollectionChanged incc = collection as INotifyCollectionChanged;
             if (incc != null)
@@ -410,7 +408,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
         /// <summary>
         /// Move <seealso cref="CurrentItem"/> to the first item.
         /// </summary>
-        /// <returns>true if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
+        /// <returns>True if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
         public virtual bool MoveCurrentToFirst()
         {
             VerifyRefreshNotDeferred();
@@ -421,7 +419,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
         /// <summary>
         /// Move <seealso cref="CurrentItem"/> to the last item.
         /// </summary>
-        /// <returns>true if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
+        /// <returns>True if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
         public virtual bool MoveCurrentToLast()
         {
             VerifyRefreshNotDeferred();
@@ -432,7 +430,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
         /// <summary>
         /// Move <seealso cref="CurrentItem"/> to the next item.
         /// </summary>
-        /// <returns>true if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
+        /// <returns>True if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
         public virtual bool MoveCurrentToNext()
         {
             VerifyRefreshNotDeferred();
@@ -450,7 +448,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
         /// <summary>
         /// Move <seealso cref="CurrentItem"/> to the previous item.
         /// </summary>
-        /// <returns>true if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
+        /// <returns>True if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
         public virtual bool MoveCurrentToPrevious()
         {
             VerifyRefreshNotDeferred();
@@ -470,7 +468,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
         /// If the item is not found, move to BeforeFirst.
         /// </summary>
         /// <param name="item">Move CurrentItem to this item.</param>
-        /// <returns>true if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
+        /// <returns>True if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
         public virtual bool MoveCurrentTo(object item)
         {
             VerifyRefreshNotDeferred();
@@ -509,7 +507,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
         /// Move <seealso cref="CurrentItem"/> to the item at the given index.
         /// </summary>
         /// <param name="position">Move CurrentItem to this index</param>
-        /// <returns>true if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
+        /// <returns>True if <seealso cref="CurrentItem"/> points to an item within the view.</returns>
         public abstract bool MoveCurrentToPosition(int position);
 
         /// <summary>
@@ -563,7 +561,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
         public abstract bool PassesFilter(object item);
 #endif
 
-        /// <summary> Return the index where the given item belongs, or -1 if this index is unknown.
+        /// <summary>
+        /// Return the index where the given item belongs, or -1 if this index is unknown.
         /// </summary>
         /// <remarks>
         /// If this method returns an index other than -1, it must always be true that
