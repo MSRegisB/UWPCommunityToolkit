@@ -21,7 +21,8 @@ using System.Linq;
 using System.Collections.Specialized;
 #endif
 using Microsoft.Toolkit.Uwp.Automation.Peers;
-using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
+using Microsoft.Toolkit.Uwp.UI.Utilities;
+using Microsoft.Toolkit.Uwp.Utilities;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;

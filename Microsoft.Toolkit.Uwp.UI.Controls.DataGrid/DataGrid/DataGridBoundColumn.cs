@@ -12,7 +12,8 @@
 
 using System.Collections.Generic;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
+using Microsoft.Toolkit.Uwp.UI.Data.Utilities;
+using Microsoft.Toolkit.Uwp.Utilities;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 

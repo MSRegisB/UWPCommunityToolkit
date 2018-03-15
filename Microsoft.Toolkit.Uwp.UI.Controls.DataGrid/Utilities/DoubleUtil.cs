@@ -12,7 +12,7 @@
 
 using System;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
+namespace Microsoft.Toolkit.Uwp.Utilities
 {
     internal static class DoubleUtil
     {

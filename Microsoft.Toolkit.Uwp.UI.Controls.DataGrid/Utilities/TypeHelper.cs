@@ -17,7 +17,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
+namespace Microsoft.Toolkit.Uwp.Utilities
 {
     internal static class TypeHelper
     {

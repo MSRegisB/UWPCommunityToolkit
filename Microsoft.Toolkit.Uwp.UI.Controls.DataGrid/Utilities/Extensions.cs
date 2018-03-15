@@ -16,12 +16,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Toolkit.Uwp.Utilities;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
+namespace Microsoft.Toolkit.Uwp.UI.Utilities
 {
     internal static class Extensions
     {

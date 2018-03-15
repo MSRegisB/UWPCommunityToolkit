@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
+namespace Microsoft.Toolkit.Uwp.Utilities
 {
     internal class IndexToValueTable<T> : IEnumerable<Range<T>>
     {

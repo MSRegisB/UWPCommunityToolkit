@@ -13,7 +13,7 @@
 using System;
 using System.Globalization;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
-using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
+using Microsoft.Toolkit.Uwp.Utilities;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {

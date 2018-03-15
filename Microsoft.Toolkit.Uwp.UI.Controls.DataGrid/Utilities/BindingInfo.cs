@@ -13,7 +13,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
+namespace Microsoft.Toolkit.Uwp.UI.Data.Utilities
 {
     /// <summary>
     /// Stores information about a Binding, including the BindingExpression, BindingTarget and associated Element.

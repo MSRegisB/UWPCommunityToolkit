@@ -15,6 +15,8 @@ using System.Diagnostics;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
+using Microsoft.Toolkit.Uwp.UI.Utilities;
+using Microsoft.Toolkit.Uwp.Utilities;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Core;
