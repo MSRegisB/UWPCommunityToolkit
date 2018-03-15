@@ -61,9 +61,10 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
 
         /// <summary>
-        /// 
+        /// Gets the collection of elements that are represented in the UI Automation tree as immediate
+        /// child elements of the automation peer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The children elements.</returns>
         protected override IList<AutomationPeer> GetChildrenCore()
         {
             if (this.OwningRowsPresenter.OwningGrid == null)
@@ -87,7 +88,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         /// <summary>
         /// Gets a value that specifies whether the element is a content element.
         /// </summary>
-        /// <returns>true if the element is a content element; otherwise false</returns>
+        /// <returns>True if the element is a content element; otherwise false</returns>
         protected override bool IsContentElementCore()
         {
             return false;

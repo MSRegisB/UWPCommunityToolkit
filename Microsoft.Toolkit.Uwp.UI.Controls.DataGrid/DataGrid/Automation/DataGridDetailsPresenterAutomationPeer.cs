@@ -30,36 +30,39 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
 
         /// <summary>
-        /// 
+        /// Gets the control type for the DataGridDetailsPresenter element that is associated with the UI Automation peer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The control type.</returns>
         protected override AutomationControlType GetAutomationControlTypeCore()
         {
             return AutomationControlType.Custom;
         }
 
         /// <summary>
-        /// 
+        /// Called by GetClassName that gets a human readable name that, in addition to AutomationControlType,
+        /// differentiates the control represented by this AutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The string that contains the name.</returns>
         protected override string GetClassNameCore()
         {
             return this.Owner.GetType().Name;
         }
 
         /// <summary>
-        /// 
+        /// Gets or sets a value indicating whether the DataGridDetailsPresenter associated with this UIElementAutomationPeer
+        /// is understood by the end user as interactive.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the DataGridDetailsPresenter associated with this UIElementAutomationPeer
+        /// is understood by the end user as interactive.</returns>
         protected override bool IsControlElementCore()
         {
             return true;
         }
 
         /// <summary>
-        /// 
+        /// Gets a value that specifies whether the element is a content element.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the element is a content element; otherwise false</returns>
         protected override bool IsContentElementCore()
         {
             return false;

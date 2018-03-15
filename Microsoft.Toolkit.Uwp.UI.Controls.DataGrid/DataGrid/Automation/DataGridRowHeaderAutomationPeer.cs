@@ -68,7 +68,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         /// <summary>
         /// Gets a value that specifies whether the element is a content element.
         /// </summary>
-        /// <returns>true if the element is a content element; otherwise false</returns>
+        /// <returns>True if the element is a content element; otherwise false</returns>
         protected override bool IsContentElementCore()
         {
             return false;

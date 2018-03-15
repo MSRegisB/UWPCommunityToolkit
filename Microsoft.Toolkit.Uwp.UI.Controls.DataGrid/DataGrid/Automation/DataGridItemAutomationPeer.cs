@@ -91,36 +91,36 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
 
         /// <summary>
-        /// 
+        /// Returns the accelerator key for the UIElement that is associated with this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The accelerator key for the UIElement that is associated with this DataGridItemAutomationPeer.</returns>
         protected override string GetAcceleratorKeyCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetAcceleratorKey() : string.Empty;
         }
 
         /// <summary>
-        /// 
+        /// Returns the access key for the UIElement that is associated with this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The access key for the UIElement that is associated with this DataGridItemAutomationPeer.</returns>
         protected override string GetAccessKeyCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetAccessKey() : string.Empty;
         }
 
         /// <summary>
-        /// 
+        /// Returns the control type for the UIElement that is associated with this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The control type for the UIElement that is associated with this DataGridItemAutomationPeer.</returns>
         protected override AutomationControlType GetAutomationControlTypeCore()
         {
             return AutomationControlType.DataItem;
         }
 
         /// <summary>
-        /// 
+        /// Returns the string that uniquely identifies the FrameworkElement that is associated with this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The string that uniquely identifies the FrameworkElement that is associated with this DataGridItemAutomationPeer.</returns>
         protected override string GetAutomationIdCore()
         {
             // The AutomationId should be unset for dynamic content.
@@ -128,18 +128,19 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
 
         /// <summary>
-        /// 
+        /// Returns the Rect that represents the bounding rectangle of the UIElement that is associated with this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The Rect that represents the bounding rectangle of the UIElement that is associated with this DataGridItemAutomationPeer.</returns>
         protected override Rect GetBoundingRectangleCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetBoundingRectangle() : default(Rect);
         }
 
         /// <summary>
-        /// 
+        /// Returns the collection of elements that are represented in the UI Automation tree as immediate
+        /// child elements of the automation peer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The children elements.</returns>
         protected override IList<AutomationPeer> GetChildrenCore()
         {
             if (this.OwningRowPeer != null)
@@ -152,88 +153,89 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
 
         /// <summary>
-        /// 
+        /// Called by GetClassName that gets a human readable name that, in addition to AutomationControlType,
+        /// differentiates the control represented by this AutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The string that contains the name.</returns>
         protected override string GetClassNameCore()
         {
             return (this.OwningRowPeer != null) ? this.OwningRowPeer.GetClassName() : string.Empty;
         }
 
         /// <summary>
-        /// 
+        /// Returns a Point that represents the clickable space that is on the UIElement that is associated with this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A Point that represents the clickable space that is on the UIElement that is associated with this DataGridItemAutomationPeer.</returns>
         protected override Point GetClickablePointCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetClickablePoint() : new Point(double.NaN, double.NaN);
         }
 
         /// <summary>
-        /// 
+        /// Returns the string that describes the functionality of the control that is associated with the automation peer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The string that contains the help text.</returns>
         protected override string GetHelpTextCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetHelpText() : string.Empty;
         }
 
         /// <summary>
-        /// 
+        /// Returns a string that communicates the visual status of the UIElement that is associated with this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string that communicates the visual status of the UIElement that is associated with this DataGridItemAutomationPeer.</returns>
         protected override string GetItemStatusCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetItemStatus() : string.Empty;
         }
 
         /// <summary>
-        /// 
+        /// Returns a human-readable string that contains the item type that the UIElement for this DataGridItemAutomationPeer represents.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A human-readable string that contains the item type that the UIElement for this DataGridItemAutomationPeer represents.</returns>
         protected override string GetItemTypeCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetItemType() : string.Empty;
         }
 
         /// <summary>
-        /// 
+        /// Returns the AutomationPeer for the element that is targeted to the UIElement for this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The AutomationPeer for the element that is targeted to the UIElement for this DataGridItemAutomationPeer.</returns>
         protected override AutomationPeer GetLabeledByCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetLabeledBy() : null;
         }
 
         /// <summary>
-        /// 
+        /// Returns a localized human readable string for this control type.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A localized human readable string for this control type.</returns>
         protected override string GetLocalizedControlTypeCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetLocalizedControlType() : string.Empty;
         }
 
         /// <summary>
-        /// 
+        /// Returns the string that describes the functionality of the control that is associated with this DataGridItemAutomationPeer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The string that contains the help text.</returns>
         protected override string GetNameCore()
         {
             return _item.ToString();
         }
 
         /// <summary>
-        /// 
+        /// Returns a value indicating whether the element associated with this DataGridItemAutomationPeer is laid out in a specific direction.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A value indicating whether the element associated with this DataGridItemAutomationPeer is laid out in a specific direction.</returns>
         protected override AutomationOrientation GetOrientationCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.GetOrientation() : AutomationOrientation.None;
         }
 
         /// <summary>
-        /// Gets the control pattern that is associated with the specified Windows.UI.Xaml.Automation.Peers.PatternInterface.
+        /// Returns the control pattern that is associated with the specified Windows.UI.Xaml.Automation.Peers.PatternInterface.
         /// </summary>
         /// <param name="patternInterface">A value from the Windows.UI.Xaml.Automation.Peers.PatternInterface enumeration.</param>
         /// <returns>The object that supports the specified pattern, or null if unsupported.</returns>
@@ -271,79 +273,81 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
 
         /// <summary>
-        /// 
+        /// Returns a value indicating whether the UIElement associated with this DataGridItemAutomationPeer can accept keyboard focus.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the element is focusable by the keyboard; otherwise false.</returns>
         protected override bool HasKeyboardFocusCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.HasKeyboardFocus() : false;
         }
 
         /// <summary>
-        /// 
+        /// Returns a value indicating whether the element associated with this DataGridItemAutomationPeer is an element that contains data that is presented to the user.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the element contains data for the user to read; otherwise, false.</returns>
         protected override bool IsContentElementCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.IsContentElement() : true;
         }
 
         /// <summary>
-        /// 
+        /// Gets or sets a value indicating whether the UIElement associated with this DataGridItemAutomationPeer
+        /// is understood by the end user as interactive.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the UIElement associated with this DataGridItemAutomationPeer
+        /// is understood by the end user as interactive.</returns>
         protected override bool IsControlElementCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.IsControlElement() : true;
         }
 
         /// <summary>
-        /// 
+        /// Gets a value indicating whether this DataGridItemAutomationPeer can receive and send events to the associated element.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if this DataGridItemAutomationPeer can receive and send events; otherwise, false.</returns>
         protected override bool IsEnabledCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.IsEnabled() : false;
         }
 
         /// <summary>
-        /// 
+        /// Gets a value indicating whether the UIElement associated with this DataGridItemAutomationPeer can accept keyboard focus.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the UIElement associated with this DataGridItemAutomationPeer can accept keyboard focus.</returns>
         protected override bool IsKeyboardFocusableCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.IsKeyboardFocusable() : false;
         }
 
         /// <summary>
-        /// 
+        /// Gets a value indicating whether the UIElement associated with this DataGridItemAutomationPeer is off the screen.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the element is not on the screen; otherwise, false.</returns>
         protected override bool IsOffscreenCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.IsOffscreen() : true;
         }
 
         /// <summary>
-        /// 
+        /// Gets a value indicating whether the UIElement associated with this DataGridItemAutomationPeer contains protected content.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Trye if the UIElement contains protected content.</returns>
         protected override bool IsPasswordCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.IsPassword() : false;
         }
 
         /// <summary>
-        /// 
+        /// Gets a value indicating whether the UIElement associated with this DataGridItemAutomationPeer is required to be completed on a form.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>True if the UIElement is required to be completed on a form.</returns>
         protected override bool IsRequiredForFormCore()
         {
             return this.OwningRowPeer != null ? this.OwningRowPeer.IsRequiredForForm() : false;
         }
 
         /// <summary>
-        /// 
+        /// Sets the keyboard input focus on the UIElement associated with this DataGridItemAutomationPeer.
         /// </summary>
         protected override void SetFocusCore()
         {
