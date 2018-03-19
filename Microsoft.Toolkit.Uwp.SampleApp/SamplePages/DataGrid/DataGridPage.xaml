@@ -8,6 +8,10 @@
 
 	<!-- Shallow Copy -->
     <Grid Visibility="Collapsed">
-        <controls:DataGrid/>
+        <controls:DataGrid>
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn />
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
     </Grid>
 </Page>

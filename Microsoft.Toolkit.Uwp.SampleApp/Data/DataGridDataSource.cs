@@ -15,6 +15,7 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.Data
     public class DataGridDataSource
     {
         private static ObservableCollection<DataGridDataItem> _items;
+        public string CachedSortedColumn = string.Empty;
 
         public async Task<IEnumerable<DataGridDataItem>> GetDataAsync()
         {
@@ -44,6 +45,141 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.Data
                             Ascents = values[8]
                         });
                 }
+            }
+
+            return _items;
+        }
+
+        public ObservableCollection<DataGridDataItem> SortData(string sortBy, bool ascending)
+        {
+            CachedSortedColumn = sortBy;
+            switch (sortBy)
+            {
+                case "Rank":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Rank ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Rank descending
+                                                                          select item);
+                    }
+
+                case "Parent_mountain":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Parent_mountain ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Parent_mountain descending
+                                                                          select item);
+                    }
+
+                case "Mountain":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Mountain ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Mountain descending
+                                                                          select item);
+                    }
+
+                case "Height_m":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Height_m ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Height_m descending
+                                                                          select item);
+                    }
+
+                case "Range":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Range ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Range descending
+                                                                          select item);
+                    }
+
+                case "Coordinates":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Coordinates ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Coordinates descending
+                                                                          select item);
+                    }
+
+                case "First_ascent":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.First_ascent ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.First_ascent descending
+                                                                          select item);
+                    }
+
+                case "Ascents":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Ascents ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Ascents descending
+                                                                          select item);
+                    }
+
+                case "Prominence":
+                    if (ascending)
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Prominence ascending
+                                                                          select item);
+                    }
+                    else
+                    {
+                        return new ObservableCollection<DataGridDataItem>(from item in _items
+                                                                          orderby item.Prominence descending
+                                                                          select item);
+                    }
             }
 
             return _items;
