@@ -5,31 +5,60 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d">
 
-  <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-      VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+  <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid.Resources>
+      <DataTemplate x:Key="RowDetailsTemplate">
+        <StackPanel>
+          <TextBlock Margin="10" Text="Here are the details for the selected mountain:" FontStyle="Italic"/>
+          <Grid Margin="10" Padding="5" RowSpacing="3" ColumnSpacing="5">
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Coordinates: " FontWeight="SemiBold" FontSize="13" />
+            <TextBlock Grid.Row="1" Text="Prominence (m): " FontWeight="SemiBold" FontSize="13" />
+            <TextBlock Grid.Row="2" Text="First Ascent (year): " FontWeight="SemiBold" FontSize="13" />
+            <TextBlock Grid.Row="3" Text="No. of ascents: " FontWeight="SemiBold" FontSize="13" />
+            <TextBlock Grid.Column="1" FontSize="13" Text="{Binding Coordinates}" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" FontSize="13" Text="{Binding Prominence}" HorizontalAlignment="Right" />
+            <TextBlock Grid.Row="2" Grid.Column="1" FontSize="13" Text="{Binding First_ascent}" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" FontSize="13" Text="{Binding Ascents}" HorizontalAlignment="Right"/>
+          </Grid>
+        </StackPanel>
+      </DataTemplate>
+    </Grid.Resources>
     <controls:DataGrid
         x:Name="dataGrid"
-        HeadersVisibility="All"
-        RowDetailsVisibilityMode="VisibleWhenSelected"
+        Margin="12"
+        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
         HorizontalScrollBarVisibility="Visible"
         VerticalScrollBarVisibility="Visible"
-        FrozenColumnCount="0"
+        AlternatingRowBackground="@[AlternatingRowBackground:Brush:Transparent]"
         AreRowDetailsFrozen="@[AreRowDetailsFrozen:Bool:False]"
-        AutoGenerateColumns="@[AutoGenerateColumns:Bool:False]"
-        IsReadOnly="@[IsReadOnly:Bool:False]"
+        AutoGenerateColumns="@[AutoGenerateColumns:Bool:True]"
         CanUserSortColumns="@[CanUserSortColumns:Bool:False]"
         CanUserReorderColumns="@[CanUserReorderColumns:Bool:True]"
-        CanUserResizeColumns="@[CanUserResizeColumns:Bool:True]">
+        CanUserResizeColumns="@[CanUserResizeColumns:Bool:True]"
+        ColumnHeaderHeight="@[ColumnHeaderHeight:String:32]"
+        FrozenColumnCount="@[FrozenColumnCount:Slider:0:0-8]"
+        GridLinesVisibility="@[GridLinesVisibility:Enum:DataGridGridLinesVisibility.None]"
+        HeadersVisibility="@[HeadersVisibility:Enum:DataGridHeadersVisibility.All]"
+        IsReadOnly="@[IsReadOnly:Bool:False]"
+        RowDetailsTemplate="{StaticResource RowDetailsTemplate}"  
+        RowDetailsVisibilityMode="@[RowDetailsVisibilityMode:Enum:DataGridRowDetailsVisibilityMode.VisibleWhenSelected]"
+        SelectionMode="@[SelectionMode:Enum:DataGridSelectionMode.Extended]">
       <controls:DataGrid.Columns>
-        <controls:DataGridTextColumn Header="Rank" Binding="{Binding Rank}" />
-        <controls:DataGridTextColumn Header="Mountain" Binding="{Binding Mountain}" />
-        <controls:DataGridTextColumn Header="Height (m)" Binding="{Binding Height_m}" />
-        <controls:DataGridTextColumn Header="Range" Binding="{Binding Range}" />
-        <controls:DataGridTextColumn Header="Coordinates" Binding="{Binding Coordinates}" />
-        <controls:DataGridTextColumn Header="Prominence (m)" Binding="{Binding Prominence}" />
-        <controls:DataGridTextColumn Header="Parent" Binding="{Binding Parent_mountain}" />
-        <controls:DataGridTextColumn Header="First ascent" Binding="{Binding First_ascent}" />
-        <controls:DataGridTextColumn Header="# of ascents" Binding="{Binding Ascents}" />
+        <controls:DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Tag="Rank"/>
+        <controls:DataGridTextColumn Header="Mountain" Binding="{Binding Mountain}" Tag="Mountain" />
+        <controls:DataGridTextColumn Header="Height (m)" Binding="{Binding Height_m}" Tag="Height_m" />
+        <controls:DataGridTextColumn Header="Range" Binding="{Binding Range}" Tag="Range"/>
+        <controls:DataGridTextColumn Header="Parent Mountain" Binding="{Binding Parent_mountain}" Tag="Parent_mountain"/>
       </controls:DataGrid.Columns>
     </controls:DataGrid>
   </Grid>
