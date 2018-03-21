@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Media;
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 {
     /// <summary>
-    /// Used within the template of a <see cref="T:System.Windows.Controls.DataGrid"/> to specify the location in the control's visual tree
+    /// Used within the template of a <see cref="DataGrid"/> to specify the location in the control's visual tree
     /// where the row details are to be added.
     /// </summary>
     public sealed class DataGridDetailsPresenter : Panel

@@ -251,7 +251,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Creates AutomationPeer (<see cref="UIElement.OnCreateAutomationPeer"/>)
         /// </summary>
-        /// <returns>An automation peer for this <see cref="T:System.Windows.Controls.DataGridCell"/>.</returns>
+        /// <returns>An automation peer for this <see cref="DataGridCell"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             if (this.OwningGrid != null &&

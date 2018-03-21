@@ -20,7 +20,7 @@ using Windows.UI.Xaml.Data;
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
-    /// Represents a <see cref="T:System.Windows.Controls.DataGrid" /> column that can
+    /// Represents a <see cref="DataGrid"/> column that can
     /// bind to a property in the grid's data source.
     /// </summary>
     [StyleTypedProperty(Property = "ElementStyle", StyleTargetType = typeof(FrameworkElement))]

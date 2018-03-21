@@ -24,7 +24,7 @@ using Windows.UI.Xaml.Media;
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 {
     /// <summary>
-    /// Represents an individual <see cref="T:System.Windows.Controls.DataGrid"/> row header.
+    /// Represents an individual <see cref="DataGrid"/> row header.
     /// </summary>
     [TemplatePart(Name = DATAGRIDROWHEADER_elementRootName, Type = typeof(FrameworkElement))]
 

@@ -219,8 +219,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         /// <summary>
         /// Occurs one time for each public, non-static property in the bound data type when the
-        /// <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.ItemsSource"/> property is changed and the
-        /// <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.AutoGenerateColumns"/> property is true.
+        /// <see cref="ItemsSource"/> property is changed and the
+        /// <see cref="AutoGenerateColumns"/> property is true.
         /// </summary>
         public event EventHandler<DataGridAutoGeneratingColumnEventArgs> AutoGeneratingColumn;
 
@@ -308,7 +308,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         public event EventHandler<DataGridPreparingCellForEditEventArgs> PreparingCellForEdit;
 
         /// <summary>
-        /// Occurs when the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.RowDetailsVisibilityMode"/>
+        /// Occurs when the <see cref="RowDetailsVisibilityMode"/>
         /// property value changes.
         /// </summary>
         public event EventHandler<DataGridRowDetailsEventArgs> RowDetailsVisibilityChanged;
@@ -324,8 +324,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         public event EventHandler<DataGridRowEditEndingEventArgs> RowEditEnding;
 
         /// <summary>
-        /// Occurs when the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.SelectedItem"/> or
-        /// <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.SelectedItems"/> property value changes.
+        /// Occurs when the <see cref="SelectedItem"/> or
+        /// <see cref="SelectedItems"/> property value changes.
         /// </summary>
         public event SelectionChangedEventHandler SelectionChanged;
 
@@ -417,11 +417,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.AlternatingRowBackground"/>
+        /// Identifies the <see cref="AlternatingRowBackground"/>
         /// dependency property.
         /// </summary>
         /// <returns>
-        /// The identifier for the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.AlternatingRowBackground"/>
+        /// The identifier for the <see cref="AlternatingRowBackground"/>
         /// dependency property.
         /// </returns>
         public static readonly DependencyProperty AlternatingRowBackgroundProperty =
@@ -506,7 +506,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         /// <summary>
         /// Gets or sets a value indicating whether columns are created
-        /// automatically when the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.ItemsSource"/> property is set.
+        /// automatically when the <see cref="ItemsSource"/> property is set.
         /// </summary>
         public bool AutoGenerateColumns
         {
@@ -617,7 +617,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.CellStyle"/> dependency property.
+        /// Identifies the <see cref="CellStyle"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty CellStyleProperty =
             DependencyProperty.Register(
@@ -656,7 +656,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.ClipboardCopyMode"/> dependency property.
+        /// Identifies the <see cref="ClipboardCopyMode"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ClipboardCopyModeProperty =
             DependencyProperty.Register(
@@ -799,7 +799,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.DragIndicatorStyle"/>
+        /// Identifies the <see cref="DragIndicatorStyle"/>
         /// dependency property.
         /// </summary>
         public static readonly DependencyProperty DragIndicatorStyleProperty =
@@ -819,7 +819,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.DropLocationIndicatorStyle"/>
+        /// Identifies the <see cref="DropLocationIndicatorStyle"/>
         /// dependency property.
         /// </summary>
         public static readonly DependencyProperty DropLocationIndicatorStyleProperty =
@@ -839,7 +839,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.FrozenColumnCount"/>
+        /// Identifies the <see cref="FrozenColumnCount"/>
         /// dependency property.
         /// </summary>
         public static readonly DependencyProperty FrozenColumnCountProperty =
@@ -1415,7 +1415,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.RowBackground"/> dependency property.
+        /// Identifies the <see cref="RowBackground"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty RowBackgroundProperty =
             DependencyProperty.Register(
@@ -1616,7 +1616,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.RowHeaderStyle"/> dependency property.
+        /// Identifies the <see cref="RowHeaderStyle"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty RowHeaderStyleProperty =
             DependencyProperty.Register(
@@ -1665,7 +1665,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Identifies the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.RowStyle"/> dependency property.
+        /// Identifies the <see cref="RowStyle"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty RowStyleProperty =
             DependencyProperty.Register(

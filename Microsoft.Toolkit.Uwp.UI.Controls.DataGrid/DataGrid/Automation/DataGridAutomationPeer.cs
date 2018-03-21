@@ -48,7 +48,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         /// Initializes a new instance of the <see cref="DataGridAutomationPeer"/> class.
         /// </summary>
         /// <param name="owner">
-        /// The <see cref="T:System.Windows.Controls.DataGrid" /> that is associated with this <see cref="T:Windows.UI.Xaml.Automation.Peers.DataGridAutomationPeer" />.
+        /// The <see cref="DataGrid" /> that is associated with this <see cref="T:Windows.UI.Xaml.Automation.Peers.DataGridAutomationPeer" />.
         /// </param>
         public DataGridAutomationPeer(DataGrid owner)
             : base(owner)

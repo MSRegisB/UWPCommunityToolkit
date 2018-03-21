@@ -256,8 +256,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             checkBox.HorizontalAlignment = HorizontalAlignment.Center;
             checkBox.VerticalAlignment = VerticalAlignment.Center;
             checkBox.IsThreeState = this.IsThreeState;
-            bool isDesignMode = Windows.ApplicationModel.DesignMode.DesignModeEnabled;
-            if (this.Binding != null || !isDesignMode)
+            if (this.Binding != null)
             {
                 checkBox.SetBinding(this.BindingTarget, this.Binding);
             }

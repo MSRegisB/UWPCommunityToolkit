@@ -83,33 +83,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the style that is used when rendering cells in the column.
-        /// </summary>
-        /// <returns>
-        /// The style that is used when rendering cells in the column. The default is null.
-        /// </returns>
-        public Style CellStyle
-        {
-            get
-            {
-                return _cellStyle;
-            }
-
-            set
-            {
-                if (_cellStyle != value)
-                {
-                    Style previousStyle = _cellStyle;
-                    _cellStyle = value;
-                    if (this.OwningGrid != null)
-                    {
-                        this.OwningGrid.OnColumnCellStyleChanged(this, previousStyle);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the user can change the column display position by dragging the column header.
         /// </summary>
         /// <returns>
@@ -216,6 +189,33 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets the style that is used when rendering cells in the column.
+        /// </summary>
+        /// <returns>
+        /// The style that is used when rendering cells in the column. The default is null.
+        /// </returns>
+        public Style CellStyle
+        {
+            get
+            {
+                return _cellStyle;
+            }
+
+            set
+            {
+                if (_cellStyle != value)
+                {
+                    Style previousStyle = _cellStyle;
+                    _cellStyle = value;
+                    if (this.OwningGrid != null)
+                    {
+                        this.OwningGrid.OnColumnCellStyleChanged(this, previousStyle);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the binding that will be used to get or set cell content for the clipboard.
         /// </summary>
         public virtual Binding ClipboardContentBinding
@@ -232,20 +232,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the display position of the column relative to the other columns in the <see cref="T:System.Windows.Controls.DataGrid"/>.
+        /// Gets or sets the display position of the column relative to the other columns in the <see cref="DataGrid"/>.
         /// </summary>
         /// <returns>
-        /// The zero-based position of the column as it is displayed in the associated <see cref="T:System.Windows.Controls.DataGrid"/>. The default is the index of the corresponding <see cref="P:System.Collections.ObjectModel.Collection`1.Item(System.Int32)"/> in the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.Columns"/> collection.
+        /// The zero-based position of the column as it is displayed in the associated <see cref="DataGrid"/>. The default is the index of the corresponding <see cref="P:System.Collections.ObjectModel.Collection`1.Item(System.Int32)"/> in the <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.Columns"/> collection.
         /// </returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// When setting this property, the specified value is less than -1 or equal to <see cref="F:System.Int32.MaxValue"/>.
         ///
         /// -or-
         ///
-        /// When setting this property on a column in a <see cref="T:System.Windows.Controls.DataGrid"/>, the specified value is less than zero or greater than or equal to the number of columns in the <see cref="T:System.Windows.Controls.DataGrid"/>.
+        /// When setting this property on a column in a <see cref="DataGrid"/>, the specified value is less than zero or greater than or equal to the number of columns in the <see cref="DataGrid"/>.
         /// </exception>
         /// <exception cref="T:System.InvalidOperationException">
-        /// When setting this property, the <see cref="T:System.Windows.Controls.DataGrid"/> is already making <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn.DisplayIndex"/> adjustments. For example, this exception is thrown when you attempt to set <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn.DisplayIndex"/> in a <see cref="E:System.Windows.Controls.DataGrid.ColumnDisplayIndexChanged"/> event handler.
+        /// When setting this property, the <see cref="DataGrid"/> is already making <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn.DisplayIndex"/> adjustments. For example, this exception is thrown when you attempt to set <see cref="Microsoft.Toolkit.Uwp.UI.Controls.DataGridColumn.DisplayIndex"/> in a <see cref="E:System.Windows.Controls.DataGrid.ColumnDisplayIndexChanged"/> event handler.
         ///
         /// -or-
         ///

@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Controls;
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 {
     /// <summary>
-    /// Represents a non-scrollable grid that contains <see cref="T:System.Windows.Controls.DataGrid"/> row headers.
+    /// Represents a non-scrollable grid that contains <see cref="DataGrid"/> row headers.
     /// </summary>
     public class DataGridFrozenGrid : Grid
     {

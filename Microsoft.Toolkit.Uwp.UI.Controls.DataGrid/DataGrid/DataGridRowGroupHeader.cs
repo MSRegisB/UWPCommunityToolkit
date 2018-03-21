@@ -72,7 +72,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the style applied to the header cell of a <see cref="T:System.Windows.Controls.DataGridRowGroupHeader"/>.
+        /// Gets or sets the style applied to the header cell of a <see cref="DataGridRowGroupHeader"/>.
         /// </summary>
         public Style HeaderStyle
         {
@@ -119,7 +119,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 new PropertyMetadata(Visibility.Visible));
 
         /// <summary>
-        /// Gets or sets the name of the property that this <see cref="T:System.Windows.Controls.DataGrid"/> row is bound to.
+        /// Gets or sets the name of the property that this <see cref="DataGrid"/> row is bound to.
         /// </summary>
         public string PropertyName
         {
@@ -158,7 +158,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         /// <summary>
         /// Gets or sets a value that indicates the amount that the
-        /// children of the <see cref="T:System.Windows.Controls.RowGroupHeader"/> are indented.
+        /// children of the <see cref="RowGroupHeader"/> are indented.
         /// </summary>
         public double SublevelIndent
         {
@@ -508,7 +508,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// <summary>
         /// Creates AutomationPeer (<see cref="UIElement.OnCreateAutomationPeer"/>)
         /// </summary>
-        /// <returns>An automation peer for this <see cref="T:System.Windows.Controls.Primitives.DataGridRowGroupHeader"/>.</returns>
+        /// <returns>An automation peer for this <see cref="DataGridRowGroupHeader"/>.</returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new DataGridRowGroupHeaderAutomationPeer(this);
