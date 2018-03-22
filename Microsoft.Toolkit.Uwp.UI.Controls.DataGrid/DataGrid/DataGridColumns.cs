@@ -1778,7 +1778,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 int columnsToScroll;
                 if (this.ColumnsInternal.DisplayInOrder(columnIndex, this.DisplayData.FirstDisplayedScrollingCol))
                 {
-                    columnsToScroll = this.ColumnsInternal.GetColumnCount(true /* isVisible */, false /* isFrozen */, columnIndex, this.DisplayData.FirstDisplayedScrollingCol);
+                    columnsToScroll = this.ColumnsInternal.GetColumnCount(true /*isVisible*/, false /*isFrozen*/, columnIndex, this.DisplayData.FirstDisplayedScrollingCol);
                     if (_negHorizontalOffset > 0)
                     {
                         columnsToScroll++;

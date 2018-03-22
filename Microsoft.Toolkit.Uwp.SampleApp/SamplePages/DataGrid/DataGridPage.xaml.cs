@@ -80,7 +80,6 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.SamplePages
                     e.Column.SortDirection = DataGridSortDirection.Ascending;
                     break;
             }
-
         }
     }
 }

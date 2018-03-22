@@ -1512,10 +1512,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 #endif
 
-        private void EnsureRowDetailsVisibility(DataGridRow row, bool raiseNotification, bool animate)
+        private void EnsureRowDetailsVisibility(
+            DataGridRow row,
+#if FEATURE_ROW_DETAILS_HEIGHT_ANIMATION
+            bool animate,
+#endif
+            bool raiseNotification)
         {
             // Show or hide RowDetails based on DataGrid settings
-            row.SetDetailsVisibilityInternal(GetRowDetailsVisibility(row.Index), raiseNotification, animate);
+            row.SetDetailsVisibilityInternal(
+                GetRowDetailsVisibility(row.Index),
+#if FEATURE_ROW_DETAILS_HEIGHT_ANIMATION
+                animate,
+#endif
+                raiseNotification);
         }
 
         private IEnumerable<DataGridRow> GetAllRows()
@@ -2464,7 +2474,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // Show or hide RowDetails based on DataGrid settings
-            EnsureRowDetailsVisibility(row, false /*raiseNotification*/, false /*animate*/);
+            EnsureRowDetailsVisibility(
+                row,
+#if FEATURE_ROW_DETAILS_HEIGHT_ANIMATION
+                false /*animate*/,
+#endif
+                false /*raiseNotification*/);
         }
 
 #if FEATURE_ICOLLECTIONVIEW_GROUP
@@ -3018,7 +3033,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (row != null)
             {
                 row.ApplyState(true /*animate*/);
-                EnsureRowDetailsVisibility(row, true /*raiseNotification*/, true /*animate*/);
+                EnsureRowDetailsVisibility(
+                    row,
+#if FEATURE_ROW_DETAILS_HEIGHT_ANIMATION
+                    true /*animate*/,
+#endif
+                    true /*raiseNotification*/);
             }
 #if FEATURE_ICOLLECTIONVIEW_GROUP
             else

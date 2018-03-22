@@ -7388,7 +7388,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         if (row.DetailsVisibility != newDetailsVisibility)
                         {
                             updated = true;
-                            row.SetDetailsVisibilityInternal(newDetailsVisibility, true /* raiseNotification */, false /* animate */);
+                            row.SetDetailsVisibilityInternal(
+                                newDetailsVisibility,
+#if FEATURE_ROW_DETAILS_HEIGHT_ANIMATION
+                                false /*animate*/,
+#endif
+                                true /*raiseNotification*/);
                         }
                     }
                 }

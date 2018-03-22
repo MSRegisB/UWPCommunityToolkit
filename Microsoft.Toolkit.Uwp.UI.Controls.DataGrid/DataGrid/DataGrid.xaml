@@ -113,12 +113,12 @@
 
                                         <ContentPresenter Content="{TemplateBinding Content}"/>
 
-                                        <!--<Path Grid.Column="1" Name="SortIcon" Fill="{ThemeResource DataGridHeaderForegroundBrush}" RenderTransformOrigin=".5,.5" HorizontalAlignment="Left" VerticalAlignment="Center" Opacity="0" Stretch="Uniform" Width="8" Margin="4,0,0,0" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z ">
+                                        <!--<Path Grid.Column="1" x:Name="SortIcon" Fill="{ThemeResource DataGridHeaderForegroundBrush}" RenderTransformOrigin=".5,.5" HorizontalAlignment="Left" VerticalAlignment="Center" Opacity="0" Stretch="Uniform" Width="8" Margin="4,0,0,0" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z ">
                                             <Path.RenderTransform>
                                                 <ScaleTransform ScaleX=".9" ScaleY=".9"/>
                                             </Path.RenderTransform>
                                         </Path>-->
-                                        <TextBlock Grid.Column="1" Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12" Foreground="{ThemeResource DataGridHeaderForegroundBrush}" 
+                                        <TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12" Foreground="{ThemeResource DataGridHeaderForegroundBrush}" 
                                                     HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.0"  RenderTransformOrigin="0.5,0.5" />
                                     </Grid>
                                 </Grid>
@@ -165,32 +165,20 @@
                             
                             <VisualStateGroup x:Name="ScrollingIndicatorStates">
                                 <VisualStateGroup.Transitions>
-                                    <VisualTransition From="MouseIndicator" To="NoIndicator">
-                                    </VisualTransition>
-                                    <VisualTransition From="MouseIndicatorFull" To="NoIndicator">
-                                    </VisualTransition>
-                                    <VisualTransition From="MouseIndicatorFull" To="MouseIndicator">
-                                    </VisualTransition>
-                                    <VisualTransition From="TouchIndicator" To="NoIndicator">
-                                    </VisualTransition>
+                                    <VisualTransition From="MouseIndicator" To="NoIndicator"/>
+                                    <VisualTransition From="MouseIndicatorFull" To="NoIndicator"/>
+                                    <VisualTransition From="MouseIndicatorFull" To="MouseIndicator"/>
+                                    <VisualTransition From="TouchIndicator" To="NoIndicator"/>
                                 </VisualStateGroup.Transitions>
 
-                                <VisualState x:Name="NoIndicator">
-                                </VisualState>
-
-                                <VisualState x:Name="TouchIndicator">
-                                </VisualState>
-
-                                <VisualState x:Name="MouseIndicator">
-                                </VisualState>
-
-                                <VisualState x:Name="MouseIndicatorFull">
-                                </VisualState>
+                                <VisualState x:Name="NoIndicator"/>
+                                <VisualState x:Name="TouchIndicator"/>
+                                <VisualState x:Name="MouseIndicator"/>
+                                <VisualState x:Name="MouseIndicatorFull"/>
                             </VisualStateGroup>
 
                             <VisualStateGroup x:Name="ScrollingSeparatorStates">
-                                <VisualState x:Name="ScrollingSeparatorNormal">
-                                </VisualState>
+                                <VisualState x:Name="ScrollingSeparatorNormal"/>
 
                                 <VisualState x:Name="ScrollingSeparatorDisabled">
                                     <Storyboard>
@@ -200,11 +188,11 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <!--<Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="2">-->
-                            <Grid Name="Root" Background="{TemplateBinding Background}">
+                            <Grid x:Name="Root" Background="{TemplateBinding Background}">
                                 <Grid.Resources>
                                     <!--Start: TopLeftHeaderTemplate-->
                                     <ControlTemplate x:Key="TopLeftHeaderTemplate" TargetType="localprimitives:DataGridColumnHeader">
-                                        <!--<Grid Name="Root">
+                                        <!--<Grid x:Name="Root">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="*"/>
                                                 <RowDefinition Height="*"/>
@@ -229,7 +217,7 @@
 
                                     <!--Start: TopRightHeaderTemplate-->
                                     <ControlTemplate x:Key="TopRightHeaderTemplate" TargetType="localprimitives:DataGridColumnHeader">
-                                        <Grid Name="RootElement">
+                                        <Grid x:Name="RootElement">
                                             <!--<Grid.RowDefinitions>
                                                 <RowDefinition Height="*"/>
                                                 <RowDefinition Height="*"/>
@@ -264,28 +252,28 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <localprimitives:DataGridColumnHeader Name="TopLeftCornerHeader" Template="{StaticResource TopLeftHeaderTemplate}" />
-                                <localprimitives:DataGridColumnHeadersPresenter Name="ColumnHeadersPresenter" Grid.Column="1" Grid.ColumnSpan="2"/>
+                                <localprimitives:DataGridColumnHeader x:Name="TopLeftCornerHeader" Template="{StaticResource TopLeftHeaderTemplate}" />
+                                <localprimitives:DataGridColumnHeadersPresenter x:Name="ColumnHeadersPresenter" Grid.Column="1" Grid.ColumnSpan="2"/>
                                 <!-- Use TopRightCornerHeader when ColumnHeadersPresenter's Grid.ColumnSpan is 1 and the vertical ScrollBar does not paint on top of the cells -->
-                                <!--<localprimitives:DataGridColumnHeader Name="TopRightCornerHeader" Grid.Column="2" Template="{StaticResource TopRightHeaderTemplate}"/>-->
-                                <Rectangle Name="ColumnHeadersAndRowsSeparator" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Width="Auto" StrokeThickness="1" Height="1" Fill="{ThemeResource GridLinesBrush}"/>
+                                <!--<localprimitives:DataGridColumnHeader x:Name="TopRightCornerHeader" Grid.Column="2" Template="{StaticResource TopRightHeaderTemplate}"/>-->
+                                <Rectangle x:Name="ColumnHeadersAndRowsSeparator" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Width="Auto" StrokeThickness="1" Height="1" Fill="{ThemeResource GridLinesBrush}"/>
 
-                                <localprimitives:DataGridRowsPresenter Name="RowsPresenter" Grid.ColumnSpan="3" Grid.Row="1" Grid.RowSpan="2"/>
-                                <Rectangle Name="BottomRightCorner" Fill="#FFE9EEF4" Grid.Row="2" Grid.Column="2"/>
+                                <localprimitives:DataGridRowsPresenter x:Name="RowsPresenter" Grid.ColumnSpan="3" Grid.Row="1" Grid.RowSpan="2"/>
+                                <Rectangle x:Name="BottomRightCorner" Fill="#FFE9EEF4" Grid.Row="2" Grid.Column="2"/>
                                 <!-- Use BottomLeftCorner when RowsPresenter's Grid.RowSpan is 1 and the horizontal ScrollBar does not paint on top of the cells -->
-                                <!--<Rectangle Name="BottomLeftCorner" Fill="#FFE9EEF4" Grid.Row="2" Grid.ColumnSpan="2"/>-->
-                                <ScrollBar Name="VerticalScrollbar" Orientation="Vertical" IndicatorMode="MouseIndicator" Grid.Column="2" Grid.Row="1"/>
+                                <!--<Rectangle x:Name="BottomLeftCorner" Fill="#FFE9EEF4" Grid.Row="2" Grid.ColumnSpan="2"/>-->
+                                <ScrollBar x:Name="VerticalScrollbar" Orientation="Vertical" IndicatorMode="MouseIndicator" Grid.Column="2" Grid.Row="1"/>
 
                                 <Grid Grid.Column="1" Grid.Row="2">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Rectangle Name="FrozenColumnScrollBarSpacer"/>
-                                    <ScrollBar Name="HorizontalScrollbar" Grid.Column="1" Orientation="Horizontal" IndicatorMode="MouseIndicator"/>
+                                    <Rectangle x:Name="FrozenColumnScrollBarSpacer"/>
+                                    <ScrollBar x:Name="HorizontalScrollbar" Grid.Column="1" Orientation="Horizontal" IndicatorMode="MouseIndicator"/>
                                 </Grid>
 
-                                <!--<dataInput:ValidationSummary Name="ValidationSummary" Grid.Row="3" Grid.ColumnSpan="3" MaxHeight="90"/>-->
+                                <!--<dataInput:ValidationSummary x:Name="ValidationSummary" Grid.Row="3" Grid.ColumnSpan="3" MaxHeight="90"/>-->
                             </Grid>
                         <!--</Border>-->
                         <Border x:Name="DisabledVisualElement" IsHitTestVisible="False" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" CornerRadius="2" Background="#8CFFFFFF" Opacity="0"/>
@@ -305,7 +293,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:DataGridCell">
-                    <Grid Name="Root" Background="{TemplateBinding Background}">
+                    <Grid x:Name="Root" Background="{TemplateBinding Background}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CurrentStates">
                                 <VisualState x:Name="Regular"/>
@@ -332,7 +320,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Rectangle Name="FocusVisual" Stroke="{ThemeResource DataGridCellFocusBorderBrush}" StrokeThickness="1" HorizontalAlignment="Stretch" 
+                        <Rectangle x:Name="FocusVisual" Stroke="{ThemeResource DataGridCellFocusBorderBrush}" StrokeThickness="1" HorizontalAlignment="Stretch" 
                                    VerticalAlignment="Stretch" IsHitTestVisible="false" Opacity="0"/>
 
                         <ContentPresenter
@@ -344,7 +332,7 @@
 
                         <Rectangle x:Name="InvalidVisualElement" IsHitTestVisible="False" StrokeThickness="1" Stroke="#FFDC000C" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0"/>
 
-                        <Rectangle Name="RightGridLine" Grid.Column="1" VerticalAlignment="Stretch" Width="1"/>
+                        <Rectangle x:Name="RightGridLine" Grid.Column="1" VerticalAlignment="Stretch" Width="1"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -363,7 +351,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="localprimitives:DataGridColumnHeader">
-                    <Grid Name="Root">
+                    <Grid x:Name="Root">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
@@ -442,19 +430,15 @@
 
                             <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                            <!--<Path Grid.Column="1" Name="SortIcon" Fill="{ThemeResource DataGridHeaderForegroundBrush}" RenderTransformOrigin=".5,.5" HorizontalAlignment="Left" VerticalAlignment="Center" Opacity="0" Stretch="Uniform" Width="8" Margin="4,0,0,0" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z ">
+                            <!--<Path Grid.Column="1" x:Name="SortIcon" Fill="{ThemeResource DataGridHeaderForegroundBrush}" RenderTransformOrigin=".5,.5" HorizontalAlignment="Left" VerticalAlignment="Center" Opacity="0" Stretch="Uniform" Width="8" Margin="4,0,0,0" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z ">
                                 <Path.RenderTransform>
                                     <ScaleTransform ScaleX=".9" ScaleY=".9"/>
                                 </Path.RenderTransform>
                             </Path>-->
-                            <TextBlock Grid.Column="1" Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12" Foreground="{ThemeResource DataGridHeaderForegroundBrush}" 
+                            <TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12" Foreground="{ThemeResource DataGridHeaderForegroundBrush}" 
                                                     HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.0"  RenderTransformOrigin="0.5,0.5" />
-
-
                         </Grid>
-
-                        <Rectangle Name="VerticalSeparator" Grid.Column="1" Width="1" VerticalAlignment="Stretch" Fill="{TemplateBinding SeparatorBrush}" Visibility="{TemplateBinding SeparatorVisibility}"/>
-
+                        <Rectangle x:Name="VerticalSeparator" Grid.Column="1" Width="1" VerticalAlignment="Stretch" Fill="{TemplateBinding SeparatorBrush}" Visibility="{TemplateBinding SeparatorVisibility}"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -467,7 +451,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:DataGridRow">
-                    <localprimitives:DataGridFrozenGrid Name="RowRoot">
+                    <localprimitives:DataGridFrozenGrid x:Name="RowRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
@@ -520,20 +504,22 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-
+                        
+                        <!-- Animating row details height is not supported
                         <Grid.Resources>
                             <Storyboard x:Key="DetailsVisibleTransition">
                                 <DoubleAnimation Storyboard.TargetName="DetailsPresenter" Storyboard.TargetProperty="ContentHeight" Duration="00:00:0.1"/>
                             </Storyboard>
                         </Grid.Resources>
+                        -->
 
                         <Rectangle x:Name="BackgroundRectangle" Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0" Fill="{ThemeResource SystemControlHighlightListAccentHighBrush}"/>
                         <Rectangle x:Name="InvalidVisualElement" Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0" Fill="#FFF7D8DB"/>
 
-                        <localprimitives:DataGridRowHeader Grid.RowSpan="3" Name="RowHeader" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
-                        <localprimitives:DataGridCellsPresenter Grid.Column="1" Name="CellsPresenter" localprimitives:DataGridFrozenGrid.IsFrozen="True" MinHeight="40"/>
-                        <localprimitives:DataGridDetailsPresenter Grid.Row="1" Grid.Column="1" Name="DetailsPresenter"/>
-                        <Rectangle Grid.Row="2" Grid.Column="1" Name="BottomGridLine" HorizontalAlignment="Stretch" Height="1"/>
+                        <localprimitives:DataGridRowHeader Grid.RowSpan="3" x:Name="RowHeader" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
+                        <localprimitives:DataGridCellsPresenter Grid.Column="1" x:Name="CellsPresenter" localprimitives:DataGridFrozenGrid.IsFrozen="True" MinHeight="40"/>
+                        <localprimitives:DataGridDetailsPresenter Grid.Row="1" Grid.Column="1" x:Name="DetailsPresenter"/>
+                        <Rectangle Grid.Row="2" Grid.Column="1" x:Name="BottomGridLine" HorizontalAlignment="Stretch" Height="1"/>
                     </localprimitives:DataGridFrozenGrid>
                 </ControlTemplate>
             </Setter.Value>
@@ -549,7 +535,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="localprimitives:DataGridRowHeader">
-                    <Grid Name="RowHeaderRoot">
+                    <Grid x:Name="RowHeaderRoot">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
@@ -632,11 +618,11 @@
                                 <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="Transparent"/>
                             </Grid>
 
-                        <Rectangle Name="HorizontalSeparator" Grid.ColumnSpan="2" Grid.Row="2" Height="1" Margin="1,0,1,0" HorizontalAlignment="Stretch" Fill="{TemplateBinding SeparatorBrush}" Visibility="{TemplateBinding SeparatorVisibility}"/>
+                        <Rectangle x:Name="HorizontalSeparator" Grid.ColumnSpan="2" Grid.Row="2" Height="1" Margin="1,0,1,0" HorizontalAlignment="Stretch" Fill="{TemplateBinding SeparatorBrush}" Visibility="{TemplateBinding SeparatorVisibility}"/>
 
                         <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Grid.RowSpan="2"/>
 
-                        <!--<Path Name="CurrentRowGlyph" VerticalAlignment="Center" Fill="{ThemeResource DataGridHeaderForegroundBrush}"  HorizontalAlignment="Center" Width="6" Height="10" Margin="8,0,8,0" Grid.RowSpan="2" Stretch="Fill" Opacity="0" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z ">
+                        <!--<Path x:Name="CurrentRowGlyph" VerticalAlignment="Center" Fill="{ThemeResource DataGridHeaderForegroundBrush}"  HorizontalAlignment="Center" Width="6" Height="10" Margin="8,0,8,0" Grid.RowSpan="2" Stretch="Fill" Opacity="0" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z ">
                             --><!--<Path.Fill>
                                 <LinearGradientBrush StartPoint="0,-.15" EndPoint="0,1.75">
                                     <GradientStop Color="#FF84E3FF" Offset="0"/>
@@ -646,7 +632,7 @@
                             </Path.Fill>--><!--
                         </Path>
 
-                        <Path Name="EditingRowGlyph" Fill="{ThemeResource DataGridHeaderForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="6" Height="10" Margin="8,0,8,0" Grid.RowSpan="2" Stretch="Fill" Opacity="0" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z ">
+                        <Path x:Name="EditingRowGlyph" Fill="{ThemeResource DataGridHeaderForegroundBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="6" Height="10" Margin="8,0,8,0" Grid.RowSpan="2" Stretch="Fill" Opacity="0" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z ">
                             --><!--<Path.Fill>
                                 <LinearGradientBrush StartPoint="0,-.15" EndPoint="0,1.75">
                                     <GradientStop Color="#FF84E3FF" Offset="0"/>
@@ -670,7 +656,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:DataGridRowGroupHeader">
-                    <localprimitives:DataGridFrozenGrid Name="RowGroupHeaderRoot" Background="{TemplateBinding Background}">
+                    <localprimitives:DataGridFrozenGrid x:Name="RowGroupHeaderRoot" Background="{TemplateBinding Background}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CurrentStates">
                                 <VisualState x:Name="Regular"/>
@@ -745,8 +731,8 @@
                         </Grid.RowDefinitions>
 
                         <Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="#FFFFFFFF" Height="1"/>
-                        <Rectangle Grid.Column="1" Grid.Row="1" Name="IndentSpacer"/>
-                        <ToggleButton Grid.Column="2" Grid.Row="1" Name="ExpanderButton" Height="15" Width="15" IsTabStop="False" Template="{StaticResource ToggleButtonTemplate}" Margin="2,0,0,0"/>
+                        <Rectangle Grid.Column="1" Grid.Row="1" x:Name="IndentSpacer"/>
+                        <ToggleButton Grid.Column="2" Grid.Row="1" x:Name="ExpanderButton" Height="15" Width="15" IsTabStop="False" Template="{StaticResource ToggleButtonTemplate}" Margin="2,0,0,0"/>
 
                         <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,1,0,1">
                             <TextBlock x:Name="PropertyNameElement" Margin="4,0,0,0" Visibility="{TemplateBinding PropertyNameVisibility}"/>
@@ -755,9 +741,9 @@
                         </StackPanel>
 
                         <Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="#FFD3D3D3" Height="1" Grid.Row="2"/>
-                        <Rectangle Name="FocusVisual" Grid.Column="1" Grid.ColumnSpan="4" Grid.RowSpan="3" Stroke="#FF6DBDD1" StrokeThickness="1" HorizontalAlignment="Stretch" 
+                        <Rectangle x:Name="FocusVisual" Grid.Column="1" Grid.ColumnSpan="4" Grid.RowSpan="3" Stroke="#FF6DBDD1" StrokeThickness="1" HorizontalAlignment="Stretch" 
                                    VerticalAlignment="Stretch" IsHitTestVisible="false" Opacity="0"/>
-                        <localprimitives:DataGridRowHeader Name="RowHeader" Grid.RowSpan="3" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
+                        <localprimitives:DataGridRowHeader x:Name="RowHeader" Grid.RowSpan="3" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
 
                     </localprimitives:DataGridFrozenGrid>
                 </ControlTemplate>

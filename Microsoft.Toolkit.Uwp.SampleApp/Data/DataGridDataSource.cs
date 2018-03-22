@@ -14,8 +14,18 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.Data
     [Bindable]
     public class DataGridDataSource
     {
-        private static ObservableCollection<DataGridDataItem> _items;
-        public string CachedSortedColumn = string.Empty;
+        public string CachedSortedColumn
+        {
+            get
+            {
+                return _cachedSortedColumn;
+            }
+
+            set
+            {
+                _cachedSortedColumn = value;
+            }
+        }
 
         public async Task<IEnumerable<DataGridDataItem>> GetDataAsync()
         {
@@ -184,5 +194,8 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.Data
 
             return _items;
         }
+
+        private static ObservableCollection<DataGridDataItem> _items;
+        private string _cachedSortedColumn = string.Empty;
     }
 }
