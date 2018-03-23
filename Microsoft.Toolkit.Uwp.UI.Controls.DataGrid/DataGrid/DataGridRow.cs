@@ -891,7 +891,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             _bottomGridLine = GetTemplateChild(DATAGRIDROW_elementBottomGridLine) as Rectangle;
-            EnsureGridLines();
 
             _headerElement = GetTemplateChild(DATAGRIDROW_elementRowHeader) as DataGridRowHeader;
             if (_headerElement != null)
@@ -904,6 +903,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 EnsureHeaderStyleAndVisibility(null);
             }
+
+            EnsureGridLines();
         }
 
         /// <summary>
@@ -1147,8 +1148,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 if (_bottomGridLine != null)
                 {
-                    // It looks like setting Visibility sometimes has side effects so make sure the value is actually
-                    // diffferent before setting it
                     Visibility newVisibility = this.OwningGrid.GridLinesVisibility == DataGridGridLinesVisibility.Horizontal || this.OwningGrid.GridLinesVisibility == DataGridGridLinesVisibility.All
                         ? Visibility.Visible : Visibility.Collapsed;
 
@@ -1156,6 +1155,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         _bottomGridLine.Visibility = newVisibility;
                     }
+
+                    EnsureHeaderGridLines(newVisibility);
 
                     _bottomGridLine.Fill = this.OwningGrid.HorizontalGridLinesBrush;
                 }
@@ -1189,6 +1190,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (_headerElement != null && this.OwningGrid != null)
             {
                 _headerElement.Visibility = this.OwningGrid.AreRowHeadersVisible ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private void EnsureHeaderGridLines(Visibility visibility)
+        {
+            if (_headerElement != null)
+            {
+                _headerElement.SeparatorVisibility = visibility;
             }
         }
 
