@@ -19,7 +19,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock Text="Coordinates: " FontWeight="SemiBold" FontSize="13" />
             <TextBlock Grid.Row="1" Text="Prominence (m): " FontWeight="SemiBold" FontSize="13" />
@@ -33,7 +33,13 @@
         </StackPanel>
       </DataTemplate>
     </Grid.Resources>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <CommandBar Margin="12" Content="DataGrid Sample: Mountains" />
     <controls:DataGrid
+      Grid.Row="1"
         x:Name="dataGrid"
         Margin="12"
         VerticalAlignment="Stretch" HorizontalAlignment="Stretch"

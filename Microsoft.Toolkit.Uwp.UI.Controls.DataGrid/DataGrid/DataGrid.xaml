@@ -290,6 +290,7 @@
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="FontSize" Value="15" />
+        <Setter Property="MinHeight" Value="32" />
         <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Template">
@@ -322,7 +323,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Rectangle x:Name="FocusVisual" Stroke="{ThemeResource DataGridCellFocusBorderBrush}" StrokeThickness="1" HorizontalAlignment="Stretch" 
+                            <Rectangle x:Name="FocusVisual" Stroke="{ThemeResource DataGridCellFocusSecondaryBorderBrush}" StrokeThickness="1" HorizontalAlignment="Stretch" 
                                    VerticalAlignment="Stretch" IsHitTestVisible="false" Opacity="0"/>
 
                         <ContentPresenter
@@ -344,12 +345,13 @@
     <Style TargetType="localprimitives:DataGridColumnHeader">
         <Setter Property="Foreground" Value="{ThemeResource DataGridHeaderForegroundBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SeparatorBrush" Value="{ThemeResource GridLinesBrush}"/>
-        <Setter Property="Padding" Value="12"/>
+        <Setter Property="Padding" Value="12,0"/>
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="MinHeight" Value="32" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="localprimitives:DataGridColumnHeader">
@@ -519,7 +521,7 @@
                         <Rectangle x:Name="InvalidVisualElement" Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0" Fill="#FFF7D8DB"/>
 
                         <localprimitives:DataGridRowHeader Grid.RowSpan="3" x:Name="RowHeader" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
-                        <localprimitives:DataGridCellsPresenter Grid.Column="1" x:Name="CellsPresenter" localprimitives:DataGridFrozenGrid.IsFrozen="True" MinHeight="40"/>
+                        <localprimitives:DataGridCellsPresenter Grid.Column="1" x:Name="CellsPresenter" localprimitives:DataGridFrozenGrid.IsFrozen="True" MinHeight="32"/>
                         <localprimitives:DataGridDetailsPresenter Grid.Row="1" Grid.Column="1" x:Name="DetailsPresenter"/>
                         <Rectangle Grid.Row="2" Grid.Column="1" x:Name="BottomGridLine" HorizontalAlignment="Stretch" Height="1"/>
                     </localprimitives:DataGridFrozenGrid>
