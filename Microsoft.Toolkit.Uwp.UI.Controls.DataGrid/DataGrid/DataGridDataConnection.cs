@@ -241,14 +241,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         {
             get
             {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 return this.CollectionView != null &&
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                     this.CollectionView.CanGroup &&
-                    this.CollectionView.GroupDescriptions != null &&
-                    this.CollectionView.GroupDescriptions.Count > 0;
-#else
-                return false;
 #endif
+                    this.CollectionView.CollectionGroups != null &&
+                    this.CollectionView.CollectionGroups.Count > 0;
             }
         }
 
@@ -682,9 +680,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 
                 bool itemIsCollectionViewGroup = false;
 
-#if FEATURE_COLLECTIONVIEWGROUP
-                itemIsCollectionViewGroup = item is CollectionViewGroup;
-#endif
+                itemIsCollectionViewGroup = item is ICollectionViewGroup;
                 this.CollectionView.MoveCurrentTo((itemIsCollectionViewGroup || this.IndexOf(item) == this.NewItemPlaceholderIndex) ? null : item);
 
                 _expectingCurrentChanged = false;
@@ -771,10 +767,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         {
             if (_expectingCurrentChanged)
             {
-#if FEATURE_COLLECTIONVIEWGROUP
                 // Committing Edit could cause our item to move to a group that no longer exists.  In
                 // this case, we need to update the item.
-                CollectionViewGroup collectionViewGroup = _itemToSelectOnCurrentChanged as CollectionViewGroup;
+                ICollectionViewGroup collectionViewGroup = _itemToSelectOnCurrentChanged as ICollectionViewGroup;
                 if (collectionViewGroup != null)
                 {
                     DataGridRowGroupInfo groupInfo = _owner.RowGroupInfoFromCollectionViewGroup(collectionViewGroup);
@@ -798,7 +793,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
                         _itemToSelectOnCurrentChanged = _owner.ItemFromSlot(_backupSlotForCurrentChanged, ref newCurrentPosition);
                     }
                 }
-#endif
+
                 _owner.ProcessSelectionAndCurrency(
                     _columnForCurrentChanged,
                     _itemToSelectOnCurrentChanged,

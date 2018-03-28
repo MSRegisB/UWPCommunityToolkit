@@ -29,6 +29,7 @@ using Microsoft.Toolkit.Uwp.UI.Utilities;
 using Microsoft.Toolkit.Uwp.Utilities;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
+using Windows.Foundation.Collections;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Input;
@@ -114,9 +115,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const double DATAGRID_maxHeadersThickness = 32768;
 
         private const double DATAGRID_defaultRowHeight = 22;
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         internal const double DATAGRID_defaultRowGroupSublevelIndent = 20;
-#endif
         private const double DATAGRID_defaultMinColumnWidth = 20;
         private const double DATAGRID_defaultMaxColumnWidth = double.PositiveInfinity;
 
@@ -175,14 +174,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataGridColumn _previousCurrentColumn;
         private object _previousCurrentItem;
         private List<ValidationResult> _propertyValidationResults;
-#if FEATURE_ICOLLECTIONVIEW_GROUP
+        private string _rowGroupHeaderPropertyNameAlternative;
         private ObservableCollection<Style> _rowGroupHeaderStyles;
 
         // To figure out what the old RowGroupHeaderStyle was for each level, we need to keep a copy
         // of the list.  The old style important so we don't blow away styles set directly on the RowGroupHeader
         private List<Style> _rowGroupHeaderStylesOld;
         private double[] _rowGroupHeightsByLevel;
-#endif
         private double _rowHeaderDesiredWidth;
         private Size? _rowsPresenterAvailableSize;
         private bool _scrollingByHeight;
@@ -198,9 +196,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private Dictionary<INotifyDataErrorInfo, string> _validationItems;
         private List<ValidationResult> _validationResults;
         private byte _verticalScrollChangesIgnored;
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-        private INotifyCollectionChanged _topLevelGroup;
-#endif
+        private IObservableVector<object> /*INotifyCollectionChanged*/ _topLevelGroup;
 #if FEATURE_VALIDATION_SUMMARY
         private ValidationSummaryItem _selectedValidationSummaryItem;
 #endif
@@ -215,6 +211,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         // Cache event listeners for PropertyChanged and CollectionChanged events from CollectionViewGroups
         private Dictionary<INotifyPropertyChanged, WeakEventListener<DataGrid, object, PropertyChangedEventArgs>> _groupsPropertyChangedListenersTable = new Dictionary<INotifyPropertyChanged, WeakEventListener<DataGrid, object, PropertyChangedEventArgs>>();
         private Dictionary<INotifyCollectionChanged, WeakEventListener<DataGrid, object, NotifyCollectionChangedEventArgs>> _groupsCollectionChangedListenersTable = new Dictionary<INotifyCollectionChanged, WeakEventListener<DataGrid, object, NotifyCollectionChangedEventArgs>>();
+#else
+        // Cache event listeners for VectorChanged events from ICollectionViewGroup's GroupItems
+        private Dictionary<IObservableVector<object>, WeakEventListener<DataGrid, object, IVectorChangedEventArgs>> _groupsVectorChangedListenersTable = new Dictionary<IObservableVector<object>, WeakEventListener<DataGrid, object, IVectorChangedEventArgs>>();
 #endif
 
         /// <summary>
@@ -295,12 +294,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         public event EventHandler<DataGridRowDetailsEventArgs> LoadingRowDetails;
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         /// <summary>
         /// Occurs before a DataGridRowGroupHeader header is used.
         /// </summary>
         public event EventHandler<DataGridRowGroupHeaderEventArgs> LoadingRowGroup;
-#endif
 
         /// <summary>
         /// Occurs when a cell in a <see cref="DataGridTemplateColumn"/> enters editing mode.
@@ -340,12 +337,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         /// </summary>
         public event EventHandler<DataGridRowEventArgs> UnloadingRow;
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         /// <summary>
         /// Occurs when the DataGridRowGroupHeader is available for reuse.
         /// </summary>
         public event EventHandler<DataGridRowGroupHeaderEventArgs> UnloadingRowGroup;
-#endif
 
         /// <summary>
         /// Occurs when a row details element becomes available for reuse.
@@ -367,12 +362,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             _loadedRows = new List<DataGridRow>();
             _lostFocusActions = new Queue<Action>();
             _selectedItems = new DataGridSelectedItemsCollection(this);
-#if FEATURE_ICOLLECTIONVIEW_GROUP
+            _rowGroupHeaderPropertyNameAlternative = Properties.Resources.DefaultRowGroupHeaderPropertyNameAlternative;
             _rowGroupHeaderStyles = new ObservableCollection<Style>();
             _rowGroupHeaderStyles.CollectionChanged += RowGroupHeaderStyles_CollectionChanged;
             _rowGroupHeaderStylesOld = new List<Style>();
             this.RowGroupHeadersTable = new IndexToValueTable<DataGridRowGroupInfo>();
-#endif
 
             _collapsedSlotsTable = new IndexToValueTable<Visibility>();
             _validationItems = new Dictionary<INotifyDataErrorInfo, string>();
@@ -460,7 +454,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 typeof(DataGrid),
                 null);
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         /// <summary>
         /// Gets or sets a value indicating whether the row group header sections
         /// remain fixed at the width of the display area or can scroll horizontally.
@@ -502,7 +495,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
-#endif
 
         /// <summary>
         /// Gets or sets a value indicating whether columns are created
@@ -978,7 +970,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                             row.EnsureHeaderVisibility();
                         }
                     }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     else
                     {
                         DataGridRowGroupHeader rowGroupHeader = element as DataGridRowGroupHeader;
@@ -987,7 +978,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                             rowGroupHeader.EnsureHeaderStyleAndVisibility(null);
                         }
                     }
-#endif
                 }
 
                 dataGrid.InvalidateRowHeightEstimate();
@@ -1220,9 +1210,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 dataGrid.DataConnection.UnWireEvents(dataGrid.DataConnection.DataSource);
                 dataGrid.DataConnection.ClearDataProperties();
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 dataGrid.ClearRowGroupHeadersTable();
-#endif
 
                 // The old selected indexes are no longer relevant. There's a perf benefit from
                 // updating the selected indexes with a null DataSource, because we know that all
@@ -1266,9 +1254,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 dataGrid.RemoveAutoGeneratedColumns();
 
                 // Set the SlotCount (from the data count and number of row group headers) before we make the default selection.
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 dataGrid.PopulateRowGroupHeadersTable();
-#endif
                 dataGrid.RefreshSlotCounts();
 
                 dataGrid.SelectedItem = null;
@@ -1639,7 +1625,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         row.EnsureHeaderStyleAndVisibility(previousStyle);
                     }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     else
                     {
                         DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
@@ -1648,7 +1633,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                             groupHeader.EnsureHeaderStyleAndVisibility(previousStyle);
                         }
                     }
-#endif
                 }
 
                 dataGrid.InvalidateRowHeightEstimate();
@@ -2023,7 +2007,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
+        /// <summary>
+        /// Gets or sets the label to display in a DataGridRowGroupHeader when its PropertyName is not set.
+        /// </summary>
+        public string RowGroupHeaderPropertyNameAlternative
+        {
+            get
+            {
+                return _rowGroupHeaderPropertyNameAlternative;
+            }
+
+            set
+            {
+                _rowGroupHeaderPropertyNameAlternative = value;
+            }
+        }
+
         /// <summary>
         /// Gets the style that is used when rendering the row group header.
         /// </summary>
@@ -2034,7 +2033,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 return _rowGroupHeaderStyles;
             }
         }
-#endif
 
         /// <summary>
         /// Gets a list that contains the data items corresponding to the selected rows.
@@ -2052,9 +2050,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             get
             {
                 if (this.CurrentSlot == -1 ||
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     this.RowGroupHeadersTable.Contains(this.CurrentSlot) ||
-#endif
                     this.ItemsSource /*this.DataConnection.DataSource*/ == null)
                 {
                     return null;
@@ -2451,7 +2447,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             private set;
         }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         internal IndexToValueTable<DataGridRowGroupInfo> RowGroupHeadersTable
         {
             get;
@@ -2463,7 +2458,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             get;
             private set;
         }
-#endif
 
         internal double RowHeightEstimate
         {
@@ -2725,14 +2719,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return true;
         }
 
-#if FEATURE_COLLECTIONVIEWGROUP
         /// <summary>
         /// Returns the Group at the indicated level or null if the item is not in the ItemsSource
         /// </summary>
         /// <param name="item">item</param>
         /// <param name="groupLevel">groupLevel</param>
         /// <returns>The group the given item falls under or null if the item is not in the ItemsSource</returns>
-        public CollectionViewGroup GetGroupFromItem(object item, int groupLevel)
+        public ICollectionViewGroup GetGroupFromItem(object item, int groupLevel)
         {
             int itemIndex = this.DataConnection.IndexOf(item);
             if (itemIndex == -1)
@@ -2750,7 +2743,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             return rowGroupInfo == null ? null : rowGroupInfo.CollectionViewGroup;
         }
-#endif
 
         /// <summary>
         /// Scrolls the specified item or RowGroupHeader and/or column into view.
@@ -2777,24 +2769,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             else
             {
                 int slot = -1;
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 DataGridRowGroupInfo rowGroupInfo = null;
-#endif
-#if FEATURE_COLLECTIONVIEWGROUP
-                CollectionViewGroup collectionViewGroup = item as CollectionViewGroup;
+                ICollectionViewGroup collectionViewGroup = item as ICollectionViewGroup;
                 if (collectionViewGroup != null)
                 {
                     rowGroupInfo = RowGroupInfoFromCollectionViewGroup(collectionViewGroup);
                     if (rowGroupInfo == null)
                     {
-                        Debug.Assert(false);
+                        Debug.Assert(false, "Expected non-null rowGroupInfo.");
                         return;
                     }
 
                     slot = rowGroupInfo.Slot;
                 }
                 else
-#endif
                 {
                     // the row index will be set to -1 if the item is null or not in the list
                     int rowIndex = this.DataConnection.IndexOf(item);
@@ -2810,7 +2798,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 if (_collapsedSlotsTable.Contains(slot))
                 {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     // We need to expand all parent RowGroups so that the slot is visible
                     if (rowGroupInfo != null)
                     {
@@ -2825,7 +2812,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                             ExpandRowGroupParentChain(rowGroupInfo.Level, rowGroupInfo.Slot);
                         }
                     }
-#endif
 
                     // Update Scrollbar and display information
                     this.NegVerticalOffset = 0;
@@ -3182,7 +3168,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         /// <summary>
         /// Raises the LoadingRowGroup event
         /// </summary>
@@ -3203,7 +3188,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
-#endif
 
         /// <summary>
         /// Raises the LoadingRowDetails for row details preparation
@@ -3369,9 +3353,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         /// <summary>
-        /// Raises the UnLoadingRowGroup event
+        /// Raises the UnloadingRowGroup event
         /// </summary>
         /// <param name="e">EventArgs</param>
         protected virtual void OnUnloadingRowGroup(DataGridRowGroupHeaderEventArgs e)
@@ -3390,7 +3373,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
-#endif
 
         internal static DataGridCell GetOwningCell(FrameworkElement element)
         {
@@ -3513,29 +3495,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         // If the DataContext is an item, rowIndex is set to the index of the item within the collection.
         internal object ItemFromSlot(int slot, ref int rowIndex)
         {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (this.RowGroupHeadersTable.Contains(slot))
             {
                 DataGridRowGroupInfo groupInfo = this.RowGroupHeadersTable.GetValueAt(slot);
                 if (groupInfo != null)
                 {
-#if FEATURE_COLLECTIONVIEWGROUP
                     return groupInfo.CollectionViewGroup;
-#else
-                    return null;
-#endif
                 }
             }
             else
-#endif
             {
                 rowIndex = RowIndexFromSlot(slot);
                 return this.DataConnection.GetDataItem(rowIndex);
             }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             return null;
-#endif
         }
 
         internal void OnRowDetailsChanged()
@@ -3739,8 +3713,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             try
             {
                 int slot = -1;
-#if FEATURE_COLLECTIONVIEWGROUP
-                CollectionViewGroup group = item as CollectionViewGroup;
+                ICollectionViewGroup group = item as ICollectionViewGroup;
                 if (group != null)
                 {
                     DataGridRowGroupInfo groupInfo = this.RowGroupInfoFromCollectionViewGroup(group);
@@ -3750,7 +3723,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
                 }
                 else
-#endif
                 {
                     slot = this.SlotFromRowIndex(this.DataConnection.IndexOf(item));
                 }
@@ -3915,10 +3887,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     if (clearRows)
                     {
                         ClearRows(false);
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                         ClearRowGroupHeadersTable();
                         PopulateRowGroupHeadersTable();
-#endif
                         RefreshSlotCounts();
                     }
 
@@ -3962,10 +3932,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     ClearRows(false /*recycle*/);
                 }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 ClearRowGroupHeadersTable();
                 PopulateRowGroupHeadersTable();
-#endif
                 RefreshSlotCounts();
             }
         }
@@ -4016,16 +3984,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             double oldHorizontalOffset = this.HorizontalOffset;
-
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             bool rowGroupHeadersTableContainsSlot = this.RowGroupHeadersTable.Contains(slot);
-#else
-            bool rowGroupHeadersTableContainsSlot = false;
-#endif
 
             // scroll horizontally unless we're on a RowGroupHeader and we're not forcing horizontal scrolling
-            if ((forceHorizontalScroll || (slot != -1 && !rowGroupHeadersTableContainsSlot))
-                && !ScrollColumnIntoView(columnIndex))
+            if ((forceHorizontalScroll || (slot != -1 && !rowGroupHeadersTableContainsSlot)) &&
+                !ScrollColumnIntoView(columnIndex))
             {
                 return false;
             }
@@ -4073,13 +4036,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             _noCurrentCellChangeCount++;
             try
             {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (this.ColumnsInternal.RowGroupSpacerColumn.IsRepresented &&
                     columnIndex == this.ColumnsInternal.RowGroupSpacerColumn.Index)
                 {
                     columnIndex = -1;
                 }
-#endif
 
                 if (IsSlotOutOfSelectionBounds(slot) || (columnIndex != -1 && IsColumnOutOfBounds(columnIndex)))
                 {
@@ -4137,12 +4098,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     columnIndex = this.FirstDisplayedNonFillerColumnIndex;
                 }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 else if (this.ColumnsInternal.RowGroupSpacerColumn.IsRepresented && _desiredCurrentColumnIndex == this.ColumnsInternal.RowGroupSpacerColumn.Index)
                 {
                     columnIndex = this.FirstDisplayedNonFillerColumnIndex;
                 }
-#endif
                 else
                 {
                     columnIndex = _desiredCurrentColumnIndex;
@@ -4317,9 +4276,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridRow dataGridRow = this.EditingRow;
             if (dataGridRow == null)
             {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 Debug.Assert(!this.RowGroupHeadersTable.Contains(this.CurrentSlot), "Expected CurrentSlot not contained in RowGroupHeadersTable.");
-#endif
+
                 if (this.IsSlotVisible(this.CurrentSlot))
                 {
                     dataGridRow = this.DisplayData.GetDisplayedElement(this.CurrentSlot) as DataGridRow;
@@ -4874,7 +4832,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                                 invalidated = true;
                             }
                         }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                         else
                         {
                             DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
@@ -4884,7 +4841,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                                 invalidated = true;
                             }
                         }
-#endif
                     }
 
                     if (invalidated)
@@ -4991,7 +4947,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 #endif
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         // Recursively expands parent RowGroupHeaders from the top down
         private void ExpandRowGroupParentChain(int level, int slot)
         {
@@ -5026,7 +4981,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
         }
-#endif
 
 #if FEATURE_VALIDATION_SUMMARY
         /// <summary>
@@ -5587,7 +5541,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 return;
             }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             // We don't want to expand all intermediate currency positions, so we only expand
             // the last current item before we flush the event
             if (_collapsedSlotsTable.Contains(this.CurrentSlot) && this.CurrentSlot != this.SlotFromRowIndex(this.DataConnection.NewItemPlaceholderIndex))
@@ -5599,7 +5552,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     this.ExpandRowGroupParentChain(rowGroupInfo.Level, rowGroupInfo.Slot);
                 }
             }
-#endif
 
             if (this.CurrentColumn != _previousCurrentColumn || this.CurrentItem != _previousCurrentItem)
             {
@@ -5795,14 +5747,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private bool IsSlotOutOfSelectionBounds(int slot)
         {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (this.RowGroupHeadersTable.Contains(slot))
             {
-                Debug.Assert(slot >= 0 && slot < this.SlotCount);
+                Debug.Assert(slot >= 0, "Expected positive slot.");
+                Debug.Assert(slot < this.SlotCount, "Expected slot smaller than this.SlotCount.");
                 return false;
             }
             else
-#endif
             {
                 int rowIndex = RowIndexFromSlot(slot);
                 return rowIndex < 0 || rowIndex >= this.DataConnection.Count;
@@ -5833,11 +5784,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 if (this.DataConnection.CollectionView.IsCurrentBeforeFirst ||
                     this.DataConnection.CollectionView.IsCurrentAfterLast)
                 {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     slot = this.RowGroupHeadersTable.Contains(0) ? 0 : -1;
-#else
-                    slot = -1;
-#endif
                 }
                 else
                 {
@@ -6398,15 +6345,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
                 else
                 {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     if (this.RowGroupHeadersTable.Contains(this.CurrentSlot))
                     {
-#if FEATURE_COLLECTIONVIEWGROUP
                         CollapseRowGroup(this.RowGroupHeadersTable.GetValueAt(this.CurrentSlot).CollectionViewGroup, false /*collapseAllSubgroups*/);
-#endif
                     }
                     else
-#endif
                     if (this.CurrentColumnIndex == -1)
                     {
                         UpdateSelectionAndCurrency(firstVisibleColumnIndex, firstVisibleSlot, DataGridSelectionAction.SelectCurrent, true /*scrollIntoView*/);
@@ -6604,16 +6547,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
                 else
                 {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     if (this.RowGroupHeadersTable.Contains(this.CurrentSlot))
                     {
-#if FEATURE_COLLECTIONVIEWGROUP
                         ExpandRowGroup(this.RowGroupHeadersTable.GetValueAt(this.CurrentSlot).CollectionViewGroup, false /*expandAllSubgroups*/);
-#endif
                     }
-                    else
-#endif
-                    if (this.CurrentColumnIndex == -1)
+                    else if (this.CurrentColumnIndex == -1)
                     {
                         int firstVisibleColumnIndex = this.ColumnsInternal.FirstVisibleColumn == null ? -1 : this.ColumnsInternal.FirstVisibleColumn.Index;
                         UpdateSelectionAndCurrency(firstVisibleColumnIndex, firstVisibleSlot, DataGridSelectionAction.SelectCurrent, true /*scrollIntoView*/);
@@ -6693,7 +6631,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 dataGridColumn = this.ColumnsInternal.GetPreviousVisibleWritableColumn(this.ColumnsItemsInternal[this.CurrentColumnIndex]);
                 neighborSlot = GetPreviousVisibleSlot(this.CurrentSlot);
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (this.EditingRow != null)
                 {
                     while (neighborSlot != -1 && this.RowGroupHeadersTable.Contains(neighborSlot))
@@ -6701,13 +6638,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         neighborSlot = GetPreviousVisibleSlot(neighborSlot);
                     }
                 }
-#endif
             }
             else
             {
                 dataGridColumn = this.ColumnsInternal.GetNextVisibleWritableColumn(this.ColumnsItemsInternal[this.CurrentColumnIndex]);
                 neighborSlot = GetNextVisibleSlot(this.CurrentSlot);
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (this.EditingRow != null)
                 {
                     while (neighborSlot < this.SlotCount && this.RowGroupHeadersTable.Contains(neighborSlot))
@@ -6715,7 +6650,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         neighborSlot = GetNextVisibleSlot(neighborSlot);
                     }
                 }
-#endif
             }
 
             neighborVisibleWritableColumnIndex = (dataGridColumn == null) ? -1 : dataGridColumn.Index;
@@ -6778,13 +6712,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this.NoSelectionChangeCount--;
             }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-            bool rowGroupHeadersTableContainsTargetSlot = this.RowGroupHeadersTable.Contains(targetSlot);
-#else
-            bool rowGroupHeadersTableContainsTargetSlot = false;
-#endif
-
-            if (_successfullyUpdatedSelection && !rowGroupHeadersTableContainsTargetSlot)
+            if (_successfullyUpdatedSelection && !this.RowGroupHeadersTable.Contains(targetSlot))
             {
                 BeginCellEdit(e);
             }
@@ -6985,7 +6913,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 #endif
         }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         private void RowGroupHeaderStyles_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (_rowsPresenter != null)
@@ -7015,7 +6942,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _rowGroupHeaderStylesOld.Add(style);
             }
         }
-#endif
 
         private void SelectAll()
         {
@@ -7055,9 +6981,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridCellCoordinates oldCurrentCell = new DataGridCellCoordinates(this.CurrentCellCoordinates);
             object newCurrentItem = null;
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (!this.RowGroupHeadersTable.Contains(slot))
-#endif
             {
                 int rowIndex = this.RowIndexFromSlot(slot);
                 if (rowIndex >= 0 && rowIndex < this.DataConnection.Count)
@@ -7077,13 +7001,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     oldDisplayedElement = this.DisplayData.GetDisplayedElement(oldCurrentCell.Slot);
                 }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-                bool rowGroupHeadersTableContainsSlot = this.RowGroupHeadersTable.Contains(oldCurrentCell.Slot);
-#else
-                bool rowGroupHeadersTableContainsSlot = false;
-#endif
-
-                if (!rowGroupHeadersTableContainsSlot && !_temporarilyResetCurrentCell)
+                if (!this.RowGroupHeadersTable.Contains(oldCurrentCell.Slot) && !_temporarilyResetCurrentCell)
                 {
                     bool keepFocus = this.ContainsFocus;
                     if (commitEdit)
@@ -7210,7 +7128,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     cell.ApplyCellState(true /*animate*/);
                 }
             }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             else
             {
                 DataGridRowGroupHeader groupHeader = displayedElement as DataGridRowGroupHeader;
@@ -7223,7 +7140,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
                 }
             }
-#endif
         }
 
         private void UpdateDisabledVisual()

@@ -279,30 +279,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal bool ContainsAll(int startSlot, int endSlot)
         {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             int itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(startSlot - 1);
-#else
-            int itemSlot = startSlot;
-#endif
             while (itemSlot <= endSlot)
             {
                 // Skip over the RowGroupHeaderSlots
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 int nextRowGroupHeaderSlot = this.OwningGrid.RowGroupHeadersTable.GetNextIndex(itemSlot);
-#else
-                int nextRowGroupHeaderSlot = -1;
-#endif
                 int lastItemSlot = nextRowGroupHeaderSlot == -1 ? endSlot : Math.Min(endSlot, nextRowGroupHeaderSlot - 1);
                 if (!_selectedSlotsTable.ContainsAll(itemSlot, lastItemSlot))
                 {
                     return false;
                 }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(lastItemSlot);
-#else
-                itemSlot = lastItemSlot + 1;
-#endif
             }
 
             return true;
@@ -396,12 +384,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void SelectSlot(int slot, bool select)
         {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (this.OwningGrid.RowGroupHeadersTable.Contains(slot))
             {
                 return;
             }
-#endif
+
             if (select)
             {
                 if (!_selectedSlotsTable.Contains(slot))
@@ -424,24 +411,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void SelectSlots(int startSlot, int endSlot, bool select)
         {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             int itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(startSlot - 1);
             int endItemSlot = this.OwningGrid.RowGroupHeadersTable.GetPreviousGap(endSlot + 1);
-#else
-            int itemSlot = startSlot;
-            int endItemSlot = endSlot;
-#endif
+
             if (select)
             {
                 while (itemSlot <= endItemSlot)
                 {
                     // Add the newly selected item slots by skipping over the RowGroupHeaderSlots
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     int nextRowGroupHeaderSlot = this.OwningGrid.RowGroupHeadersTable.GetNextIndex(itemSlot);
                     int lastItemSlot = nextRowGroupHeaderSlot == -1 ? endItemSlot : Math.Min(endItemSlot, nextRowGroupHeaderSlot - 1);
-#else
-                    int lastItemSlot = endItemSlot;
-#endif
+
                     for (int slot = itemSlot; slot <= lastItemSlot; slot++)
                     {
                         if (!_selectedSlotsTable.Contains(slot))
@@ -451,11 +431,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
 
                     _selectedSlotsTable.AddValues(itemSlot, lastItemSlot - itemSlot + 1, true);
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(lastItemSlot);
-#else
-                    itemSlot = lastItemSlot + 1;
-#endif
                 }
             }
             else
@@ -463,12 +439,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 while (itemSlot <= endItemSlot)
                 {
                     // Remove the unselected item slots by skipping over the RowGroupHeaderSlots
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     int nextRowGroupHeaderSlot = this.OwningGrid.RowGroupHeadersTable.GetNextIndex(itemSlot);
                     int lastItemSlot = nextRowGroupHeaderSlot == -1 ? endItemSlot : Math.Min(endItemSlot, nextRowGroupHeaderSlot - 1);
-#else
-                    int lastItemSlot = endItemSlot;
-#endif
+
                     for (int slot = itemSlot; slot <= lastItemSlot; slot++)
                     {
                         if (_selectedSlotsTable.Contains(slot))
@@ -478,11 +451,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
 
                     _selectedSlotsTable.RemoveValues(itemSlot, lastItemSlot - itemSlot + 1);
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                     itemSlot = this.OwningGrid.RowGroupHeadersTable.GetNextGap(lastItemSlot);
-#else
-                    itemSlot = lastItemSlot + 1;
-#endif
                 }
             }
         }

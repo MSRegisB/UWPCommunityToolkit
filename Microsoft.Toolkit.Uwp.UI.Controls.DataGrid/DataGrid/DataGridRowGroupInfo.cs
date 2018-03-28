@@ -10,39 +10,32 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Data;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
 {
     internal class DataGridRowGroupInfo
     {
         public DataGridRowGroupInfo(
-#if FEATURE_COLLECTIONVIEWGROUP
-            CollectionViewGroup collectionViewGroup,
-#endif
+            ICollectionViewGroup collectionViewGroup,
             Visibility visibility,
             int level,
             int slot,
             int lastSubItemSlot)
         {
-#if FEATURE_COLLECTIONVIEWGROUP
             this.CollectionViewGroup = collectionViewGroup;
-#endif
             this.Visibility = visibility;
             this.Level = level;
             this.Slot = slot;
             this.LastSubItemSlot = lastSubItemSlot;
         }
 
-#if FEATURE_COLLECTIONVIEWGROUP
-        public CollectionViewGroup CollectionViewGroup
+        public ICollectionViewGroup CollectionViewGroup
         {
             get;
             private set;
         }
-#endif
 
         public int LastSubItemSlot
         {
@@ -69,5 +62,3 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals
         }
     }
 }
-
-#endif

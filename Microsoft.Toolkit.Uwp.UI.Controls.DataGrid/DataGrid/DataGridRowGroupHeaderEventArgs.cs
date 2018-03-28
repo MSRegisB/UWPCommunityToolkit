@@ -10,8 +10,6 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-
 using System;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls
@@ -40,5 +38,3 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
     }
 }
-
-#endif

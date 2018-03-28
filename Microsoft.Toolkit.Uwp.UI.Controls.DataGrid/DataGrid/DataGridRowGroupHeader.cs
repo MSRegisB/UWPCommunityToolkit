@@ -10,20 +10,21 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Toolkit.Uwp.Automation.Peers;
 using Microsoft.Toolkit.Uwp.UI.Controls.DataGridInternals;
 using Microsoft.Toolkit.Uwp.UI.Controls.Primitives;
-using Windows.Devices.Input;
+using Microsoft.Toolkit.Uwp.UI.Controls.Utilities;
+using Microsoft.Toolkit.Uwp.UI.Utilities;
+using Microsoft.Toolkit.Uwp.Utilities;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
@@ -33,25 +34,28 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     /// Represents the header of a <see cref="DataGrid"/> row group.
     /// </summary>
     [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRoot, Type = typeof(Panel))]
-    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRowHeader, Type = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
+    [TemplatePart(Name = DataGridRow.DATAGRIDROW_elementRowHeader, Type = typeof(DataGridRowHeader))]
     [TemplatePart(Name = DATAGRIDROWGROUPHEADER_expanderButton, Type = typeof(ToggleButton))]
     [TemplatePart(Name = DATAGRIDROWGROUPHEADER_indentSpacer, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = DATAGRIDROWGROUPHEADER_itemCountElement, Type = typeof(TextBlock))]
     [TemplatePart(Name = DATAGRIDROWGROUPHEADER_propertyNameElement, Type = typeof(TextBlock))]
-    [StyleTypedProperty(Property = "HeaderStyle", StyleTargetType = typeof(Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader))]
+    [TemplatePart(Name = DATAGRIDROWGROUPHEADER_propertyValueElement, Type = typeof(TextBlock))]
+    [StyleTypedProperty(Property = "HeaderStyle", StyleTargetType = typeof(DataGridRowHeader))]
     public class DataGridRowGroupHeader : Control
     {
         private const string DATAGRIDROWGROUPHEADER_expanderButton = "ExpanderButton";
         private const string DATAGRIDROWGROUPHEADER_indentSpacer = "IndentSpacer";
         private const string DATAGRIDROWGROUPHEADER_itemCountElement = "ItemCountElement";
         private const string DATAGRIDROWGROUPHEADER_propertyNameElement = "PropertyNameElement";
+        private const string DATAGRIDROWGROUPHEADER_propertyValueElement = "PropertyValueElement";
 
         private bool _areIsCheckedHandlersSuspended;
         private ToggleButton _expanderButton;
-        private Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader _headerElement;
+        private DataGridRowHeader _headerElement;
         private FrameworkElement _indentSpacer;
         private TextBlock _itemCountElement;
         private TextBlock _propertyNameElement;
+        private TextBlock _propertyValueElement;
         private Panel _rootElement;
         private double _totalIndent;
 
@@ -119,6 +123,25 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 new PropertyMetadata(Visibility.Visible));
 
         /// <summary>
+        /// Gets the nesting level of the associated group.
+        /// </summary>
+        public int Level
+        {
+            get { return (int)GetValue(LevelProperty); }
+            internal set { SetValue(LevelProperty, value); }
+        }
+
+        /// <summary>
+        /// Identifies the Level dependency property.
+        /// </summary>
+        public static readonly DependencyProperty LevelProperty =
+            DependencyProperty.Register(
+                "Level",
+                typeof(int),
+                typeof(DataGridRowGroupHeader),
+                new PropertyMetadata(0));
+
+        /// <summary>
         /// Gets or sets the name of the property that this <see cref="DataGrid"/> row is bound to.
         /// </summary>
         public string PropertyName
@@ -135,7 +158,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 "PropertyName",
                 typeof(string),
                 typeof(DataGridRowGroupHeader),
-                null);
+                new PropertyMetadata(null, OnPropertyNameChanged));
+
+        private static void OnPropertyNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataGridRowGroupHeader groupHeader = d as DataGridRowGroupHeader;
+            groupHeader.UpdateTitleElements();
+        }
 
         /// <summary>
         /// Gets or sets a value that indicates whether the property name is visible.
@@ -157,8 +186,33 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 new PropertyMetadata(Visibility.Visible));
 
         /// <summary>
+        /// Gets or sets the value of the property that this <see cref="DataGrid"/> row is bound to.
+        /// </summary>
+        public string PropertyValue
+        {
+            get { return GetValue(PropertyValueProperty) as string; }
+            set { SetValue(PropertyValueProperty, value); }
+        }
+
+        /// <summary>
+        /// DependencyProperty for PropertyName
+        /// </summary>
+        public static readonly DependencyProperty PropertyValueProperty =
+            DependencyProperty.Register(
+                "PropertyValue",
+                typeof(string),
+                typeof(DataGridRowGroupHeader),
+                new PropertyMetadata(null, OnPropertyValueChanged));
+
+        private static void OnPropertyValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DataGridRowGroupHeader groupHeader = d as DataGridRowGroupHeader;
+            groupHeader.UpdateTitleElements();
+        }
+
+        /// <summary>
         /// Gets or sets a value that indicates the amount that the
-        /// children of the <see cref="RowGroupHeader"/> are indented.
+        /// children of the <see cref="DataGridRowGroupHeader"/> are indented.
         /// </summary>
         public double SublevelIndent
         {
@@ -201,7 +255,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader HeaderCell
+        /// <summary>
+        /// Gets the ICollectionViewGroup implementation associated with this <see cref="DataGridRowGroupHeader"/>.
+        /// </summary>
+        public ICollectionViewGroup CollectionViewGroup
+        {
+            get
+            {
+                return this.RowGroupInfo == null ? null : this.RowGroupInfo.CollectionViewGroup;
+            }
+        }
+
+        internal DataGridRowHeader HeaderCell
         {
             get
             {
@@ -225,12 +290,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         internal bool IsRecycled
-        {
-            get;
-            set;
-        }
-
-        internal int Level
         {
             get;
             set;
@@ -290,9 +349,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 VisualStates.GoToState(this, useTransitions, VisualStates.StateRegular);
             }
 
-#if FEATURE_COLLECTIONVIEWGROUP
             // Expanded States
-            if (this.RowGroupInfo.CollectionViewGroup.ItemCount == 0)
+            if (this.RowGroupInfo.CollectionViewGroup.GroupItems.Count == 0)
             {
                 VisualStates.GoToState(this, useTransitions, VisualStates.StateEmpty);
             }
@@ -307,7 +365,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateCollapsed, VisualStates.StateEmpty);
                 }
             }
-#endif
         }
 
         /// <summary>
@@ -416,13 +473,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void EnsureExpanderButtonIsChecked()
         {
-#if FEATURE_COLLECTIONVIEWGROUP
-            if (_expanderButton != null && this.RowGroupInfo != null && this.RowGroupInfo.CollectionViewGroup != null &&
-                this.RowGroupInfo.CollectionViewGroup.ItemCount != 0)
+            if (_expanderButton != null &&
+                this.RowGroupInfo != null &&
+                this.RowGroupInfo.CollectionViewGroup != null &&
+                this.RowGroupInfo.CollectionViewGroup.GroupItems != null &&
+                this.RowGroupInfo.CollectionViewGroup.GroupItems.Count != 0)
             {
                 SetIsCheckedNoCallBack(this.RowGroupInfo.Visibility == Visibility.Visible);
             }
-#endif
         }
 
         internal void EnsureHeaderStyleAndVisibility(Style previousStyle)
@@ -487,7 +545,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _expanderButton.Unchecked += new RoutedEventHandler(ExpanderButton_Unchecked);
             }
 
-            _headerElement = GetTemplateChild(DataGridRow.DATAGRIDROW_elementRowHeader) as Microsoft.Toolkit.Uwp.UI.Controls.Primitives.DataGridRowHeader;
+            _headerElement = GetTemplateChild(DataGridRow.DATAGRIDROW_elementRowHeader) as DataGridRowHeader;
             if (_headerElement != null)
             {
                 _headerElement.Owner = this;
@@ -502,6 +560,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             _itemCountElement = GetTemplateChild(DATAGRIDROWGROUPHEADER_itemCountElement) as TextBlock;
             _propertyNameElement = GetTemplateChild(DATAGRIDROWGROUPHEADER_propertyNameElement) as TextBlock;
+            _propertyValueElement = GetTemplateChild(DATAGRIDROWGROUPHEADER_propertyValueElement) as TextBlock;
             UpdateTitleElements();
         }
 
@@ -532,8 +591,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void ToggleExpandCollapse(Visibility newVisibility, bool setCurrent)
         {
-#if FEATURE_COLLECTIONVIEWGROUP
-            if (this.RowGroupInfo.CollectionViewGroup.ItemCount != 0)
+            if (this.RowGroupInfo.CollectionViewGroup.GroupItems.Count != 0)
             {
                 if (this.OwningGrid == null)
                 {
@@ -548,25 +606,52 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 EnsureExpanderButtonIsChecked();
                 ApplyState(true /*useTransitions*/);
             }
-#endif
         }
 
         internal void UpdateTitleElements()
         {
+            string propertyName = this.PropertyName;
+            bool hasPropertyValue = _propertyValueElement != null && !string.IsNullOrEmpty(this.PropertyValue);
+
             if (_propertyNameElement != null)
             {
-                _propertyNameElement.Text = string.Format(CultureInfo.CurrentCulture, "{0}:", this.PropertyName);
+                if (!string.IsNullOrWhiteSpace(propertyName) && this.OwningGrid.DataConnection.DataType != null)
+                {
+                    string displayName = this.OwningGrid.DataConnection.DataType.GetDisplayName(propertyName);
+                    if (!string.IsNullOrWhiteSpace(displayName))
+                    {
+                        propertyName = displayName;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(propertyName))
+                {
+                    propertyName = this.OwningGrid.RowGroupHeaderPropertyNameAlternative;
+                }
+
+                if (!string.IsNullOrEmpty(propertyName) && hasPropertyValue)
+                {
+                    propertyName = string.Format(CultureInfo.CurrentCulture, Properties.Resources.DataGridRowGroupHeader_PropertyName, propertyName);
+                }
+
+                if (!string.IsNullOrEmpty(propertyName))
+                {
+                    _propertyNameElement.Text = propertyName;
+                }
             }
 
-#if FEATURE_COLLECTIONVIEWGROUP
+            if (hasPropertyValue)
+            {
+                _propertyValueElement.Text = this.PropertyValue;
+            }
+
             if (_itemCountElement != null && this.RowGroupInfo != null && this.RowGroupInfo.CollectionViewGroup != null)
             {
                 _itemCountElement.Text = string.Format(
                     CultureInfo.CurrentCulture,
-                    this.RowGroupInfo.CollectionViewGroup.ItemCount == 1 ? "({0} item)" : "({0} items)",
-                    this.RowGroupInfo.CollectionViewGroup.ItemCount);
+                    this.RowGroupInfo.CollectionViewGroup.GroupItems.Count == 1 ? Properties.Resources.DataGridRowGroupHeader_ItemCountSingular : Properties.Resources.DataGridRowGroupHeader_ItemCountPlural,
+                    this.RowGroupInfo.CollectionViewGroup.GroupItems.Count);
             }
-#endif
         }
 
         private void DataGridRowGroupHeader_PointerCanceled(object sender, PointerRoutedEventArgs e)
@@ -596,10 +681,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 return;
             }
 
-            this.IsMouseOver = isPointerOver;
+            this.IsPointerOver = isPointerOver;
             ApplyState(true /*useTransitions*/);
         }
     }
 }
-
-#endif

@@ -94,13 +94,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 return base.ArrangeOverride(finalSize);
             }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             double rowGroupSpacerWidth = this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.Width.Value;
             double xClip = this.OwningGrid.AreRowGroupHeadersFrozen ? rowGroupSpacerWidth : 0;
-#else
-            double rowGroupSpacerWidth = 0;
-            double xClip = 0;
-#endif
             double leftEdge = rowGroupSpacerWidth;
             double width;
             if (this.OwningGrid.AreRowDetailsFrozen)
@@ -160,9 +155,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 this.OwningGrid.CellsWidth :
                 Math.Max(this.OwningGrid.CellsWidth, this.OwningGrid.ColumnsInternal.VisibleEdgedColumnsWidth);
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             desiredWidth -= this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.Width.Value;
-#endif
 
             foreach (UIElement child in this.Children)
             {

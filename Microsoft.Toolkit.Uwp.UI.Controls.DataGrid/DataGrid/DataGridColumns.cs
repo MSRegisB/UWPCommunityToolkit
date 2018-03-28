@@ -298,9 +298,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridColumnEventArgs e = new DataGridColumnEventArgs(dataGridColumn);
 
             // Call protected method to raise event
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (dataGridColumn != this.ColumnsInternal.RowGroupSpacerColumn)
-#endif
             {
                 OnColumnDisplayIndexChanged(e);
             }
@@ -334,11 +332,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 InDisplayIndexAdjustments = true;
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 bool trackChange = targetColumn != this.ColumnsInternal.RowGroupSpacerColumn;
-#else
-                bool trackChange = true;
-#endif
                 DataGridColumn column;
 
                 // Move is legal - let's adjust the affected display indexes.
@@ -655,14 +649,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridCellCoordinates newCurrentCellCoordinates;
             Debug.Assert(insertColumn != null, "Expected non-null insertColumn.");
 
-            if (insertColumn.OwningGrid != null)
+            if (insertColumn.OwningGrid != null && insertColumn != this.ColumnsInternal.RowGroupSpacerColumn)
             {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-                if (insertColumn != this.ColumnsInternal.RowGroupSpacerColumn)
-#endif
-                {
-                    throw DataGridError.DataGrid.ColumnCannotBeReassignedToDifferentDataGrid();
-                }
+                throw DataGridError.DataGrid.ColumnCannotBeReassignedToDifferentDataGrid();
             }
 
             // Reset current cell if there is one, no matter the relative position of the columns involved
@@ -1560,9 +1549,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     column.DisplayIndexHasChanged = false;
                     if (raiseEvent)
                     {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-                        Debug.Assert(column != this.ColumnsInternal.RowGroupSpacerColumn);
-#endif
+                        Debug.Assert(column != this.ColumnsInternal.RowGroupSpacerColumn, "Expected column other than ColumnsInternal.RowGroupSpacerColumn.");
                         OnColumnDisplayIndexChanged(column);
                     }
                 }

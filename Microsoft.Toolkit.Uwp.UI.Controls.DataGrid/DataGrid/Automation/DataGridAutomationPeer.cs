@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
 
 namespace Microsoft.Toolkit.Uwp.Automation.Peers
 {
@@ -33,9 +34,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         ISelectionProvider,
         ITableProvider
     {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         private Dictionary<object, DataGridGroupItemAutomationPeer> _groupItemPeers = new Dictionary<object, DataGridGroupItemAutomationPeer>();
-#endif
         private Dictionary<object, DataGridItemAutomationPeer> _itemPeers = new Dictionary<object, DataGridItemAutomationPeer>();
         private bool _oldHorizontallyScrollable;
         private double _oldHorizontalScrollPercent;
@@ -281,12 +280,10 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 this.OwningDataGrid.ScrollIntoView(item, this.OwningDataGrid.Columns[column]);
 
                 DataGridRow dgr = this.OwningDataGrid.DisplayData.GetDisplayedRow(row);
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (this.OwningDataGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented)
                 {
                     column++;
                 }
-#endif
 
                 Debug.Assert(column >= 0, "Expected positive column value.");
                 Debug.Assert(column < this.OwningDataGrid.ColumnsItemsInternal.Count, "Expected smaller column value.");
@@ -572,20 +569,16 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         internal List<AutomationPeer> GetChildPeers()
         {
             List<AutomationPeer> peers = new List<AutomationPeer>();
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             PopulateGroupItemPeers();
-#endif
             PopulateItemPeers();
-#if FEATURE_ICOLLECTIONVIEW_GROUP
             if (_groupItemPeers != null && _groupItemPeers.Count > 0)
             {
-                foreach (object group in this.OwningDataGrid.DataConnection.CollectionView.Groups)
+                foreach (object group in this.OwningDataGrid.DataConnection.CollectionView.CollectionGroups /*Groups*/)
                 {
                     peers.Add(_groupItemPeers[group]);
                 }
             }
             else
-#endif
             {
                 foreach (DataGridItemAutomationPeer itemPeer in _itemPeers.Values)
                 {
@@ -596,7 +589,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
             return peers;
         }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         internal DataGridGroupItemAutomationPeer GetOrCreateGroupItemPeer(object group)
         {
             DataGridGroupItemAutomationPeer peer = null;
@@ -609,7 +601,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 }
                 else
                 {
-                    peer = new DataGridGroupItemAutomationPeer(group as CollectionViewGroup, this.OwningDataGrid);
+                    peer = new DataGridGroupItemAutomationPeer(group as ICollectionViewGroup, this.OwningDataGrid);
                     _groupItemPeers.Add(group, peer);
                 }
 
@@ -622,7 +614,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
 
             return peer;
         }
-#endif
 
         internal DataGridItemAutomationPeer GetOrCreateItemPeer(object item)
         {
@@ -650,21 +641,22 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
             return peer;
         }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         internal void PopulateGroupItemPeers()
         {
             Dictionary<object, DataGridGroupItemAutomationPeer> oldChildren = new Dictionary<object, DataGridGroupItemAutomationPeer>(_groupItemPeers);
             _groupItemPeers.Clear();
 
-            if (this.OwningDataGrid.DataConnection.CollectionView != null
-                && this.OwningDataGrid.DataConnection.CollectionView.CanGroup
-                && this.OwningDataGrid.DataConnection.CollectionView.Groups != null
-                && this.OwningDataGrid.DataConnection.CollectionView.Groups.Count > 0)
+            if (this.OwningDataGrid.DataConnection.CollectionView != null &&
+#if FEATURE_ICOLLECTIONVIEW_GROUP
+                this.OwningDataGrid.DataConnection.CollectionView.CanGroup &&
+#endif
+                this.OwningDataGrid.DataConnection.CollectionView.CollectionGroups != null &&
+                this.OwningDataGrid.DataConnection.CollectionView.CollectionGroups.Count > 0)
             {
-                List<object> groups = new List<object>(this.OwningDataGrid.DataConnection.CollectionView.Groups);
+                List<object> groups = new List<object>(this.OwningDataGrid.DataConnection.CollectionView.CollectionGroups);
                 while (groups.Count > 0)
                 {
-                    CollectionViewGroup cvGroup = groups[0] as CollectionViewGroup;
+                    ICollectionViewGroup cvGroup = groups[0] as ICollectionViewGroup;
                     groups.RemoveAt(0);
                     if (cvGroup != null)
                     {
@@ -695,6 +687,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                             _groupItemPeers.Add(cvGroup, peer);
                         }
 
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                         // Look for any sub groups
                         if (!cvGroup.IsBottomLevel)
                         {
@@ -705,11 +698,11 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                                 position++;
                             }
                         }
+#endif
                     }
                 }
             }
         }
-#endif
 
         internal void PopulateItemPeers()
         {
@@ -767,7 +760,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 column >= 0 && column < this.OwningDataGrid.ColumnsItemsInternal.Count &&
                 this.OwningDataGrid.IsSlotVisible(slot))
             {
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 if (this.OwningDataGrid.RowGroupHeadersTable.Contains(slot))
                 {
                     DataGridRowGroupHeader header = this.OwningDataGrid.DisplayData.GetDisplayedElement(slot) as DataGridRowGroupHeader;
@@ -781,7 +773,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                     }
                 }
                 else
-#endif
                 {
                     AutomationPeer cellPeer = GetCellPeer(slot, column);
                     if (cellPeer != null)
@@ -936,7 +927,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
             }
         }
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
         internal void UpdateRowGroupHeaderPeerEventsSource(DataGridRowGroupHeader header)
         {
             object group = header.RowGroupInfo.CollectionViewGroup;
@@ -946,7 +936,6 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
                 peer.EventsSource = _groupItemPeers[group];
             }
         }
-#endif
 
         internal void UpdateRowPeerEventsSource(DataGridRow row)
         {

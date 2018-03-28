@@ -817,12 +817,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
 
             scrollAmount = 0;
             double leftEdge = 0;
-#if FEATURE_ICOLLECTIONVIEW_GROUP
+
             if (this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented)
             {
                 leftEdge = this.OwningGrid.ColumnsInternal.RowGroupSpacerColumn.ActualWidth;
             }
-#endif
+
             DataGridColumnHeaderInteractionInfo interactionInfo = this.OwningGrid.ColumnHeaderInteractionInfo;
             double rightEdge = this.OwningGrid.CellsWidth;
             if (this.OwningColumn.IsFrozen)

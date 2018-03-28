@@ -652,12 +652,10 @@
         </Setter>
     </Style>
 
-    <!--
     <Style TargetType="local:DataGridRowGroupHeader">
-        !-<Setter Property="UseSystemFocusVisuals" Value="True"/>-
+        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Background" Value="#FFE4E8EA"/>
-        <Setter Property="Height" Value="20"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:DataGridRowGroupHeader">
@@ -680,17 +678,13 @@
                                             <VisualState x:Name="Normal"/>
                                             <VisualState x:Name="PointerOver">
                                                 <Storyboard>
-                                                    !- SL5 <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Stroke).Color" Duration="0" To="#FF6DBDD1"/>-
                                                     <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="#FF6DBDD1"/>
-                                                    !- SL5 <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FF6DBDD1"/>-
                                                     <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FF6DBDD1"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="Pressed">
                                                 <Storyboard>
-                                                    !- SL5 <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Stroke).Color" Duration="0" To="#FF6DBDD1"/>-
                                                     <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="#FF6DBDD1"/>
-                                                    !- SL5 <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FF6DBDD1"/>-
                                                     <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FF6DBDD1"/>
                                                 </Storyboard>
                                             </VisualState>
@@ -731,7 +725,7 @@
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
@@ -741,7 +735,7 @@
 
                         <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,1,0,1">
                             <TextBlock x:Name="PropertyNameElement" Margin="4,0,0,0" Visibility="{TemplateBinding PropertyNameVisibility}"/>
-                            <TextBlock Margin="4,0,0,0" Text="{Binding Name}"/>
+                            <TextBlock x:Name="PropertyValueElement" Margin="4,0,0,0"/>
                             <TextBlock x:Name="ItemCountElement" Margin="4,0,0,0" Visibility="{TemplateBinding ItemCountVisibility}"/>
                         </StackPanel>
 
@@ -755,5 +749,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-    -->
 </ResourceDictionary>

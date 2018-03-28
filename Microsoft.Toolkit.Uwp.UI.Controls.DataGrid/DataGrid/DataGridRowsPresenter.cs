@@ -79,7 +79,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                     row.EnsureFillerVisibility();
                     row.Arrange(new Rect(-this.OwningGrid.HorizontalOffset, topEdge, rowDesiredWidth, element.DesiredSize.Height));
                 }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 else
                 {
                     DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
@@ -89,7 +88,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                         groupHeader.Arrange(new Rect(leftEdge, topEdge, rowDesiredWidth - leftEdge, element.DesiredSize.Height));
                     }
                 }
-#endif
+
                 topEdge += element.DesiredSize.Height;
             }
 
@@ -152,7 +151,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     headerWidth = Math.Max(headerWidth, row.HeaderCell.DesiredSize.Width);
                 }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 else
                 {
                     DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
@@ -161,7 +159,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                         headerWidth = Math.Max(headerWidth, groupHeader.HeaderCell.DesiredSize.Width);
                     }
                 }
-#endif
+
                 totalHeight += element.DesiredSize.Height;
             }
 
@@ -225,20 +223,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
                 {
                     Debug.WriteLine(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Slot: {0} Row: {1} Visibility: {2} ", row.Slot, row.Index, row.Visibility));
                 }
-#if FEATURE_ICOLLECTIONVIEW_GROUP
                 else
                 {
                     DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
                     if (groupHeader != null)
                     {
-#if FEATURE_COLLECTIONVIEWGROUP
+#if FEATURE_ICOLLECTIONVIEW_GROUP
                         Debug.WriteLine(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Slot: {0} GroupHeader: {1} Visibility: {2}", groupHeader.RowGroupInfo.Slot, groupHeader.RowGroupInfo.CollectionViewGroup.Name, groupHeader.Visibility));
 #else
                         Debug.WriteLine(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Slot: {0} Visibility: {1}", groupHeader.RowGroupInfo.Slot, groupHeader.Visibility));
 #endif
                     }
                 }
-#endif
             }
         }
 #endif

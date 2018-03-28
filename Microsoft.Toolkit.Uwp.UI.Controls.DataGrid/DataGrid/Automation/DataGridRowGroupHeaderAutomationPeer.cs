@@ -10,8 +10,6 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-#if FEATURE_ICOLLECTIONVIEW_GROUP
-
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using Windows.UI.Xaml.Automation.Peers;
 
@@ -41,7 +39,7 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
 
         /// <summary>
-        /// Called by GetClassName that gets a human readable name that, in addition to AutomationControlType, 
+        /// Called by GetClassName that gets a human readable name that, in addition to AutomationControlType,
         /// differentiates the control represented by this AutomationPeer.
         /// </summary>
         /// <returns>The string that contains the name.</returns>
@@ -51,5 +49,3 @@ namespace Microsoft.Toolkit.Uwp.Automation.Peers
         }
     }
 }
-
-#endif
