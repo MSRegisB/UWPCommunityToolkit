@@ -27,7 +27,6 @@
     <StaticResource x:Key="GridLinesBrush" ResourceKey="SystemControlGridLinesBaseMediumLowBrush" />
     <StaticResource x:Key="DataGridRowBackgroundBrush" ResourceKey="SystemControlTransparentBrush" />
     <StaticResource x:Key="DataGridCellBackgroundBrush" ResourceKey="SystemControlTransparentBrush" />
-    <!--<StaticResource x:Key="DataGridAlternatingRowBackgroundBrush" ResourceKey="SystemControlHighlightListLowBrush" />-->
     <StaticResource x:Key="DataGridHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseMediumBrush"/>
     <StaticResource x:Key="DataGridHeaderBackgroundBrush" ResourceKey="SystemControlBackgroundAltHighBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderPointerOverBrush" ResourceKey="SystemControlHighlightListLowBrush"/>
@@ -288,7 +287,6 @@
         <Setter Property="Background" Value="{ThemeResource DataGridCellBackgroundBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-        <Setter Property="Padding" Value="12,0" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="MinHeight" Value="32" />
         <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
@@ -312,7 +310,7 @@
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="InvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                         <!-- SL5 <ColorAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFFFFFFF"/>-->
-                                        <ColorAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FFFFFFFF"/>
+                                        <ColorAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FFFF00"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -330,8 +328,7 @@
                             Content="{TemplateBinding Content}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Margin="{TemplateBinding Padding}"/>
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
 
                         <Rectangle x:Name="InvalidVisualElement" IsHitTestVisible="False" StrokeThickness="1" Stroke="#FFDC000C" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0"/>
 

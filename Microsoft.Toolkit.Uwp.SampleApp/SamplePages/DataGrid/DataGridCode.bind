@@ -47,7 +47,7 @@
         VerticalScrollBarVisibility="Visible"
         AlternatingRowBackground="@[AlternatingRowBackground:Brush:Transparent]"
         AreRowDetailsFrozen="@[AreRowDetailsFrozen:Bool:False]"
-        AutoGenerateColumns="@[AutoGenerateColumns:Bool:True]"
+        AutoGenerateColumns="False"
         CanUserSortColumns="@[CanUserSortColumns:Bool:False]"
         CanUserReorderColumns="@[CanUserReorderColumns:Bool:True]"
         CanUserResizeColumns="@[CanUserResizeColumns:Bool:True]"
@@ -57,7 +57,7 @@
         HeadersVisibility="@[HeadersVisibility:Enum:DataGridHeadersVisibility.All]"
         IsReadOnly="@[IsReadOnly:Bool:False]"
         RowDetailsTemplate="{StaticResource RowDetailsTemplate}"  
-        RowDetailsVisibilityMode="@[RowDetailsVisibilityMode:Enum:DataGridRowDetailsVisibilityMode.VisibleWhenSelected]"
+        RowDetailsVisibilityMode="@[RowDetailsVisibilityMode:Enum:DataGridRowDetailsVisibilityMode.Collapsed]"
         SelectionMode="@[SelectionMode:Enum:DataGridSelectionMode.Extended]">
       <controls:DataGrid.Columns>
         <controls:DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Tag="Rank"/>

@@ -226,7 +226,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         protected override FrameworkElement GenerateElement(DataGridCell cell, object dataItem)
         {
             TextBlock textBlockElement = new TextBlock();
-            textBlockElement.Margin = new Thickness(4);
+            textBlockElement.Margin = new Thickness(12, 0, 12, 0);
             textBlockElement.VerticalAlignment = VerticalAlignment.Center;
             if (DependencyProperty.UnsetValue != ReadLocalValue(DataGridTextColumn.FontFamilyProperty))
             {
