@@ -323,7 +323,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (_headerElement != null && this.OwningGrid.AreRowHeadersVisible)
             {
-                _headerElement.ApplyOwnerStatus(animate);
+                _headerElement.ApplyOwnerState(animate);
             }
         }
 

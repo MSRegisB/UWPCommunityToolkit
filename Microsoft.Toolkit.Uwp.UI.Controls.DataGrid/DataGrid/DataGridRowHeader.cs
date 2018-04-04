@@ -283,7 +283,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             _rootElement = GetTemplateChild(DATAGRIDROWHEADER_elementRootName) as FrameworkElement;
             if (_rootElement != null)
             {
-                ApplyOwnerStatus(false /*animate*/);
+                ApplyOwnerState(false /*animate*/);
             }
         }
 
@@ -325,7 +325,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             return new DataGridRowHeaderAutomationPeer(this);
         }
 
-        internal void ApplyOwnerStatus(bool animate)
+        internal void ApplyOwnerState(bool animate)
         {
             if (_rootElement != null && this.Owner != null && this.Owner.Visibility == Visibility.Visible)
             {

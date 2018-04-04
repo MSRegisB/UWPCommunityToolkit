@@ -302,7 +302,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // CurrentStates
-            if (this.IsCurrent)
+            if (this.IsCurrent && !this.OwningGrid.ColumnHeaderHasFocus)
             {
                 VisualStates.GoToState(this, animate, VisualStates.StateCurrent, VisualStates.StateRegular);
             }
@@ -455,7 +455,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 if (!e.Handled && this.OwningGrid.IsTabStop)
                 {
-                    bool success = this.OwningGrid.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                    bool success = this.OwningGrid.Focus(FocusState.Programmatic);
                     Debug.Assert(success, "Expected successful focus change.");
                 }
 

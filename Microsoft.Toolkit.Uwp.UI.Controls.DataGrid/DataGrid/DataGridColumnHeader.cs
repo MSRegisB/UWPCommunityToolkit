@@ -36,6 +36,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
     [TemplateVisualState(Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StatePointerOver, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StatePressed, GroupName = VisualStates.GroupCommon)]
+    [TemplateVisualState(Name = VisualStates.StateFocused, GroupName = VisualStates.GroupFocus)]
+    [TemplateVisualState(Name = VisualStates.StateUnfocused, GroupName = VisualStates.GroupFocus)]
     [TemplateVisualState(Name = VisualStates.StateUnsorted, GroupName = VisualStates.GroupSort)]
     [TemplateVisualState(Name = VisualStates.StateSortAscending, GroupName = VisualStates.GroupSort)]
     [TemplateVisualState(Name = VisualStates.StateSortDescending, GroupName = VisualStates.GroupSort)]
@@ -170,6 +172,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             set;
         }
 
+        private bool HasFocus
+        {
+            get
+            {
+                return this.OwningGrid != null &&
+                    this.OwningColumn == this.OwningGrid.FocusedColumn &&
+                    this.OwningGrid.ColumnHeaderHasFocus;
+            }
+        }
+
         private bool IsPointerOver
         {
             get;
@@ -240,6 +252,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Primitives
             else
             {
                 VisualStates.GoToState(this, useTransitions, VisualStates.StateNormal);
+            }
+
+            // Focus States
+            if (this.HasFocus)
+            {
+                VisualStates.GoToState(this, useTransitions, VisualStates.StateFocused, VisualStates.StateRegular);
+            }
+            else
+            {
+                VisualStates.GoToState(this, useTransitions, VisualStates.StateUnfocused);
             }
 
             // Sort States

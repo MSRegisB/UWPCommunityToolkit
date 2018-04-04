@@ -14,28 +14,22 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="using:Microsoft.Toolkit.Uwp.UI.Controls"
                     xmlns:localprimitives="using:Microsoft.Toolkit.Uwp.UI.Controls.Primitives">
-                    <!--WPF version:
-                    xmlns:local="clr-namespace:Microsoft.Toolkit.Uwp.UI.Controls"
-                    xmlns:localprimitives="clr-namespace:Microsoft.Toolkit.Uwp.UI.Controls.Primitives">-->
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ms-appx:///Microsoft.Toolkit.Uwp.UI.Controls.DataGrid/DataGrid/Microsoft.Toolkit.Uwp.UI.Controls.DataGrid.DataGridCheckBoxColumn.xaml"/>
-    </ResourceDictionary.MergedDictionaries>
 
-    <SolidColorBrush x:Key="SystemControlGridLinesBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}" />
+    <SolidColorBrush x:Key="SystemControlGridLinesBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}"/>
     <x:String x:Key="SortIconAscending">&#xE74A;</x:String>
     <x:String x:Key="SortIconDescending">&#xE74B;</x:String>
-    <StaticResource x:Key="GridLinesBrush" ResourceKey="SystemControlGridLinesBaseMediumLowBrush" />
-    <StaticResource x:Key="DataGridRowBackgroundBrush" ResourceKey="SystemControlTransparentBrush" />
-    <StaticResource x:Key="DataGridCellBackgroundBrush" ResourceKey="SystemControlTransparentBrush" />
-    <!--<StaticResource x:Key="DataGridAlternatingRowBackgroundBrush" ResourceKey="SystemControlHighlightListLowBrush" />-->
+    <StaticResource x:Key="GridLinesBrush" ResourceKey="SystemControlGridLinesBaseMediumLowBrush"/>
+    <StaticResource x:Key="DataGridRowBackgroundBrush" ResourceKey="SystemControlTransparentBrush"/>
+    <StaticResource x:Key="DataGridCellBackgroundBrush" ResourceKey="SystemControlTransparentBrush"/>
+    <!--<StaticResource x:Key="DataGridAlternatingRowBackgroundBrush" ResourceKey="SystemControlHighlightListLowBrush"/>-->
     <StaticResource x:Key="DataGridHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseMediumBrush"/>
     <StaticResource x:Key="DataGridHeaderBackgroundBrush" ResourceKey="SystemControlBackgroundAltHighBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderPointerOverBrush" ResourceKey="SystemControlHighlightListLowBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderPressedBrush" ResourceKey="SystemControlHighlightListMediumBrush"/>
-    <StaticResource x:Key="DataGridCellFocusVisualPrimaryBrush" ResourceKey="SystemControlFocusVisualPrimaryBrush" />
-    <StaticResource x:Key="DataGridCellFocusVisualSecondaryBrush" ResourceKey="SystemControlFocusVisualSecondaryBrush" />
-    <StaticResource x:Key="DataGridCellFocusBorderBrush" ResourceKey="SystemControlForegroundAltHighBrush" />
-    <StaticResource x:Key="DataGridCellFocusSecondaryBorderBrush" ResourceKey="SystemControlForegroundBaseHighBrush" />
+    <StaticResource x:Key="DataGridCellFocusVisualPrimaryBrush" ResourceKey="SystemControlFocusVisualPrimaryBrush"/>
+    <StaticResource x:Key="DataGridCellFocusVisualSecondaryBrush" ResourceKey="SystemControlFocusVisualSecondaryBrush"/>
+    <StaticResource x:Key="DataGridCellFocusBorderBrush" ResourceKey="SystemControlForegroundAltHighBrush"/>
+    <StaticResource x:Key="DataGridCellFocusSecondaryBorderBrush" ResourceKey="SystemControlForegroundBaseHighBrush"/>
     
     <Style TargetType="local:DataGrid">
         <Setter Property="RowBackground" Value="{ThemeResource DataGridRowBackgroundBrush}"/>
@@ -82,11 +76,9 @@
                                             <VisualState x:Name="SortDescending">
                                                 <Storyboard>
                                                     <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1.0"/>
-                                                    <!-- SL5 <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(RenderTransform).ScaleY" Duration="0" To="-.9"/>-->
-                                                    <!--<DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(TextBlock.RenderTransform).(ScaleTransform.ScaleY)" Duration="0" To="-1.0"/>-->
                                                 </Storyboard>
                                                 <VisualState.Setters>
-                                                    <Setter Target="SortIcon.Text" Value="{ThemeResource SortIconDescending}" />
+                                                    <Setter Target="SortIcon.Text" Value="{ThemeResource SortIconDescending}"/>
                                                 </VisualState.Setters>
                                             </VisualState>
                                         </VisualStateGroup>
@@ -113,13 +105,8 @@
 
                                         <ContentPresenter Content="{TemplateBinding Content}"/>
 
-                                        <!--<Path Grid.Column="1" x:Name="SortIcon" Fill="{ThemeResource DataGridHeaderForegroundBrush}" RenderTransformOrigin=".5,.5" HorizontalAlignment="Left" VerticalAlignment="Center" Opacity="0" Stretch="Uniform" Width="8" Margin="4,0,0,0" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z ">
-                                            <Path.RenderTransform>
-                                                <ScaleTransform ScaleX=".9" ScaleY=".9"/>
-                                            </Path.RenderTransform>
-                                        </Path>-->
                                         <TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12" Foreground="{ThemeResource DataGridHeaderForegroundBrush}" 
-                                                    HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.0"  RenderTransformOrigin="0.5,0.5" />
+                                                    HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.0"  RenderTransformOrigin="0.5,0.5"/>
                                     </Grid>
                                 </Grid>
                             </ControlTemplate>
@@ -145,7 +132,6 @@
         </Setter>
         <Setter Property="GridLinesVisibility" Value="Vertical"/>
         <Setter Property="HorizontalGridLinesBrush" Value="{ThemeResource GridLinesBrush}"/>
-        <!--Remove UseSystemFocusVisuals in WPF-->
         <Setter Property="UseSystemFocusVisuals" Value="True"/>
         <Setter Property="IsTabStop" Value="True"/>
         <Setter Property="VerticalGridLinesBrush" Value="{ThemeResource GridLinesBrush}"/>
@@ -254,7 +240,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <localprimitives:DataGridColumnHeader x:Name="TopLeftCornerHeader" Template="{StaticResource TopLeftHeaderTemplate}" />
+                                <localprimitives:DataGridColumnHeader x:Name="TopLeftCornerHeader" Template="{StaticResource TopLeftHeaderTemplate}"/>
                                 <localprimitives:DataGridColumnHeadersPresenter x:Name="ColumnHeadersPresenter" Grid.Column="1" Grid.ColumnSpan="2"/>
                                 <!-- Use TopRightCornerHeader when ColumnHeadersPresenter's Grid.ColumnSpan is 1 and the vertical ScrollBar does not paint on top of the cells -->
                                 <!--<localprimitives:DataGridColumnHeader x:Name="TopRightCornerHeader" Grid.Column="2" Template="{StaticResource TopRightHeaderTemplate}"/>-->
@@ -284,14 +270,14 @@
             </Setter.Value>
         </Setter>
     </Style>
+    
     <Style TargetType="local:DataGridCell">
         <Setter Property="Background" Value="{ThemeResource DataGridCellBackgroundBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-        <Setter Property="Padding" Value="12,0" />
-        <Setter Property="FontSize" Value="15" />
-        <Setter Property="MinHeight" Value="32" />
-        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
+        <Setter Property="Padding" Value="12,0"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="MinHeight" Value="32"/>
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -324,7 +310,7 @@
                         </Grid.ColumnDefinitions>
 
                         <Rectangle x:Name="FocusVisual" Stroke="{ThemeResource DataGridCellFocusSecondaryBorderBrush}" StrokeThickness="1" Fill="Transparent" HorizontalAlignment="Stretch" 
-                                   VerticalAlignment="Stretch" IsHitTestVisible="false" Opacity="0"/>
+                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Opacity="0"/>
 
                         <ContentPresenter
                             Content="{TemplateBinding Content}"
@@ -346,12 +332,11 @@
         <Setter Property="Foreground" Value="{ThemeResource DataGridHeaderForegroundBrush}"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SeparatorBrush" Value="{ThemeResource GridLinesBrush}"/>
         <Setter Property="Padding" Value="12,0"/>
-        <Setter Property="FontSize" Value="12" />
-        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="MinHeight" Value="32"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="localprimitives:DataGridColumnHeader">
@@ -388,6 +373,14 @@
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
+                            <VisualStateGroup x:Name="FocusStates">
+                                <VisualState x:Name="Unfocused"/>
+                                <VisualState x:Name="Focused">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
                             <VisualStateGroup x:Name="SortStates">
                                 <VisualState x:Name="Unsorted"/>
                                 <VisualState x:Name="SortAscending">
@@ -398,11 +391,9 @@
                                 <VisualState x:Name="SortDescending">
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1.0"/>
-                                        <!-- SL5 <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(RenderTransform).ScaleY" Duration="0" To="-.9"/>-->
-                                        <!--<DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="(Path.RenderTransform).(ScaleTransform.ScaleY)" Duration="0" To="-1.0"/>-->
                                     </Storyboard>
                                     <VisualState.Setters>
-                                        <Setter Target="SortIcon.Text" Value="{ThemeResource SortIconDescending}" />
+                                        <Setter Target="SortIcon.Text" Value="{ThemeResource SortIconDescending}"/>
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
@@ -434,15 +425,13 @@
 
                             <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                            <!--<Path Grid.Column="1" x:Name="SortIcon" Fill="{ThemeResource DataGridHeaderForegroundBrush}" RenderTransformOrigin=".5,.5" HorizontalAlignment="Left" VerticalAlignment="Center" Opacity="0" Stretch="Uniform" Width="8" Margin="4,0,0,0" Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z ">
-                                <Path.RenderTransform>
-                                    <ScaleTransform ScaleX=".9" ScaleY=".9"/>
-                                </Path.RenderTransform>
-                            </Path>-->
                             <TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12" Foreground="{ThemeResource DataGridHeaderForegroundBrush}" 
-                                                    HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.0"  RenderTransformOrigin="0.5,0.5" />
+                                                    HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.0"  RenderTransformOrigin="0.5,0.5"/>
                         </Grid>
                         <Rectangle x:Name="VerticalSeparator" Grid.Column="1" Width="1" VerticalAlignment="Stretch" Fill="{TemplateBinding SeparatorBrush}" Visibility="{TemplateBinding SeparatorVisibility}"/>
+
+                        <Rectangle x:Name="FocusVisual" Stroke="{ThemeResource DataGridCellFocusSecondaryBorderBrush}" StrokeThickness="1" Fill="Transparent" 
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Opacity="0"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -450,7 +439,6 @@
     </Style>
 
     <Style TargetType="local:DataGridRow">
-        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -482,7 +470,6 @@
                                 <VisualState x:Name="UnfocusedSelected">
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
-                                        <!-- SL5 <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FFE1E7EC"/>-->
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#FFE1E7EC"/>
                                     </Storyboard>
                                 </VisualState>
@@ -532,7 +519,6 @@
     
     <Style TargetType="localprimitives:DataGridRowHeader">
         <Setter Property="Background" Value="{ThemeResource DataGridHeaderBackgroundBrush}"/>
-        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SeparatorBrush" Value="{ThemeResource GridLinesBrush}"/>
         <Setter Property="SeparatorVisibility" Value="Collapsed"/>
@@ -545,40 +531,46 @@
                                 <VisualState x:Name="Normal"/>
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
-                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#99D5EAF1"/>-->
                                         <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource DataGridHeaderBackgroundBrush}"/>
+                                        <!--
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
+                                        -->
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="PointerOverCurrentRowSelected">
                                     <Storyboard>
-                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>-->
                                         <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource DataGridHeaderBackgroundBrush}"/>
+                                        <!--
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
+                                        -->
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="NormalCurrentRow">
+                                    <!--
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                     </Storyboard>
+                                    -->
                                 </VisualState>
                                 <VisualState x:Name="NormalSelected">
                                     <Storyboard>
-                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>-->
                                         <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource DataGridHeaderBackgroundBrush}"/>
+                                        <!--
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
+                                        -->
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="NormalEditingRow">
                                     <Storyboard>
-                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFD5EAF1"/>-->
                                         <ColorAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource DataGridHeaderBackgroundBrush}"/>
+                                        <!--
                                         <DoubleAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                         <DoubleAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
+                                        -->
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -588,18 +580,14 @@
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
                                         <DoubleAnimation Storyboard.TargetName="RowInvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
-                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[0].Color" Duration="0" To="#FFDC000C"/>
-                                        <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" Duration="0" To="#FFDC000C"/>
-                                        <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" Duration="0" To="#FFDC000C"/>
-                                        <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[0].Color" Duration="0" To="#FFDC000C"/>
-                                        <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" Duration="0" To="#FFDC000C"/>
-                                        <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" Duration="0" To="#FFDC000C"/>-->
+                                        <!--
                                         <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="EditingRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
+                                        -->
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -627,6 +615,7 @@
 
                         <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Grid.RowSpan="2"/>
 
+                        <!--
                         <Path x:Name="CurrentRowGlyph" VerticalAlignment="Center" HorizontalAlignment="Center" Width="6" Height="10" Margin="8,0,8,0" Grid.RowSpan="2" Stretch="Fill" Opacity="0" Data="F1 M 511.047,352.682L 511.047,342.252L 517.145,347.467L 511.047,352.682 Z ">
                             <Path.Fill>
                                 <LinearGradientBrush StartPoint="0,-.15" EndPoint="0,1.75">
@@ -646,6 +635,7 @@
                                 </LinearGradientBrush>
                             </Path.Fill>
                         </Path>
+                        -->
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -653,7 +643,6 @@
     </Style>
 
     <Style TargetType="local:DataGridRowGroupHeader">
-        <!--<Setter Property="UseSystemFocusVisuals" Value="True"/>-->
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Background" Value="#FFE4E8EA"/>
         <Setter Property="Template">
@@ -741,7 +730,7 @@
 
                         <Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="#FFD3D3D3" Height="1" Grid.Row="2"/>
                         <Rectangle x:Name="FocusVisual" Grid.Column="1" Grid.ColumnSpan="4" Grid.RowSpan="3" Stroke="#FF6DBDD1" StrokeThickness="1" HorizontalAlignment="Stretch" 
-                                   VerticalAlignment="Stretch" IsHitTestVisible="false" Opacity="0"/>
+                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Opacity="0"/>
                         <localprimitives:DataGridRowHeader x:Name="RowHeader" Grid.RowSpan="3" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
 
                     </localprimitives:DataGridFrozenGrid>

@@ -31,7 +31,6 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
-using Windows.UI.Core;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -134,6 +133,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private List<ValidationResult> _bindingValidationResults;
         private ContentControl _clipboardContentControl;
         private IndexToValueTable<Visibility> _collapsedSlotsTable;
+        private bool _columnHeaderHasFocus;
         private DataGridCellCoordinates _currentCellCoordinates;
 
         // used to store the current column during a Reset
@@ -169,6 +169,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         // the number of pixels of DisplayData.FirstDisplayedScrollingRow which are not displayed
         private int _noCurrentCellChangeCount;
+        private int _noFocusedColumnChangeCount;
         private int _noSelectionChangeCount;
         private DataGridCellCoordinates _previousAutomationFocusCoordinates;
         private DataGridColumn _previousCurrentColumn;
@@ -392,6 +393,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.CurrentCellCoordinates = new DataGridCellCoordinates(-1, -1);
 
             this.RowGroupHeaderHeightEstimate = DATAGRID_defaultRowHeight;
+
+            this.LastHandledKeyDown = VirtualKey.None;
 
             DefaultStyleKey = typeof(DataGrid);
         }
@@ -1990,6 +1993,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         return;
                     }
 
+                    if (_noFocusedColumnChangeCount == 0)
+                    {
+                        this.ColumnHeaderHasFocus = false;
+                    }
+
                     this.UpdateSelectionAndCurrency(dataGridColumn.Index, this.CurrentSlot, DataGridSelectionAction.None, false /*scrollIntoView*/);
                     Debug.Assert(_successfullyUpdatedSelection, "Expected _successfullyUpdatedSelection is true.");
                     if (beginEdit &&
@@ -2210,6 +2218,48 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        internal bool ColumnHeaderHasFocus
+        {
+            get
+            {
+                return _columnHeaderHasFocus;
+            }
+
+            set
+            {
+                Debug.Assert(!value || (this.ColumnHeaders != null && this.AreColumnHeadersVisible), "Expected value==False || (non-null ColumnHeaders and AreColumnHeadersVisible==True)");
+
+                if (_columnHeaderHasFocus != value)
+                {
+                    _columnHeaderHasFocus = value;
+
+                    if (this.CurrentColumn != null && this.IsSlotVisible(this.CurrentSlot))
+                    {
+                        UpdateCurrentState(this.DisplayData.GetDisplayedElement(this.CurrentSlot), this.CurrentColumnIndex, true /*applyCellState*/);
+                    }
+
+                    DataGridColumn oldFocusedColumn = this.FocusedColumn;
+                    this.FocusedColumn = null;
+
+                    if (_columnHeaderHasFocus)
+                    {
+                        this.FocusedColumn = this.CurrentColumn == null ? this.ColumnsInternal.FirstVisibleNonFillerColumn : this.CurrentColumn;
+                    }
+
+                    if (oldFocusedColumn != null && oldFocusedColumn.HasHeaderCell)
+                    {
+                        oldFocusedColumn.HeaderCell.ApplyState(true);
+                    }
+
+                    if (this.FocusedColumn != null && this.FocusedColumn.HasHeaderCell)
+                    {
+                        this.FocusedColumn.HeaderCell.ApplyState(true);
+                        ScrollColumnIntoView(this.FocusedColumn.Index);
+                    }
+                }
+            }
+        }
+
         internal DataGridColumnHeaderInteractionInfo ColumnHeaderInteractionInfo
         {
             get;
@@ -2302,6 +2352,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 return _negHorizontalOffset;
             }
+        }
+
+        internal DataGridColumn FocusedColumn
+        {
+            get;
+            set;
         }
 
         internal bool HasColumnUserInteraction
@@ -2614,6 +2670,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 return _rowsPresenter != null && Grid.GetRowSpan(_rowsPresenter) == 2;
             }
+        }
+
+        private VirtualKey LastHandledKeyDown
+        {
+            get;
+            set;
         }
 
         private int NoSelectionChangeCount
@@ -4186,7 +4248,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     _lostFocusActions.Enqueue(action);
                     editingElement.LostFocus += new RoutedEventHandler(EditingElement_LostFocus);
                     this.IsTabStop = true;
-                    this.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                    this.Focus(FocusState.Programmatic);
                     return true;
                 }
             }
@@ -4906,7 +4968,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // We need to focus the DataGrid in case the focused element gets removed when we end edit.
-            if ((_editingColumnIndex == -1 || (this.Focus(Windows.UI.Xaml.FocusState.Programmatic) && EndCellEdit(DataGridEditAction.Commit, true, true, true)))
+            if ((_editingColumnIndex == -1 || (this.Focus(FocusState.Programmatic) && EndCellEdit(DataGridEditAction.Commit, true, true, true)))
                 && e.Item != null && e.Target != null && _validationSummary.Errors.Contains(e.Item))
             {
                 DataGridCell cell = e.Target.Control as DataGridCell;
@@ -5108,18 +5170,43 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (!e.Handled)
             {
                 e.Handled = ProcessDataGridKey(e);
+                this.LastHandledKeyDown = e.Handled ? e.Key : VirtualKey.None;
             }
         }
 
         private void DataGrid_KeyUp(object sender, KeyRoutedEventArgs e)
         {
-            if (e.Key == Windows.System.VirtualKey.Tab && this.CurrentColumnIndex != -1 && e.OriginalSource == this)
+            if (e.Key == VirtualKey.Tab && e.OriginalSource == this)
             {
-                bool success = ScrollSlotIntoView(this.CurrentColumnIndex, this.CurrentSlot, false /*forCurrentCellChange*/, true /*forceHorizontalScroll*/);
-                Debug.Assert(success, "Expected ScrollSlotIntoView returns true.");
-                if (this.CurrentColumnIndex != -1 && this.SelectedItem == null)
+                if (this.CurrentColumnIndex == -1)
                 {
-                    SetRowSelection(this.CurrentSlot, true /*isSelected*/, true /*setAnchorSlot*/);
+                    if (this.ColumnHeaders != null && this.AreColumnHeadersVisible && !this.ColumnHeaderHasFocus /*&& this.LastHandledKeyDown != VirtualKey.Tab*/)
+                    {
+                        this.ColumnHeaderHasFocus = true;
+                    }
+                }
+                else
+                {
+                    if (this.ColumnHeaders != null && this.AreColumnHeadersVisible)
+                    {
+                        bool ctrl, shift;
+                        KeyboardHelper.GetMetaKeyState(out ctrl, out shift);
+
+                        if (shift && this.LastHandledKeyDown != VirtualKey.Tab)
+                        {
+                            Debug.Assert(!this.ColumnHeaderHasFocus, "Expected ColumnHeaderHasFocus is false.");
+
+                            // Show currency on the current column's header as focus is entering the DataGrid backwards.
+                            this.ColumnHeaderHasFocus = true;
+                        }
+                    }
+
+                    bool success = ScrollSlotIntoView(this.CurrentColumnIndex, this.CurrentSlot, false /*forCurrentCellChange*/, true /*forceHorizontalScroll*/);
+                    Debug.Assert(success, "Expected ScrollSlotIntoView returns true.");
+                    if (this.CurrentColumnIndex != -1 && this.SelectedItem == null)
+                    {
+                        SetRowSelection(this.CurrentSlot, true /*isSelected*/, true /*setAnchorSlot*/);
+                    }
                 }
             }
         }
@@ -5331,7 +5418,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this.IsTabStop = true;
                 if (keepFocus && editingElement.ContainsFocusedElement())
                 {
-                    this.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                    this.Focus(FocusState.Programmatic);
                 }
 
                 PopulateCellContent(!exitEditingMode /*isCellEdited*/, this.CurrentColumn, this.EditingRow, editingCell);
@@ -5511,7 +5598,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             ResetEditingRow();
             if (keepFocus)
             {
-                bool success = Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                bool success = Focus(FocusState.Programmatic);
                 Debug.Assert(success, "Expected successful Focus call.");
             }
         }
@@ -5629,7 +5716,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
                 else
                 {
-                    success = dataGridCell.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                    success = dataGridCell.Focus(FocusState.Programmatic);
                 }
 
                 _focusEditingControl = !success;
@@ -6057,7 +6144,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (focusDataGrid && this.IsTabStop)
             {
-                this.Focus(Windows.UI.Xaml.FocusState.Programmatic);
+                this.Focus(FocusState.Programmatic);
             }
 
             return focusDataGrid;
@@ -6094,7 +6181,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 int desiredSlot;
                 int columnIndex;
                 DataGridSelectionAction action;
-                if (this.CurrentColumnIndex == -1)
+
+                if (this.ColumnHeaderHasFocus)
+                {
+                    if (ctrl || shift)
+                    {
+                        return false;
+                    }
+
+                    if (this.CurrentSlot == this.FirstVisibleSlot)
+                    {
+                        this.ColumnHeaderHasFocus = false;
+                        return true;
+                    }
+
+                    Debug.Assert(this.CurrentColumnIndex != -1, "Expected CurrentColumnIndex other than -1.");
+                    desiredSlot = this.FirstVisibleSlot;
+                    columnIndex = this.CurrentColumnIndex;
+                    action = DataGridSelectionAction.SelectCurrent;
+                }
+                else if (this.CurrentColumnIndex == -1)
                 {
                     desiredSlot = this.FirstVisibleSlot;
                     columnIndex = firstVisibleColumnIndex;
@@ -6158,7 +6264,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             int lastVisibleColumnIndex = (dataGridColumn == null) ? -1 : dataGridColumn.Index;
             int firstVisibleSlot = this.FirstVisibleSlot;
             int lastVisibleSlot = this.LastVisibleSlot;
-            if (lastVisibleColumnIndex == -1 || firstVisibleSlot == -1)
+            if (lastVisibleColumnIndex == -1 || (firstVisibleSlot == -1 && !this.ColumnHeaderHasFocus))
             {
                 return false;
             }
@@ -6175,7 +6281,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return ProcessRightMost(lastVisibleColumnIndex, firstVisibleSlot);
                 }
-                else
+                else if (firstVisibleSlot != -1)
                 {
                     DataGridSelectionAction action = (shift && this.SelectionMode == DataGridSelectionMode.Extended)
                         ? DataGridSelectionAction.SelectFromAnchorToCurrent
@@ -6197,6 +6303,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (!ctrl)
             {
+                if (this.ColumnHeaderHasFocus)
+                {
+                    this.CurrentColumn.HeaderCell.InvokeProcessSort();
+                    return true;
+                }
+
                 // If Enter was used by a TextBox, we shouldn't handle the key
                 TextBox focusedTextBox = FocusManager.GetFocusedElement() as TextBox;
                 if (focusedTextBox != null && focusedTextBox.AcceptsReturn)
@@ -6278,7 +6390,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridColumn dataGridColumn = this.ColumnsInternal.FirstVisibleNonFillerColumn;
             int firstVisibleColumnIndex = (dataGridColumn == null) ? -1 : dataGridColumn.Index;
             int firstVisibleSlot = this.FirstVisibleSlot;
-            if (firstVisibleColumnIndex == -1 || firstVisibleSlot == -1)
+            if (firstVisibleColumnIndex == -1 || (firstVisibleSlot == -1 && !this.ColumnHeaderHasFocus))
             {
                 return false;
             }
@@ -6295,7 +6407,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return ProcessLeftMost(firstVisibleColumnIndex, firstVisibleSlot);
                 }
-                else
+                else if (firstVisibleSlot != -1)
                 {
                     DataGridSelectionAction action = (shift && this.SelectionMode == DataGridSelectionMode.Extended)
                         ? DataGridSelectionAction.SelectFromAnchorToCurrent
@@ -6316,7 +6428,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridColumn dataGridColumn = this.ColumnsInternal.FirstVisibleNonFillerColumn;
             int firstVisibleColumnIndex = (dataGridColumn == null) ? -1 : dataGridColumn.Index;
             int firstVisibleSlot = this.FirstVisibleSlot;
-            if (firstVisibleColumnIndex == -1 || firstVisibleSlot == -1)
+            if (firstVisibleColumnIndex == -1 || (firstVisibleSlot == -1 && !this.ColumnHeaderHasFocus))
             {
                 return false;
             }
@@ -6336,6 +6448,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
+            DataGridColumn oldFocusedColumn = this.FocusedColumn;
+
             _noSelectionChangeCount++;
             try
             {
@@ -6343,9 +6457,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return ProcessLeftMost(firstVisibleColumnIndex, firstVisibleSlot);
                 }
-                else
+                else if (firstVisibleSlot != -1)
                 {
-                    if (this.RowGroupHeadersTable.Contains(this.CurrentSlot))
+                    if (this.RowGroupHeadersTable.Contains(this.CurrentSlot) && !this.ColumnHeaderHasFocus)
                     {
                         CollapseRowGroup(this.RowGroupHeadersTable.GetValueAt(this.CurrentSlot).CollectionViewGroup, false /*collapseAllSubgroups*/);
                     }
@@ -6361,7 +6475,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                             return true;
                         }
 
-                        UpdateSelectionAndCurrency(previousVisibleColumnIndex, this.CurrentSlot, DataGridSelectionAction.None, true /*scrollIntoView*/);
+                        _noFocusedColumnChangeCount++;
+                        try
+                        {
+                            UpdateSelectionAndCurrency(previousVisibleColumnIndex, this.CurrentSlot, DataGridSelectionAction.None, true /*scrollIntoView*/);
+                        }
+                        finally
+                        {
+                            _noFocusedColumnChangeCount--;
+                        }
                     }
                 }
             }
@@ -6370,12 +6492,50 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this.NoSelectionChangeCount--;
             }
 
-            return _successfullyUpdatedSelection;
+            if (this.ColumnHeaderHasFocus)
+            {
+                if (this.CurrentColumn == null)
+                {
+                    dataGridColumn = this.ColumnsInternal.GetPreviousVisibleNonFillerColumn(this.FocusedColumn);
+                    if (dataGridColumn != null)
+                    {
+                        this.FocusedColumn = dataGridColumn;
+                    }
+                }
+                else
+                {
+                    this.FocusedColumn = this.CurrentColumn;
+                }
+
+                if (firstVisibleSlot == -1 && this.FocusedColumn != null)
+                {
+                    ScrollColumnIntoView(this.FocusedColumn.Index);
+                }
+            }
+
+            bool focusedColumnChanged = this.ColumnHeaderHasFocus && oldFocusedColumn != this.FocusedColumn;
+
+            if (focusedColumnChanged)
+            {
+                if (oldFocusedColumn != null && oldFocusedColumn.HasHeaderCell)
+                {
+                    oldFocusedColumn.HeaderCell.ApplyState(true);
+                }
+
+                if (this.FocusedColumn != null && this.FocusedColumn.HasHeaderCell)
+                {
+                    this.FocusedColumn.HeaderCell.ApplyState(true);
+                }
+            }
+
+            return focusedColumnChanged || _successfullyUpdatedSelection;
         }
 
         // Ctrl Left <==> Home
         private bool ProcessLeftMost(int firstVisibleColumnIndex, int firstVisibleSlot)
         {
+            DataGridColumn oldFocusedColumn = this.FocusedColumn;
+
             _noSelectionChangeCount++;
             try
             {
@@ -6393,14 +6553,54 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     action = DataGridSelectionAction.None;
                 }
 
-                UpdateSelectionAndCurrency(firstVisibleColumnIndex, desiredSlot, action, true /*scrollIntoView*/);
+                _noFocusedColumnChangeCount++;
+                try
+                {
+                    UpdateSelectionAndCurrency(firstVisibleColumnIndex, desiredSlot, action, true /*scrollIntoView*/);
+                }
+                finally
+                {
+                    _noFocusedColumnChangeCount--;
+                }
             }
             finally
             {
                 this.NoSelectionChangeCount--;
             }
 
-            return _successfullyUpdatedSelection;
+            if (this.ColumnHeaderHasFocus)
+            {
+                if (this.CurrentColumn == null)
+                {
+                    this.FocusedColumn = this.ColumnsInternal.FirstVisibleColumn;
+                }
+                else
+                {
+                    this.FocusedColumn = this.CurrentColumn;
+                }
+
+                if (firstVisibleSlot == -1 && this.FocusedColumn != null)
+                {
+                    ScrollColumnIntoView(this.FocusedColumn.Index);
+                }
+            }
+
+            bool focusedColumnChanged = this.ColumnHeaderHasFocus && oldFocusedColumn != this.FocusedColumn;
+
+            if (focusedColumnChanged)
+            {
+                if (oldFocusedColumn != null && oldFocusedColumn.HasHeaderCell)
+                {
+                    oldFocusedColumn.HeaderCell.ApplyState(true);
+                }
+
+                if (this.FocusedColumn != null && this.FocusedColumn.HasHeaderCell)
+                {
+                    this.FocusedColumn.HeaderCell.ApplyState(true);
+                }
+            }
+
+            return focusedColumnChanged || _successfullyUpdatedSelection;
         }
 
         private bool ProcessNextKey(bool shift, bool ctrl)
@@ -6518,7 +6718,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             DataGridColumn dataGridColumn = this.ColumnsInternal.LastVisibleColumn;
             int lastVisibleColumnIndex = (dataGridColumn == null) ? -1 : dataGridColumn.Index;
             int firstVisibleSlot = this.FirstVisibleSlot;
-            if (lastVisibleColumnIndex == -1 || firstVisibleSlot == -1)
+            if (lastVisibleColumnIndex == -1 || (firstVisibleSlot == -1 && !this.ColumnHeaderHasFocus))
             {
                 return false;
             }
@@ -6538,6 +6738,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
+            DataGridColumn oldFocusedColumn = this.FocusedColumn;
+
             _noSelectionChangeCount++;
             try
             {
@@ -6545,9 +6747,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return ProcessRightMost(lastVisibleColumnIndex, firstVisibleSlot);
                 }
-                else
+                else if (firstVisibleSlot != -1)
                 {
-                    if (this.RowGroupHeadersTable.Contains(this.CurrentSlot))
+                    if (this.RowGroupHeadersTable.Contains(this.CurrentSlot) && !this.ColumnHeaderHasFocus)
                     {
                         ExpandRowGroup(this.RowGroupHeadersTable.GetValueAt(this.CurrentSlot).CollectionViewGroup, false /*expandAllSubgroups*/);
                     }
@@ -6563,7 +6765,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                             return true;
                         }
 
-                        UpdateSelectionAndCurrency(nextVisibleColumnIndex, this.CurrentSlot, DataGridSelectionAction.None, true /*scrollIntoView*/);
+                        _noFocusedColumnChangeCount++;
+                        try
+                        {
+                            UpdateSelectionAndCurrency(nextVisibleColumnIndex, this.CurrentSlot, DataGridSelectionAction.None, true /*scrollIntoView*/);
+                        }
+                        finally
+                        {
+                            _noFocusedColumnChangeCount--;
+                        }
                     }
                 }
             }
@@ -6572,12 +6782,50 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 this.NoSelectionChangeCount--;
             }
 
-            return _successfullyUpdatedSelection;
+            if (this.ColumnHeaderHasFocus)
+            {
+                if (this.CurrentColumn == null)
+                {
+                    dataGridColumn = this.ColumnsInternal.GetNextVisibleColumn(this.FocusedColumn);
+                    if (dataGridColumn != null)
+                    {
+                        this.FocusedColumn = dataGridColumn;
+                    }
+                }
+                else
+                {
+                    this.FocusedColumn = this.CurrentColumn;
+                }
+
+                if (firstVisibleSlot == -1 && this.FocusedColumn != null)
+                {
+                    ScrollColumnIntoView(this.FocusedColumn.Index);
+                }
+            }
+
+            bool focusedColumnChanged = this.ColumnHeaderHasFocus && oldFocusedColumn != this.FocusedColumn;
+
+            if (focusedColumnChanged)
+            {
+                if (oldFocusedColumn != null && oldFocusedColumn.HasHeaderCell)
+                {
+                    oldFocusedColumn.HeaderCell.ApplyState(true);
+                }
+
+                if (this.FocusedColumn != null && this.FocusedColumn.HasHeaderCell)
+                {
+                    this.FocusedColumn.HeaderCell.ApplyState(true);
+                }
+            }
+
+            return focusedColumnChanged || _successfullyUpdatedSelection;
         }
 
         // Ctrl Right <==> End
         private bool ProcessRightMost(int lastVisibleColumnIndex, int firstVisibleSlot)
         {
+            DataGridColumn oldFocusedColumn = this.FocusedColumn;
+
             _noSelectionChangeCount++;
             try
             {
@@ -6594,14 +6842,54 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     action = DataGridSelectionAction.None;
                 }
 
-                UpdateSelectionAndCurrency(lastVisibleColumnIndex, desiredSlot, action, true /*scrollIntoView*/);
+                _noFocusedColumnChangeCount++;
+                try
+                {
+                    UpdateSelectionAndCurrency(lastVisibleColumnIndex, desiredSlot, action, true /*scrollIntoView*/);
+                }
+                finally
+                {
+                    _noFocusedColumnChangeCount--;
+                }
             }
             finally
             {
                 this.NoSelectionChangeCount--;
             }
 
-            return _successfullyUpdatedSelection;
+            if (this.ColumnHeaderHasFocus)
+            {
+                if (this.CurrentColumn == null)
+                {
+                    this.FocusedColumn = this.ColumnsInternal.LastVisibleColumn;
+                }
+                else
+                {
+                    this.FocusedColumn = this.CurrentColumn;
+                }
+
+                if (firstVisibleSlot == -1 && this.FocusedColumn != null)
+                {
+                    ScrollColumnIntoView(this.FocusedColumn.Index);
+                }
+            }
+
+            bool focusedColumnChanged = this.ColumnHeaderHasFocus && oldFocusedColumn != this.FocusedColumn;
+
+            if (focusedColumnChanged)
+            {
+                if (oldFocusedColumn != null && oldFocusedColumn.HasHeaderCell)
+                {
+                    oldFocusedColumn.HeaderCell.ApplyState(true);
+                }
+
+                if (this.FocusedColumn != null && this.FocusedColumn.HasHeaderCell)
+                {
+                    this.FocusedColumn.HeaderCell.ApplyState(true);
+                }
+            }
+
+            return focusedColumnChanged || _successfullyUpdatedSelection;
         }
 
         private bool ProcessTabKey(KeyRoutedEventArgs e)
@@ -6615,9 +6903,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (ctrl || _editingColumnIndex == -1 || this.IsReadOnly)
             {
-                // Go to the next/previous control on the page when
+                // Go to the next/previous control on the page or the column header when
                 // - Ctrl key is used
                 // - Potential current cell is not edited, or the datagrid is read-only.
+                if (!shift && this.ColumnHeaders != null && this.AreColumnHeadersVisible && !this.ColumnHeaderHasFocus)
+                {
+                    // Show focus on the current column's header.
+                    this.ColumnHeaderHasFocus = true;
+                    return true;
+                }
+                else if (shift && this.ColumnHeaderHasFocus)
+                {
+                    this.ColumnHeaderHasFocus = false;
+                    return this.CurrentColumnIndex != -1;
+                }
+
+                this.ColumnHeaderHasFocus = false;
                 return false;
             }
 
@@ -7041,6 +7342,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 return false;
             }
 
+            if (_noFocusedColumnChangeCount == 0)
+            {
+                this.ColumnHeaderHasFocus = false;
+            }
+
             this.CurrentColumnIndex = columnIndex;
             this.CurrentSlot = slot;
 
@@ -7119,7 +7425,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 if (this.AreRowHeadersVisible)
                 {
-                    row.ApplyHeaderStatus(true /*animate*/);
+                    row.ApplyHeaderState(true /*animate*/);
                 }
 
                 DataGridCell cell = row.Cells[columnIndex];

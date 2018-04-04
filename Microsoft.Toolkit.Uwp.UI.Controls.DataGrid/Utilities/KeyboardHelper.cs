@@ -20,14 +20,14 @@ namespace Microsoft.Toolkit.Uwp.Utilities
     {
         public static void GetMetaKeyState(out bool ctrl, out bool shift)
         {
-            ctrl = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) == CoreVirtualKeyStates.Down;
-            shift = Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) == CoreVirtualKeyStates.Down;
+            ctrl = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
+            shift = Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
         }
 
         public static void GetMetaKeyState(out bool ctrl, out bool shift, out bool alt)
         {
             GetMetaKeyState(out ctrl, out shift);
-            alt = Window.Current.CoreWindow.GetKeyState(VirtualKey.Menu) == CoreVirtualKeyStates.Down;
+            alt = Window.Current.CoreWindow.GetKeyState(VirtualKey.Menu).HasFlag(CoreVirtualKeyStates.Down);
         }
     }
 }

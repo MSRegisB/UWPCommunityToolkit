@@ -981,11 +981,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal void ApplyHeaderStatus(bool animate)
+        internal void ApplyHeaderState(bool animate)
         {
             if (_headerElement != null && this.OwningGrid.AreRowHeadersVisible)
             {
-                _headerElement.ApplyOwnerStatus(animate);
+                _headerElement.ApplyOwnerState(animate);
             }
         }
 
@@ -1060,7 +1060,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     VisualStates.GoToState(this, animate, VisualStates.StateInvalid, VisualStates.StateValid);
                 }
 
-                ApplyHeaderStatus(animate);
+                ApplyHeaderState(animate);
             }
         }
 
