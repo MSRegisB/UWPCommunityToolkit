@@ -14,6 +14,9 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.Data
     [Bindable]
     public class DataGridDataSource
     {
+        private static ObservableCollection<DataGridDataItem> _items;
+        private string _cachedSortedColumn = string.Empty;
+
         public string CachedSortedColumn
         {
             get
@@ -62,7 +65,7 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.Data
 
         public ObservableCollection<DataGridDataItem> SortData(string sortBy, bool ascending)
         {
-            CachedSortedColumn = sortBy;
+            _cachedSortedColumn = sortBy;
             switch (sortBy)
             {
                 case "Rank":
@@ -134,68 +137,9 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.Data
                                                                           orderby item.Range descending
                                                                           select item);
                     }
-
-                case "Coordinates":
-                    if (ascending)
-                    {
-                        return new ObservableCollection<DataGridDataItem>(from item in _items
-                                                                          orderby item.Coordinates ascending
-                                                                          select item);
-                    }
-                    else
-                    {
-                        return new ObservableCollection<DataGridDataItem>(from item in _items
-                                                                          orderby item.Coordinates descending
-                                                                          select item);
-                    }
-
-                case "First_ascent":
-                    if (ascending)
-                    {
-                        return new ObservableCollection<DataGridDataItem>(from item in _items
-                                                                          orderby item.First_ascent ascending
-                                                                          select item);
-                    }
-                    else
-                    {
-                        return new ObservableCollection<DataGridDataItem>(from item in _items
-                                                                          orderby item.First_ascent descending
-                                                                          select item);
-                    }
-
-                case "Ascents":
-                    if (ascending)
-                    {
-                        return new ObservableCollection<DataGridDataItem>(from item in _items
-                                                                          orderby item.Ascents ascending
-                                                                          select item);
-                    }
-                    else
-                    {
-                        return new ObservableCollection<DataGridDataItem>(from item in _items
-                                                                          orderby item.Ascents descending
-                                                                          select item);
-                    }
-
-                case "Prominence":
-                    if (ascending)
-                    {
-                        return new ObservableCollection<DataGridDataItem>(from item in _items
-                                                                          orderby item.Prominence ascending
-                                                                          select item);
-                    }
-                    else
-                    {
-                        return new ObservableCollection<DataGridDataItem>(from item in _items
-                                                                          orderby item.Prominence descending
-                                                                          select item);
-                    }
             }
 
             return _items;
         }
-
-        private static ObservableCollection<DataGridDataItem> _items;
-        private string _cachedSortedColumn = string.Empty;
     }
 }

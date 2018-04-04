@@ -13,7 +13,6 @@
 using Microsoft.Toolkit.Uwp.SampleApp.Data;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using Microsoft.Toolkit.Uwp.UI.Extensions;
-using System.Collections.ObjectModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -34,22 +33,6 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.SamplePages
             dataGrid = control.FindDescendantByName("dataGrid") as DataGrid;
             dataGrid.ItemsSource = await viewModel.GetDataAsync();
             dataGrid.Sorting += DataGrid_Sorting;
-            dataGrid.AutoGeneratingColumn += DataGrid_AutoGeneratingColumn;
-        }
-
-        private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
-        {
-            // set the tag to use in sorting
-            e.Column.Tag = e.PropertyName;
-
-            // if the column is already present from markup declaration, do not autogenerate it
-            foreach (DataGridColumn c in dataGrid.Columns)
-            {
-                if (c.Tag.ToString() == e.PropertyName)
-                {
-                    e.Cancel = true;
-                }
-            }
         }
 
         private void DataGrid_Sorting(object sender, DataGridColumnEventArgs e)
