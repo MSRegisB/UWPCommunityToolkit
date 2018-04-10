@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Toolkit.Uwp.SampleApp.Data
 {
-    public class DataGridDataItem : INotifyDataErrorInfo
+    public class DataGridDataItem : INotifyDataErrorInfo, IComparable
     {
         private Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
         private uint _rank;
@@ -171,6 +171,20 @@ namespace Microsoft.Toolkit.Uwp.SampleApp.Data
             else
             {
                 return null;
+            }
+        }
+
+        int IComparable.CompareTo(object obj)
+        {
+            int lnCompare = Range.CompareTo((obj as DataGridDataItem).Range);
+
+            if (lnCompare == 0)
+            {
+                return Parent_mountain.CompareTo((obj as DataGridDataItem).Parent_mountain);
+            }
+            else
+            {
+                return lnCompare;
             }
         }
     }
