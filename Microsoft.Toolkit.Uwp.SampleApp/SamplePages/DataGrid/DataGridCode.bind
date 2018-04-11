@@ -75,7 +75,7 @@
         RowDetailsTemplate="{StaticResource RowDetailsTemplate}"
         RowDetailsVisibilityMode="@[RowDetailsVisibilityMode:Enum:DataGridRowDetailsVisibilityMode.Collapsed]"
         SelectionMode="@[SelectionMode:Enum:DataGridSelectionMode.Extended]"
-        RowGroupHeaderPropertyNameAlternative="@[RowGroupHeaderPropertyNameAlternative:String:Range]">
+        RowGroupHeaderPropertyNameAlternative="Range">
       <controls:DataGrid.Columns>
         <controls:DataGridTextColumn Header="Rank" Binding="{Binding Rank}" Tag="Rank"/>
         <controls:DataGridTextColumn Header="Mountain" Binding="{Binding Mountain}" Tag="Mountain" />
