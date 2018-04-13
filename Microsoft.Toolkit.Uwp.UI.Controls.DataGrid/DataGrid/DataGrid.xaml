@@ -323,7 +323,7 @@
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
 
-                        <Rectangle x:Name="InvalidVisualElement" IsHitTestVisible="False" StrokeThickness="1" Stroke="#FFDC000C" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0"/>
+                        <Rectangle x:Name="InvalidVisualElement" IsHitTestVisible="False" StrokeThickness="1" Stroke="#C50500" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0"/>
 
                         <Rectangle x:Name="RightGridLine" Grid.Column="1" VerticalAlignment="Stretch" Width="1"/>
                     </Grid>
@@ -511,7 +511,7 @@
                         -->
 
                         <Rectangle x:Name="BackgroundRectangle" Grid.ColumnSpan="2" Fill="{ThemeResource SystemControlTransparentBrush}"/>
-                        <Rectangle x:Name="InvalidVisualElement" Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0" Fill="#FFF7D8DB"/>
+                        <Rectangle x:Name="InvalidVisualElement" Grid.ColumnSpan="2" Opacity="0" Fill="#FFF7D8DB"/>
 
                         <localprimitives:DataGridRowHeader Grid.RowSpan="3" x:Name="RowHeader" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
                         <localprimitives:DataGridCellsPresenter Grid.Column="1" x:Name="CellsPresenter" localprimitives:DataGridFrozenGrid.IsFrozen="True" MinHeight="32"/>
