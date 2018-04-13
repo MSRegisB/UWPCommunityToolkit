@@ -451,30 +451,32 @@
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
-                                <VisualState x:Name="NormalAlternatingRow">
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
-                                    </Storyboard>
-                                </VisualState>
+                                <VisualState x:Name="NormalAlternatingRow" />
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To=".5"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemListLowColor}"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <Storyboard>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemListMediumColor}"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="NormalSelected">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemAccentColor}"/>
+                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="0.6"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="PointerOverSelected">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemAccentColor}"/>
+                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="0.8"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="UnfocusedSelected">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#FFE1E7EC"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#33FFFFFF"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -508,7 +510,7 @@
                         </Grid.Resources>
                         -->
 
-                        <Rectangle x:Name="BackgroundRectangle" Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0" Fill="{ThemeResource SystemControlHighlightListAccentHighBrush}"/>
+                        <Rectangle x:Name="BackgroundRectangle" Grid.ColumnSpan="2" Fill="{ThemeResource SystemControlTransparentBrush}"/>
                         <Rectangle x:Name="InvalidVisualElement" Grid.RowSpan="2" Grid.ColumnSpan="2" Opacity="0" Fill="#FFF7D8DB"/>
 
                         <localprimitives:DataGridRowHeader Grid.RowSpan="3" x:Name="RowHeader" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
@@ -668,59 +670,32 @@
                         </VisualStateManager.VisualStateGroups>
                         <localprimitives:DataGridFrozenGrid.Resources>
                             <ControlTemplate x:Key="ToggleButtonTemplate" TargetType="ToggleButton">
-                                <Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
+                                <Grid Background="{TemplateBinding Background}">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
-                                            <VisualState x:Name="Normal">
-                                                <Storyboard>
-                                                    <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                                </Storyboard>
-                                            </VisualState>
+                                            <VisualState x:Name="Normal"/>
                                             <VisualState x:Name="PointerOver">
                                                 <Storyboard>
-                                                    <!--<ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPointerOver}"/>-->
-                                                    <!--<ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPointerOver}"/>-->
-                                                    <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RowGroupHeaderIcon" Storyboard.TargetProperty="Foreground">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonForegroundPointerOver}" />
-                                                    </ObjectAnimationUsingKeyFrames>-->
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundPointerOver}" />
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                                    <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPointerOver}"/>
+                                                    <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPointerOver}"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="Pressed">
                                                 <Storyboard>
-                                                    <!--<ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPressed}"/>-->
-                                                    <!--<ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPressed}"/>-->
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundPressed}" />
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RowGroupHeaderIcon" Storyboard.TargetProperty="Foreground">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonForegroundPressed}" />
-                                                    </ObjectAnimationUsingKeyFrames>-->
-                                                    <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                                    <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPressed}"/>
+                                                    <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPressed}"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="Disabled">
                                                 <Storyboard>
                                                     <DoubleAnimation Duration="0" Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="Opacity" To=".5"/>
                                                     <DoubleAnimation Duration="0" Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="Opacity" To=".5"/>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundDisabled}" />
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RowGroupHeaderIcon" Storyboard.TargetProperty="Foreground">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonForegroundDisabled}" />
-                                                    </ObjectAnimationUsingKeyFrames>-->
                                                 </Storyboard>
                                             </VisualState>
                                         </VisualStateGroup>
                                         <VisualStateGroup x:Name="CheckStates">
                                             <VisualState x:Name="Checked">
                                                 <Storyboard>
-                                                    <!--<ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="RowGroupHeaderIcon" Storyboard.TargetProperty="Text">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource RowGroupHeaderIconClosed}"/>
-                                                    </ObjectAnimationUsingKeyFrames>-->
                                                     <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="Visibility">
                                                         <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
                                                     </ObjectAnimationUsingKeyFrames>
@@ -731,9 +706,6 @@
                                             </VisualState>
                                             <VisualState x:Name="Unchecked">
                                                 <Storyboard>
-                                                    <!--<ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="RowGroupHeaderIcon" Storyboard.TargetProperty="Text">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource RowGroupHeaderIconClosed}"/>
-                                                    </ObjectAnimationUsingKeyFrames>-->
                                                     <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="Visibility">
                                                         <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
                                                     </ObjectAnimationUsingKeyFrames>
@@ -745,20 +717,11 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
 
-                                    
-                                    <Path Stretch="Uniform" Data="F1 M 0,0 L 0,1 L .6,.5 L 0,0 Z" Width="12" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                          x:Name="CollapsedArrow" Visibility="Collapsed" Stroke="{TemplateBinding Foreground}"/>
-                                    <Path Stretch="Uniform" Data="F1 M 0,1 L 1,1 L 1,0 L 0,1 Z" Width="12" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                          x:Name="ExpandedArrow" Fill="{TemplateBinding Foreground}"/>
 
-                                    <!--<FontIcon x:Name="ExpandedArrow" Glyph="{ThemeResource RowGroupHeaderIconOpen}"
-                                               Width="12" Height="12"
-                                               Foreground="{TemplateBinding Foreground}" 
-                                               HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                    <FontIcon x:Name="CollapsedArrow" Glyph="{ThemeResource RowGroupHeaderIconClosed}" 
-                                               FontSize="12" Width="12"
-                                               Foreground="{TemplateBinding Foreground}" 
-                                               HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed" />-->
+                                    <Path Stretch="Uniform" Data="F1 M 0,0 L 1,0.5 L 0,1" Width="12" Height="12"  HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                          x:Name="CollapsedArrow" Visibility="Collapsed" Stroke="{TemplateBinding Foreground}"/>
+                                    <Path Stretch="Uniform" Data="F1 M 0,0 L 0.5,1 L 1,0" Width="12" Height="12" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                          x:Name="ExpandedArrow" Stroke="{TemplateBinding Foreground}"/>
                                 </Grid>
                             </ControlTemplate>
                         </localprimitives:DataGridFrozenGrid.Resources>
@@ -781,7 +744,7 @@
                         <Rectangle Grid.Column="1" Grid.Row="1" x:Name="IndentSpacer"/>
                         <ToggleButton Grid.Column="2" Grid.Row="1" x:Name="ExpanderButton" Height="12" Width="12"
                                       IsTabStop="False" Template="{StaticResource ToggleButtonTemplate}" 
-                                      Margin="2,0,0,0" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"/>
+                                      Margin="12,0,0,0" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"/>
 
                         <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
                             <TextBlock x:Name="PropertyNameElement" Margin="4,0,0,0" Visibility="{TemplateBinding PropertyNameVisibility}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{TemplateBinding Foreground}"/>

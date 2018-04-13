@@ -103,7 +103,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             // SSS_DROP_BEGIN
             // TODO: We might set Margin in a style instead, but Jolt Bugs 14282 prevents that from working
             // SSS_DROP_END
-            checkBox.Margin = new Thickness(0);
             ConfigureCheckBox(checkBox);
             return checkBox;
         }
@@ -254,7 +253,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void ConfigureCheckBox(CheckBox checkBox)
         {
-            checkBox.HorizontalAlignment = HorizontalAlignment.Center;
+            checkBox.Margin = new Thickness(12, 0, 0, 0);
+            checkBox.HorizontalAlignment = HorizontalAlignment.Left;
             checkBox.VerticalAlignment = VerticalAlignment.Center;
             checkBox.IsThreeState = this.IsThreeState;
             if (this.Binding != null)
