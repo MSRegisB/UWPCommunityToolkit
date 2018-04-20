@@ -15,6 +15,18 @@
                     xmlns:local="using:Microsoft.Toolkit.Uwp.UI.Controls"
                     xmlns:localprimitives="using:Microsoft.Toolkit.Uwp.UI.Controls.Primitives">
 
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Default">
+            <SolidColorBrush x:Key="InvalidBrush" Color="#C50500" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="HighContrast">
+            <SolidColorBrush x:Key="InvalidBrush" Color="#FFFF00" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="InvalidBrush" Color="#C50500" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
     <SolidColorBrush x:Key="SystemControlGridLinesBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}"/>
     <SolidColorBrush x:Key="SystemControlRowGroupHeaderBackgroundMediumBrush" Color="{StaticResource SystemChromeMediumColor}"/>
     <x:String x:Key="SortIconAscending">&#xE74A;</x:String>
@@ -22,20 +34,20 @@
     <x:String x:Key="RowGroupHeaderIconClosed">&#xE974;</x:String>
     <x:String x:Key="RowGroupHeaderIconOpened">&#xE972;</x:String>
     <StaticResource x:Key="GridLinesBrush" ResourceKey="SystemControlGridLinesBaseMediumLowBrush"/>
-    <StaticResource x:Key="DataGridRowBackgroundBrush" ResourceKey="SystemControlTransparentBrush"/>
-    <StaticResource x:Key="DataGridCellBackgroundBrush" ResourceKey="SystemControlTransparentBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseMediumBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderBackgroundBrush" ResourceKey="SystemControlBackgroundAltHighBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderPointerOverBrush" ResourceKey="SystemControlHighlightListLowBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderPressedBrush" ResourceKey="SystemControlHighlightListMediumBrush"/>
+    <StaticResource x:Key="DataGridRowBackgroundBrush" ResourceKey="SystemControlTransparentBrush"/>
     <StaticResource x:Key="DataGridRowHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseMediumBrush"/>
     <StaticResource x:Key="DataGridRowHeaderBackgroundBrush" ResourceKey="SystemControlBackgroundAltHighBrush"/>
     <StaticResource x:Key="DataGridRowGroupHeaderBackgroundBrush" ResourceKey="SystemControlRowGroupHeaderBackgroundMediumBrush"/>
     <StaticResource x:Key="DataGridRowGroupHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseHighBrush"/>
+    <StaticResource x:Key="DataGridRowInvalidBrush" ResourceKey="InvalidBrush"/>
+    <StaticResource x:Key="DataGridCellBackgroundBrush" ResourceKey="SystemControlTransparentBrush"/>
     <StaticResource x:Key="DataGridCellFocusVisualPrimaryBrush" ResourceKey="SystemControlFocusVisualPrimaryBrush"/>
     <StaticResource x:Key="DataGridCellFocusVisualSecondaryBrush" ResourceKey="SystemControlFocusVisualSecondaryBrush"/>
-    <StaticResource x:Key="DataGridCellFocusBorderBrush" ResourceKey="SystemControlForegroundAltHighBrush"/>
-    <StaticResource x:Key="DataGridCellFocusSecondaryBorderBrush" ResourceKey="SystemControlForegroundBaseHighBrush"/>
+    <StaticResource x:Key="DataGridCellInvalidBrush" ResourceKey="InvalidBrush"/>
 
     <Style TargetType="local:DataGrid">
         <Setter Property="RowBackground" Value="{ThemeResource DataGridRowBackgroundBrush}"/>
@@ -302,8 +314,6 @@
                                 <VisualState x:Name="Invalid">
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="InvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
-                                        <!-- SL5 <ColorAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="(Fill).Color" Duration="0" To="#FFFFFFFF"/>-->
-                                        <ColorAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Duration="0" To="#FFFF00"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -314,16 +324,20 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Rectangle x:Name="FocusVisual" Stroke="{ThemeResource DataGridCellFocusSecondaryBorderBrush}" StrokeThickness="1" Fill="Transparent" HorizontalAlignment="Stretch" 
-                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Opacity="0"/>
-
+                        <Grid x:Name="FocusVisual" IsHitTestVisible="False" Opacity="0">
+                            <Rectangle x:Name="FocusVisualPrimary" Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="2" Fill="Transparent"
+                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False"/>
+                            <Rectangle x:Name="FocusVisualSecondary" Stroke="{ThemeResource DataGridCellFocusVisualSecondaryBrush}" StrokeThickness="1" Fill="Transparent"
+                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
+                        </Grid>
+                        
                         <ContentPresenter
                             Content="{TemplateBinding Content}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
 
-                        <Rectangle x:Name="InvalidVisualElement" IsHitTestVisible="False" StrokeThickness="1" Stroke="#C50500" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0"/>
+                        <Rectangle x:Name="InvalidVisualElement" IsHitTestVisible="False" StrokeThickness="1" Stroke="{ThemeResource DataGridCellInvalidBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0"/>
 
                         <Rectangle x:Name="RightGridLine" Grid.Column="1" VerticalAlignment="Stretch" Width="1"/>
                     </Grid>
@@ -434,8 +448,12 @@
                         </Grid>
                         <Rectangle x:Name="VerticalSeparator" Grid.Column="1" Width="1" VerticalAlignment="Stretch" Fill="{TemplateBinding SeparatorBrush}" Visibility="{TemplateBinding SeparatorVisibility}"/>
 
-                        <Rectangle x:Name="FocusVisual" Stroke="{ThemeResource DataGridCellFocusSecondaryBorderBrush}" StrokeThickness="1" Fill="Transparent" 
-                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Opacity="0"/>
+                        <Grid x:Name="FocusVisual" IsHitTestVisible="False" Opacity="0">
+                            <Rectangle x:Name="FocusVisualPrimary" Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="2" Fill="Transparent" 
+                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False"/>
+                            <Rectangle x:Name="FocusVisualSecondary" Stroke="{ThemeResource DataGridCellFocusVisualSecondaryBrush}" StrokeThickness="1" Fill="Transparent" 
+                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
+                        </Grid>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -487,7 +505,7 @@
                                         <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
                                         </ObjectAnimationUsingKeyFrames>
-                                        <DoubleAnimation Storyboard.TargetName="InvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
+                                        <DoubleAnimation Storyboard.TargetName="InvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="0.4"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -511,7 +529,7 @@
                         -->
 
                         <Rectangle x:Name="BackgroundRectangle" Grid.ColumnSpan="2" Fill="{ThemeResource SystemControlTransparentBrush}"/>
-                        <Rectangle x:Name="InvalidVisualElement" Grid.ColumnSpan="2" Opacity="0" Fill="#FFF7D8DB"/>
+                        <Rectangle x:Name="InvalidVisualElement" Grid.ColumnSpan="2" Opacity="0" Fill="{ThemeResource DataGridRowInvalidBrush}"/>
 
                         <localprimitives:DataGridRowHeader Grid.RowSpan="3" x:Name="RowHeader" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
                         <localprimitives:DataGridCellsPresenter Grid.Column="1" x:Name="CellsPresenter" localprimitives:DataGridFrozenGrid.IsFrozen="True" MinHeight="32"/>
@@ -585,7 +603,7 @@
                                 <VisualState x:Name="RowInvalid">
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="0"/>
-                                        <DoubleAnimation Storyboard.TargetName="RowInvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
+                                        <DoubleAnimation Storyboard.TargetName="RowInvalidVisualElement" Storyboard.TargetProperty="Opacity" Duration="0" To="0.4"/>
                                         <!--
                                         <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
                                         <ColorAnimation Storyboard.TargetName="CurrentRowGlyph" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Duration="0" To="#FFDC000C"/>
@@ -612,7 +630,7 @@
 
                         <Border BorderBrush="{TemplateBinding SeparatorBrush}" BorderThickness="0,0,1,0" Grid.RowSpan="3" Grid.ColumnSpan="2">
                             <Grid Background="{TemplateBinding Background}">
-                                <Rectangle x:Name="RowInvalidVisualElement" Stretch="Fill" Fill="#FFF7D8DB" Opacity="0"/>
+                                <Rectangle x:Name="RowInvalidVisualElement" Stretch="Fill" Fill="{ThemeResource DataGridRowInvalidBrush}" Opacity="0"/>
                                 <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="Transparent"/>
                             </Grid>
                         </Border>
@@ -754,9 +772,16 @@
 
                         <!--<Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="#FFD3D3D3" Height="1" Grid.Row="2"/>-->
                         <Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="Transparent" Height="0" Grid.Row="2"/>
-                        <Rectangle x:Name="FocusVisual" Grid.Column="1" Grid.ColumnSpan="5" Grid.RowSpan="3" 
-                                   Stroke="{ThemeResource DataGridCellFocusSecondaryBorderBrush}" StrokeThickness="1" Fill="Transparent" HorizontalAlignment="Stretch" 
-                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Opacity="0"/>
+
+                        <Grid x:Name="FocusVisual" Grid.Column="1" Grid.ColumnSpan="5" Grid.RowSpan="3" IsHitTestVisible="False" Opacity="0">
+                            <Rectangle x:Name="FocusVisualPrimary"
+                                       Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="2" Fill="Transparent"
+                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False"/>
+                            <Rectangle x:Name="FocusVisualSecondary"
+                                       Stroke="{ThemeResource DataGridCellFocusVisualSecondaryBrush}" StrokeThickness="1" Fill="Transparent"
+                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
+                        </Grid>
+
                         <localprimitives:DataGridRowHeader x:Name="RowHeader" Grid.RowSpan="3" localprimitives:DataGridFrozenGrid.IsFrozen="True"/>
 
                     </localprimitives:DataGridFrozenGrid>
