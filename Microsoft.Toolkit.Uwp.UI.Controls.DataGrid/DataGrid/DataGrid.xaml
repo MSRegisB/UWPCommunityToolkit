@@ -17,20 +17,23 @@
 
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
-            <SolidColorBrush x:Key="InvalidBrush" Color="#C50500" />
+            <SolidColorBrush x:Key="InvalidBrush" Color="#C50500"/>
         </ResourceDictionary>
         <ResourceDictionary x:Key="HighContrast">
-            <SolidColorBrush x:Key="InvalidBrush" Color="#FFFF00" />
+            <SolidColorBrush x:Key="InvalidBrush" Color="#FFFF00"/>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
-            <SolidColorBrush x:Key="InvalidBrush" Color="#C50500" />
+            <SolidColorBrush x:Key="InvalidBrush" Color="#C50500"/>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
+    <FontFamily x:Key="SymbolThemeFontFamily">Segoe MDL2 Assets</FontFamily>
     <SolidColorBrush x:Key="SystemControlGridLinesBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}"/>
     <SolidColorBrush x:Key="SystemControlRowGroupHeaderBackgroundMediumBrush" Color="{StaticResource SystemChromeMediumColor}"/>
     <x:String x:Key="SortIconAscending">&#xE74A;</x:String>
     <x:String x:Key="SortIconDescending">&#xE74B;</x:String>
+    <!--<x:String x:Key="SortIconAscending">&#xEE68;</x:String>
+    <x:String x:Key="SortIconDescending">&#xEE69;</x:String>-->
     <x:String x:Key="RowGroupHeaderIconClosed">&#xE974;</x:String>
     <x:String x:Key="RowGroupHeaderIconOpened">&#xE972;</x:String>
     <StaticResource x:Key="GridLinesBrush" ResourceKey="SystemControlGridLinesBaseMediumLowBrush"/>
@@ -61,17 +64,6 @@
         <Setter Property="CanUserSortColumns" Value="True"/>
         <Setter Property="AutoGenerateColumns" Value="True"/>
         <Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected"/>
-        <!--<Setter Property="BorderBrush">
-            <Setter.Value>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FFA3AEB9" Offset="0"/>
-                    <GradientStop Color="#FF8399A9" Offset="0.375"/>
-                    <GradientStop Color="#FF718597" Offset="0.375"/>
-                    <GradientStop Color="#FF617584" Offset="1"/>
-                </LinearGradientBrush>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="BorderThickness" Value="1"/>-->
         <Setter Property="DragIndicatorStyle">
             <Setter.Value>
                 <!-- TODO: Change the TargetType to Control when the fix Jolt bugs 18719 is verified -->
@@ -88,43 +80,35 @@
                                             <VisualState x:Name="Unsorted"/>
                                             <VisualState x:Name="SortAscending">
                                                 <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1.0"/>
+                                                    <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="SortDescending">
                                                 <Storyboard>
-                                                    <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1.0"/>
+                                                    <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                                 </Storyboard>
                                                 <VisualState.Setters>
-                                                    <Setter Target="SortIcon.Text" Value="{ThemeResource SortIconDescending}"/>
+                                                    <!--<Setter Target="SortIcon.Text" Value="{ThemeResource SortIconDescending}"/>-->
+                                                    <Setter Target="SortIcon.Glyph" Value="{ThemeResource SortIconDescending}"/>
                                                 </VisualState.Setters>
                                             </VisualState>
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
 
-                                    <!--<Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="#66808080" Grid.ColumnSpan="2"/>
-
-                                    <Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" Opacity="0" >
-                                        <Rectangle.Fill>
-                                            <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
-                                                <GradientStop Color="#FFFFFFFF" Offset="0.015"/>
-                                                <GradientStop Color="#F9FFFFFF" Offset="0.375"/>
-                                                <GradientStop Color="#E5FFFFFF" Offset="0.6"/>
-                                                <GradientStop Color="#C6FFFFFF" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Rectangle.Fill>
-                                    </Rectangle>-->
-
                                     <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition MinWidth="32" Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
                                         <ContentPresenter Content="{TemplateBinding Content}"/>
 
-                                        <TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12" Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}" 
-                                                    HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.0"  RenderTransformOrigin="0.5,0.5"/>
+                                        <!--<TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" 
+                                                FontSize="12" Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}"
+                                                HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0"/>-->
+                                        <FontIcon Grid.Column="1" x:Name="SortIcon" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="{ThemeResource SortIconAscending}"
+                                            FontSize="12" Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                                     </Grid>
                                 </Grid>
                             </ControlTemplate>
@@ -150,7 +134,7 @@
         </Setter>
         <Setter Property="GridLinesVisibility" Value="Vertical"/>
         <Setter Property="HorizontalGridLinesBrush" Value="{ThemeResource GridLinesBrush}"/>
-        <Setter Property="UseSystemFocusVisuals" Value="True"/>
+        <Setter Property="UseSystemFocusVisuals" Value="False"/>
         <Setter Property="IsTabStop" Value="True"/>
         <Setter Property="VerticalGridLinesBrush" Value="{ThemeResource GridLinesBrush}"/>
         <Setter Property="Template">
@@ -191,7 +175,6 @@
                                 </VisualState>
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <!--<Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="2">-->
                         <Grid x:Name="Root" Background="{TemplateBinding Background}">
                             <Grid.Resources>
                                 <!--Start: TopLeftHeaderTemplate-->
@@ -202,20 +185,7 @@
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
-                                        <Border BorderThickness="0,0,1,0" BorderBrush="{ThemeResource GridLinesBrush}" Grid.RowSpan="2">
-                                            <!--
-                                                <Rectangle Stretch="Fill" StrokeThickness="1">
-                                                    <Rectangle.Fill>
-                                                        <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
-                                                            <GradientStop Color="#FCFFFFFF" Offset="0.015"/>
-                                                            <GradientStop Color="#F7FFFFFF" Offset="0.375"/>
-                                                            <GradientStop Color="#E5FFFFFF" Offset="0.6"/>
-                                                            <GradientStop Color="#D1FFFFFF" Offset="1"/>
-                                                        </LinearGradientBrush>
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
-                                                -->
-                                        </Border>
+                                        <Border BorderThickness="0,0,1,0" BorderBrush="{ThemeResource GridLinesBrush}" Grid.RowSpan="2"/>
                                         <Rectangle VerticalAlignment="Bottom" Width="Auto" StrokeThickness="1" Height="1" Fill="{ThemeResource GridLinesBrush}" Grid.RowSpan="2"/>
                                     </Grid>
                                 </ControlTemplate>
@@ -223,25 +193,7 @@
 
                                 <!--Start: TopRightHeaderTemplate-->
                                 <ControlTemplate x:Key="TopRightHeaderTemplate" TargetType="localprimitives:DataGridColumnHeader">
-                                    <Grid x:Name="RootElement">
-                                        <!--<Grid.RowDefinitions>
-                                                <RowDefinition Height="*"/>
-                                                <RowDefinition Height="*"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <Border BorderThickness="1,0,0,0" BorderBrush="#FFC9CACA" Background="#FF1F3B53" Grid.RowSpan="2">
-                                                <Rectangle Stretch="Fill">
-                                                    <Rectangle.Fill>
-                                                        <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
-                                                            <GradientStop Color="#FCFFFFFF" Offset="0.015"/>
-                                                            <GradientStop Color="#F7FFFFFF" Offset="0.375"/>
-                                                            <GradientStop Color="#E5FFFFFF" Offset="0.6"/>
-                                                            <GradientStop Color="#D1FFFFFF" Offset="1"/>
-                                                        </LinearGradientBrush>
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
-                                            </Border>-->
-                                    </Grid>
+                                    <Grid x:Name="RootElement"/>
                                 </ControlTemplate>
                                 <!--End: TopRightHeaderTemplate-->
                             </Grid.Resources>
@@ -281,7 +233,6 @@
 
                             <!--<dataInput:ValidationSummary x:Name="ValidationSummary" Grid.Row="3" Grid.ColumnSpan="3" MaxHeight="90"/>-->
                         </Grid>
-                        <!--</Border>-->
                         <Border x:Name="DisabledVisualElement" IsHitTestVisible="False" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" CornerRadius="2" Background="#8CFFFFFF" Opacity="0"/>
                     </Grid>
                 </ControlTemplate>
@@ -305,6 +256,13 @@
                                 <VisualState x:Name="Regular"/>
                                 <VisualState x:Name="Current">
                                     <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="CurrencyVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
+                                        <DoubleAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="Opacity" To="0" Duration="0"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="CurrentWithFocus">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="CurrencyVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
                                         <DoubleAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
                                     </Storyboard>
                                 </VisualState>
@@ -324,13 +282,15 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
+                        <Rectangle x:Name="CurrencyVisual" Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="1" Fill="Transparent"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Opacity="0"/>
                         <Grid x:Name="FocusVisual" IsHitTestVisible="False" Opacity="0">
-                            <Rectangle x:Name="FocusVisualPrimary" Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="2" Fill="Transparent"
-                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False"/>
-                            <Rectangle x:Name="FocusVisualSecondary" Stroke="{ThemeResource DataGridCellFocusVisualSecondaryBrush}" StrokeThickness="1" Fill="Transparent"
-                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
+                            <Rectangle Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="1" Fill="Transparent"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="1"/>
+                            <Rectangle Stroke="{ThemeResource DataGridCellFocusVisualSecondaryBrush}" StrokeThickness="1" Fill="Transparent"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
                         </Grid>
-                        
+
                         <ContentPresenter
                             Content="{TemplateBinding Content}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
@@ -352,7 +312,7 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SeparatorBrush" Value="{ThemeResource GridLinesBrush}"/>
-        <Setter Property="Padding" Value="12,0"/>
+        <Setter Property="Padding" Value="12,0,0,0"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="MinHeight" Value="32"/>
         <Setter Property="Template">
@@ -364,30 +324,12 @@
                                 <VisualState x:Name="Normal"/>
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
-                                        <!-- SL5 <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FF448DCA"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[3].Color" To="#7FFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" To="#CCFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" To="#F2FFFFFF"/>-->
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemChromeMediumLowColor}"/>
-
-                                        <!--<ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#7FFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#CCFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#F2FFFFFF"/>-->
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
-                                        <!-- SL5 <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Fill).Color" To="#FF448DCA"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[0].Color" To="#D8FFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[1].Color" To="#C6FFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[2].Color" To="#8CFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Fill).(GradientStops)[3].Color" To="#3FFFFFFF"/>-->
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemChromeMediumColor}"/>
-
-                                        <!--<ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" To="#D8FFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#C6FFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#8CFFFFFF"/>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Shape.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#3FFFFFFF"/>-->
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -403,15 +345,16 @@
                                 <VisualState x:Name="Unsorted"/>
                                 <VisualState x:Name="SortAscending">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1.0"/>
+                                        <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="SortDescending">
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1.0"/>
+                                        <DoubleAnimation Storyboard.TargetName="SortIcon" Storyboard.TargetProperty="Opacity" Duration="0" To="1"/>
                                     </Storyboard>
                                     <VisualState.Setters>
-                                        <Setter Target="SortIcon.Text" Value="{ThemeResource SortIconDescending}"/>
+                                        <!--<Setter Target="SortIcon.Text" Value="{ThemeResource SortIconDescending}"/>-->
+                                        <Setter Target="SortIcon.Glyph" Value="{ThemeResource SortIconDescending}"/>
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
@@ -424,35 +367,26 @@
 
                         <Rectangle x:Name="BackgroundRectangle" Stretch="Fill" Fill="{ThemeResource DataGridColumnHeaderBackgroundBrush}" Grid.ColumnSpan="2"/>
 
-                        <!--<Rectangle x:Name="BackgroundGradient" Stretch="Fill" Grid.ColumnSpan="2" >
-                            <Rectangle.Fill>
-                                <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
-                                    <GradientStop Color="#FCFFFFFF" Offset="0.015"/>
-                                    <GradientStop Color="#F7FFFFFF" Offset="0.375"/>
-                                    <GradientStop Color="#E5FFFFFF" Offset="0.6"/>
-                                    <GradientStop Color="#D1FFFFFF" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Rectangle.Fill>
-                        </Rectangle>-->
-
                         <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition MinWidth="32" Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
                             <ContentPresenter Content="{TemplateBinding Content}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                            <TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12" Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}" 
-                                                    HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.0"  RenderTransformOrigin="0.5,0.5"/>
+                            <!--<TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" FontSize="12"
+                                    Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0"/>-->
+                            <FontIcon Grid.Column="1" x:Name="SortIcon" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="{ThemeResource SortIconAscending}" FontSize="12"
+                                Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                         </Grid>
                         <Rectangle x:Name="VerticalSeparator" Grid.Column="1" Width="1" VerticalAlignment="Stretch" Fill="{TemplateBinding SeparatorBrush}" Visibility="{TemplateBinding SeparatorVisibility}"/>
 
                         <Grid x:Name="FocusVisual" IsHitTestVisible="False" Opacity="0">
                             <Rectangle x:Name="FocusVisualPrimary" Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="2" Fill="Transparent" 
-                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False"/>
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False"/>
                             <Rectangle x:Name="FocusVisualSecondary" Stroke="{ThemeResource DataGridCellFocusVisualSecondaryBrush}" StrokeThickness="1" Fill="Transparent" 
-                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
                         </Grid>
                     </Grid>
                 </ControlTemplate>
@@ -681,6 +615,13 @@
                                 <VisualState x:Name="Regular"/>
                                 <VisualState x:Name="Current">
                                     <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="CurrencyVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
+                                        <DoubleAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="Opacity" To="0" Duration="0"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="CurrentWithFocus">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="CurrencyVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
                                         <DoubleAnimation Storyboard.TargetName="FocusVisual" Storyboard.TargetProperty="Opacity" To="1" Duration="0"/>
                                     </Storyboard>
                                 </VisualState>
@@ -735,7 +676,6 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
 
-
                                     <Path Stretch="Uniform" Data="F1 M 0,0 L 1,0.5 L 0,1" Width="12" Height="12"  HorizontalAlignment="Left" VerticalAlignment="Center" 
                                           x:Name="CollapsedArrow" Visibility="Collapsed" Stroke="{TemplateBinding Foreground}"/>
                                     <Path Stretch="Uniform" Data="F1 M 0,0 L 0.5,1 L 1,0" Width="12" Height="12" HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -757,7 +697,6 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!--<Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="#FFFFFFFF" Height="1"/>-->
                         <Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="Transparent" Height="0"/>
                         <Rectangle Grid.Column="1" Grid.Row="1" x:Name="IndentSpacer"/>
                         <ToggleButton Grid.Column="2" Grid.Row="1" x:Name="ExpanderButton" Height="12" Width="12"
@@ -770,15 +709,15 @@
                             <TextBlock x:Name="ItemCountElement" Margin="4,0,0,0" Visibility="{TemplateBinding ItemCountVisibility}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{TemplateBinding Foreground}"/>
                         </StackPanel>
 
-                        <!--<Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="#FFD3D3D3" Height="1" Grid.Row="2"/>-->
                         <Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="Transparent" Height="0" Grid.Row="2"/>
 
+                        <Rectangle x:Name="CurrencyVisual" Grid.Column="1" Grid.ColumnSpan="5" Grid.RowSpan="3"
+                            Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="1" Fill="Transparent"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Opacity="0"/>
                         <Grid x:Name="FocusVisual" Grid.Column="1" Grid.ColumnSpan="5" Grid.RowSpan="3" IsHitTestVisible="False" Opacity="0">
-                            <Rectangle x:Name="FocusVisualPrimary"
-                                       Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="2" Fill="Transparent"
-                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False"/>
-                            <Rectangle x:Name="FocusVisualSecondary"
-                                       Stroke="{ThemeResource DataGridCellFocusVisualSecondaryBrush}" StrokeThickness="1" Fill="Transparent"
+                            <Rectangle Stroke="{ThemeResource DataGridCellFocusVisualPrimaryBrush}" StrokeThickness="2" Fill="Transparent"
+                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="1"/>
+                            <Rectangle Stroke="{ThemeResource DataGridCellFocusVisualSecondaryBrush}" StrokeThickness="1" Fill="Transparent"
                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False" Margin="2"/>
                         </Grid>
 

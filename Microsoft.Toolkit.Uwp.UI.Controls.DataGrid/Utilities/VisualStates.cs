@@ -129,6 +129,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
         public const string StateCurrent = "Current";
 
         /// <summary>
+        /// CurrentWithFocus state
+        /// </summary>
+        public const string StateCurrentWithFocus = "CurrentWithFocus";
+
+        /// <summary>
         /// Current state group
         /// </summary>
         public const string GroupCurrent = "CurrentStates";

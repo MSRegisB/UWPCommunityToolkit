@@ -33,10 +33,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [TemplateVisualState(Name = VisualStates.StatePointerOver, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StateUnselected, GroupName = VisualStates.GroupSelection)]
     [TemplateVisualState(Name = VisualStates.StateSelected, GroupName = VisualStates.GroupSelection)]
-    [TemplateVisualState(Name = VisualStates.StateUnfocused, GroupName = VisualStates.GroupFocus)]
-    [TemplateVisualState(Name = VisualStates.StateFocused, GroupName = VisualStates.GroupFocus)]
     [TemplateVisualState(Name = VisualStates.StateRegular, GroupName = VisualStates.GroupCurrent)]
     [TemplateVisualState(Name = VisualStates.StateCurrent, GroupName = VisualStates.GroupCurrent)]
+    [TemplateVisualState(Name = VisualStates.StateCurrentWithFocus, GroupName = VisualStates.GroupCurrent)]
     [TemplateVisualState(Name = VisualStates.StateDisplay, GroupName = VisualStates.GroupInteraction)]
     [TemplateVisualState(Name = VisualStates.StateEditing, GroupName = VisualStates.GroupInteraction)]
     [TemplateVisualState(Name = VisualStates.StateInvalid, GroupName = VisualStates.GroupValidation)]
@@ -291,20 +290,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 VisualStates.GoToState(this, animate, VisualStates.StateUnselected);
             }
 
-            // FocusStates
-            if (this.OwningGrid.ContainsFocus)
-            {
-                VisualStates.GoToState(this, animate, VisualStates.StateFocused, VisualStates.StateUnfocused);
-            }
-            else
-            {
-                VisualStates.GoToState(this, animate, VisualStates.StateUnfocused);
-            }
-
             // CurrentStates
             if (this.IsCurrent && !this.OwningGrid.ColumnHeaderHasFocus)
             {
-                VisualStates.GoToState(this, animate, VisualStates.StateCurrent, VisualStates.StateRegular);
+                if (this.OwningGrid.ContainsFocus)
+                {
+                    VisualStates.GoToState(this, animate, VisualStates.StateCurrentWithFocus, VisualStates.StateCurrent, VisualStates.StateRegular);
+                }
+                else
+                {
+                    VisualStates.GoToState(this, animate, VisualStates.StateCurrent, VisualStates.StateRegular);
+                }
             }
             else
             {

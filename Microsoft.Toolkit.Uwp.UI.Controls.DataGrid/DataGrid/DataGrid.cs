@@ -5180,7 +5180,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 if (this.CurrentColumnIndex == -1)
                 {
-                    if (this.ColumnHeaders != null && this.AreColumnHeadersVisible && !this.ColumnHeaderHasFocus /*&& this.LastHandledKeyDown != VirtualKey.Tab*/)
+                    if (this.ColumnHeaders != null && this.AreColumnHeadersVisible && !this.ColumnHeaderHasFocus)
                     {
                         this.ColumnHeaderHasFocus = true;
                     }
@@ -5262,7 +5262,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                     ResetFocusedRow();
                     ApplyDisplayedRowsState(this.DisplayData.FirstScrollingSlot, this.DisplayData.LastScrollingSlot);
-                    if (this.CurrentColumnIndex != -1 && this.IsSlotVisible(this.CurrentSlot))
+                    if (this.ColumnHeaderHasFocus)
+                    {
+                        this.ColumnHeaderHasFocus = false;
+                    }
+                    else if (this.CurrentColumnIndex != -1 && this.IsSlotVisible(this.CurrentSlot))
                     {
                         DataGridRow row = this.DisplayData.GetDisplayedElement(this.CurrentSlot) as DataGridRow;
                         if (row != null)
@@ -6463,8 +6467,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         CollapseRowGroup(this.RowGroupHeadersTable.GetValueAt(this.CurrentSlot).CollectionViewGroup, false /*collapseAllSubgroups*/);
                     }
-                    else
-                    if (this.CurrentColumnIndex == -1)
+                    else if (this.CurrentColumnIndex == -1)
                     {
                         UpdateSelectionAndCurrency(firstVisibleColumnIndex, firstVisibleSlot, DataGridSelectionAction.SelectCurrent, true /*scrollIntoView*/);
                     }
