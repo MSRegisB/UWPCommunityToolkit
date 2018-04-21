@@ -27,15 +27,16 @@
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
-    <FontFamily x:Key="SymbolThemeFontFamily">Segoe MDL2 Assets</FontFamily>
     <SolidColorBrush x:Key="SystemControlGridLinesBaseMediumLowBrush" Color="{StaticResource SystemBaseMediumLowColor}"/>
     <SolidColorBrush x:Key="SystemControlRowGroupHeaderBackgroundMediumBrush" Color="{StaticResource SystemChromeMediumColor}"/>
     <x:String x:Key="SortIconAscending">&#xE74A;</x:String>
     <x:String x:Key="SortIconDescending">&#xE74B;</x:String>
     <!--<x:String x:Key="SortIconAscending">&#xEE68;</x:String>
     <x:String x:Key="SortIconDescending">&#xEE69;</x:String>-->
-    <x:String x:Key="RowGroupHeaderIconClosed">&#xE974;</x:String>
-    <x:String x:Key="RowGroupHeaderIconOpened">&#xE972;</x:String>
+    <x:String x:Key="RowGroupHeaderIconClosed">&#xE0E3;</x:String>
+    <x:String x:Key="RowGroupHeaderIconOpened">&#xE0E5;</x:String>
+    <!--<x:String x:Key="RowGroupHeaderIconClosed">&#xE974;</x:String>
+    <x:String x:Key="RowGroupHeaderIconOpened">&#xE972;</x:String>-->
     <StaticResource x:Key="GridLinesBrush" ResourceKey="SystemControlGridLinesBaseMediumLowBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseMediumBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderBackgroundBrush" ResourceKey="SystemControlBackgroundAltHighBrush"/>
@@ -103,10 +104,10 @@
 
                                         <ContentPresenter Content="{TemplateBinding Content}"/>
 
-                                        <!--<TextBlock Grid.Column="1" x:Name="SortIcon" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" 
+                                        <!--<TextBlock x:Name="SortIcon" Grid.Column="1" FontFamily="Segoe MDL2 Assets" Text="{ThemeResource SortIconAscending}" 
                                                 FontSize="12" Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}"
                                                 HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0"/>-->
-                                        <FontIcon Grid.Column="1" x:Name="SortIcon" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="{ThemeResource SortIconAscending}"
+                                        <FontIcon x:Name="SortIcon" Grid.Column="1" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="{ThemeResource SortIconAscending}"
                                             FontSize="12" Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}"
                                             HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0"/>
                                     </Grid>
@@ -403,7 +404,7 @@
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal"/>
-                                <VisualState x:Name="NormalAlternatingRow" />
+                                <VisualState x:Name="NormalAlternatingRow"/>
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemListLowColor}"/>
@@ -632,58 +633,39 @@
                                 <Grid Background="{TemplateBinding Background}">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
-                                            <VisualState x:Name="Normal"/>
+                                            <VisualState x:Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Target="Arrow.Glyph" Value="{ThemeResource RowGroupHeaderIconClosed}"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
                                             <VisualState x:Name="PointerOver">
-                                                <Storyboard>
-                                                    <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPointerOver}"/>
-                                                    <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPointerOver}"/>
-                                                </Storyboard>
+                                                <VisualState.Setters>
+                                                    <Setter Target="Arrow.Glyph" Value="{ThemeResource RowGroupHeaderIconClosed}"/>
+                                                </VisualState.Setters>
                                             </VisualState>
                                             <VisualState x:Name="Pressed">
-                                                <Storyboard>
-                                                    <ColorAnimation Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPressed}"/>
-                                                    <ColorAnimation Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" Duration="0" To="{ThemeResource ToggleButtonForegroundPressed}"/>
-                                                </Storyboard>
+                                                <VisualState.Setters>
+                                                    <Setter Target="Arrow.Glyph" Value="{ThemeResource RowGroupHeaderIconClosed}"/>
+                                                </VisualState.Setters>
                                             </VisualState>
                                             <VisualState x:Name="Disabled">
-                                                <Storyboard>
-                                                    <DoubleAnimation Duration="0" Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="Opacity" To=".5"/>
-                                                    <DoubleAnimation Duration="0" Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="Opacity" To=".5"/>
-                                                </Storyboard>
+                                                <VisualState.Setters>
+                                                    <Setter Target="Arrow.Glyph" Value="{ThemeResource RowGroupHeaderIconClosed}"/>
+                                                </VisualState.Setters>
                                             </VisualState>
-                                        </VisualStateGroup>
-                                        <VisualStateGroup x:Name="CheckStates">
-                                            <VisualState x:Name="Checked">
-                                                <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="Visibility">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="Visibility">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="Unchecked">
-                                                <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="CollapsedArrow" Storyboard.TargetProperty="Visibility">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                    <ObjectAnimationUsingKeyFrames Duration="0" Storyboard.TargetName="ExpandedArrow" Storyboard.TargetProperty="Visibility">
-                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                </Storyboard>
-                                            </VisualState>
+                                            <VisualState x:Name="Checked"/>
+                                            <VisualState x:Name="CheckedPointerOver"/>
+                                            <VisualState x:Name="CheckedPressed"/>
+                                            <VisualState x:Name="CheckedDisabled"/>
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
 
-                                    <Path Stretch="Uniform" Data="F1 M 0,0 L 1,0.5 L 0,1" Width="12" Height="12"  HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                          x:Name="CollapsedArrow" Visibility="Collapsed" Stroke="{TemplateBinding Foreground}"/>
-                                    <Path Stretch="Uniform" Data="F1 M 0,0 L 0.5,1 L 1,0" Width="12" Height="12" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                          x:Name="ExpandedArrow" Stroke="{TemplateBinding Foreground}"/>
+                                    <FontIcon x:Name="Arrow" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="{ThemeResource RowGroupHeaderIconOpened}"
+                                        FontSize="12" Foreground="{ThemeResource DataGridColumnHeaderForegroundBrush}"
+                                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 </Grid>
                             </ControlTemplate>
                         </localprimitives:DataGridFrozenGrid.Resources>
-
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -698,10 +680,9 @@
                         </Grid.RowDefinitions>
 
                         <Rectangle Grid.Column="1" Grid.ColumnSpan="5" Fill="Transparent" Height="0"/>
-                        <Rectangle Grid.Column="1" Grid.Row="1" x:Name="IndentSpacer"/>
-                        <ToggleButton Grid.Column="2" Grid.Row="1" x:Name="ExpanderButton" Height="12" Width="12"
-                                      IsTabStop="False" Template="{StaticResource ToggleButtonTemplate}" 
-                                      Margin="12,0,0,0" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"/>
+                        <Rectangle x:Name="IndentSpacer" Grid.Column="1" Grid.Row="1"/>
+                        <ToggleButton x:Name="ExpanderButton" Grid.Column="2" Grid.Row="1" Height="12" Width="12" Template="{StaticResource ToggleButtonTemplate}"
+                            IsTabStop="False" Margin="12,0,0,0" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"/>
 
                         <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
                             <TextBlock x:Name="PropertyNameElement" Margin="4,0,0,0" Visibility="{TemplateBinding PropertyNameVisibility}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{TemplateBinding Foreground}"/>

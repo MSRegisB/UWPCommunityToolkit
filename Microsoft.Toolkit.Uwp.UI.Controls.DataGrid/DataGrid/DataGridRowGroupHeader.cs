@@ -319,7 +319,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        internal void ApplyHeaderStatus(bool animate)
+        internal void ApplyHeaderState(bool animate)
         {
             if (_headerElement != null && this.OwningGrid.AreRowHeadersVisible)
             {
@@ -340,9 +340,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             // Current States
-            if (this.IsCurrent)
+            if (this.IsCurrent && !this.OwningGrid.ColumnHeaderHasFocus)
             {
-                VisualStates.GoToState(this, useTransitions, VisualStates.StateCurrent, VisualStates.StateRegular);
+                if (this.OwningGrid.ContainsFocus)
+                {
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateCurrentWithFocus, VisualStates.StateCurrent, VisualStates.StateRegular);
+                }
+                else
+                {
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateCurrent, VisualStates.StateRegular);
+                }
             }
             else
             {
@@ -521,7 +528,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             EnsureHeaderStyleAndVisibility(null);
             ApplyState(false /*useTransitions*/);
-            ApplyHeaderStatus(false);
+            ApplyHeaderState(false);
         }
 
         /// <summary>

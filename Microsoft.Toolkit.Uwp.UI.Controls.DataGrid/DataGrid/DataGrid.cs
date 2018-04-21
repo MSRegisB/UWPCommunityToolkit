@@ -5268,11 +5268,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
                     else if (this.CurrentColumnIndex != -1 && this.IsSlotVisible(this.CurrentSlot))
                     {
-                        DataGridRow row = this.DisplayData.GetDisplayedElement(this.CurrentSlot) as DataGridRow;
-                        if (row != null)
-                        {
-                            row.Cells[this.CurrentColumnIndex].ApplyCellState(true /*animate*/);
-                        }
+                        UpdateCurrentState(this.DisplayData.GetDisplayedElement(this.CurrentSlot), this.CurrentColumnIndex, true /*applyCellState*/);
                     }
                 }
                 else if (!dataGridWillReceiveRoutedEvent)
@@ -6144,6 +6140,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                 case VirtualKey.Insert:
                     return ProcessCopyKey();
+
+                case VirtualKey.Space:
+                    return ProcessSpaceKey();
             }
 
             if (focusDataGrid && this.IsTabStop)
@@ -6312,6 +6311,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     this.CurrentColumn.HeaderCell.InvokeProcessSort();
                     return true;
                 }
+                else if (this.FirstVisibleSlot != -1 && this.RowGroupHeadersTable.Contains(this.CurrentSlot) && ToggleRowGroup())
+                {
+                    return true;
+                }
 
                 // If Enter was used by a TextBox, we shouldn't handle the key
                 TextBox focusedTextBox = FocusManager.GetFocusedElement() as TextBox;
@@ -6461,13 +6464,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return ProcessLeftMost(firstVisibleColumnIndex, firstVisibleSlot);
                 }
-                else if (firstVisibleSlot != -1)
+                else if (firstVisibleSlot != -1 && (!this.RowGroupHeadersTable.Contains(this.CurrentSlot) || this.ColumnHeaderHasFocus))
                 {
-                    if (this.RowGroupHeadersTable.Contains(this.CurrentSlot) && !this.ColumnHeaderHasFocus)
-                    {
-                        CollapseRowGroup(this.RowGroupHeadersTable.GetValueAt(this.CurrentSlot).CollectionViewGroup, false /*collapseAllSubgroups*/);
-                    }
-                    else if (this.CurrentColumnIndex == -1)
+                    if (this.CurrentColumnIndex == -1)
                     {
                         UpdateSelectionAndCurrency(firstVisibleColumnIndex, firstVisibleSlot, DataGridSelectionAction.SelectCurrent, true /*scrollIntoView*/);
                     }
@@ -6750,13 +6749,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 {
                     return ProcessRightMost(lastVisibleColumnIndex, firstVisibleSlot);
                 }
-                else if (firstVisibleSlot != -1)
+                else if (firstVisibleSlot != -1 && (!this.RowGroupHeadersTable.Contains(this.CurrentSlot) || this.ColumnHeaderHasFocus))
                 {
-                    if (this.RowGroupHeadersTable.Contains(this.CurrentSlot) && !this.ColumnHeaderHasFocus)
-                    {
-                        ExpandRowGroup(this.RowGroupHeadersTable.GetValueAt(this.CurrentSlot).CollectionViewGroup, false /*expandAllSubgroups*/);
-                    }
-                    else if (this.CurrentColumnIndex == -1)
+                    if (this.CurrentColumnIndex == -1)
                     {
                         int firstVisibleColumnIndex = this.ColumnsInternal.FirstVisibleColumn == null ? -1 : this.ColumnsInternal.FirstVisibleColumn.Index;
                         UpdateSelectionAndCurrency(firstVisibleColumnIndex, firstVisibleSlot, DataGridSelectionAction.SelectCurrent, true /*scrollIntoView*/);
@@ -6893,6 +6888,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             return focusedColumnChanged || _successfullyUpdatedSelection;
+        }
+
+        private bool ProcessSpaceKey()
+        {
+            return ToggleRowGroup();
         }
 
         private bool ProcessTabKey(KeyRoutedEventArgs e)
@@ -7445,7 +7445,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     groupHeader.ApplyState(true /*useTransitions*/);
                     if (this.AreRowHeadersVisible)
                     {
-                        groupHeader.ApplyHeaderStatus(true /*animate*/);
+                        groupHeader.ApplyHeaderState(true /*animate*/);
                     }
                 }
             }

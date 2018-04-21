@@ -3081,6 +3081,35 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        private bool ToggleRowGroup()
+        {
+            if (!this.ColumnHeaderHasFocus && this.FirstVisibleSlot != -1 && this.RowGroupHeadersTable.Contains(this.CurrentSlot))
+            {
+                ICollectionViewGroup collectionViewGroup = this.RowGroupHeadersTable.GetValueAt(this.CurrentSlot).CollectionViewGroup;
+
+                if (collectionViewGroup != null)
+                {
+                    DataGridRowGroupInfo dataGridRowGroupInfo = RowGroupInfoFromCollectionViewGroup(collectionViewGroup);
+
+                    if (dataGridRowGroupInfo != null)
+                    {
+                        if (dataGridRowGroupInfo.Visibility == Visibility.Collapsed)
+                        {
+                            ExpandRowGroup(collectionViewGroup, false /*expandAllSubgroups*/);
+                        }
+                        else
+                        {
+                            CollapseRowGroup(collectionViewGroup, false /*collapseAllSubgroups*/);
+                        }
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         private void UnloadElements(bool recycle)
         {
             // Since we're unloading all the elements, we can't be in editing mode anymore,
