@@ -12,31 +12,70 @@
 
 using Microsoft.Toolkit.Uwp.UI.Controls.Design.Common;
 using Microsoft.Windows.Design;
-using Microsoft.Windows.Design.Features;
+//using Microsoft.Windows.Design.Features;
 using Microsoft.Windows.Design.Metadata;
-using Microsoft.Windows.Design.Model;
+//using Microsoft.Windows.Design.Model;
 using System.ComponentModel;
 
 namespace Microsoft.Toolkit.Uwp.UI.Controls.Design
 {
-    internal class DataGridDefaults : DefaultInitializer
-    {
-        public override void InitializeDefaults(ModelItem item)
-        {
-// REGISB   item.Properties[nameof(DataGrid.MyProperty)].SetValue(0d);
-        }
-    }
+    //internal class DataGridDefaults : DefaultInitializer
+    //{
+    //    public override void InitializeDefaults(ModelItem item)
+    //    {
+    //        item.Properties[nameof(DataGrid.MyProperty)].SetValue(<value other than runtime default>);
+    //    }
+    //}
 
     internal class DataGridMetadata : AttributeTableBuilder
     {
         public DataGridMetadata() : base()
         {
-            AddCallback(typeof(Microsoft.Toolkit.Uwp.UI.Controls.DataGrid),
+            AddCallback(typeof(DataGrid),
                 b =>
                 {
-                    b.AddCustomAttributes(new FeatureAttribute(typeof(DataGridDefaults)));
-// REGISB           b.AddCustomAttributes(nameof(DataGrid.MyProperty), new CategoryAttribute(Properties.Resources.CategoryCommon)); // vs. CategoryAppearance, CategoryBrush
-                    b.AddCustomAttributes(nameof(DataGrid.IsReadOnly), new CategoryAttribute(Properties.Resources.CategoryCommon));
+                    //b.AddCustomAttributes(new FeatureAttribute(typeof(DataGridDefaults)));
+                    b.AddCustomAttributes(nameof(DataGrid.AlternatingRowBackground), new CategoryAttribute(Properties.Resources.CategoryRows));
+                    b.AddCustomAttributes(nameof(DataGrid.AreRowDetailsFrozen), new CategoryAttribute(Properties.Resources.CategoryRows));
+                    b.AddCustomAttributes(nameof(DataGrid.AreRowGroupHeadersFrozen), new CategoryAttribute(Properties.Resources.CategoryHeaders));
+                    b.AddCustomAttributes(nameof(DataGrid.AutoGenerateColumns), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.CanUserReorderColumns), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.CanUserResizeColumns), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.CanUserSortColumns), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.CellStyle), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.ClipboardCopyMode), new CategoryAttribute(Properties.Resources.CategoryMiscellaneous));
+                    b.AddCustomAttributes(nameof(DataGrid.ColumnHeaderHeight), new CategoryAttribute(Properties.Resources.CategoryHeaders));
+                    b.AddCustomAttributes(nameof(DataGrid.ColumnHeaderStyle), new CategoryAttribute(Properties.Resources.CategoryHeaders));
+                    b.AddCustomAttributes(nameof(DataGrid.Columns), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.ColumnWidth), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.CurrentColumn), new CategoryAttribute(Properties.Resources.CategoryMiscellaneous));
+                    b.AddCustomAttributes(nameof(DataGrid.DragIndicatorStyle), new CategoryAttribute(Properties.Resources.CategoryMiscellaneous));
+                    b.AddCustomAttributes(nameof(DataGrid.DropLocationIndicatorStyle), new CategoryAttribute(Properties.Resources.CategoryMiscellaneous));
+                    b.AddCustomAttributes(nameof(DataGrid.FrozenColumnCount), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.GridLinesVisibility), new CategoryAttribute(Properties.Resources.CategoryGridLines));
+                    b.AddCustomAttributes(nameof(DataGrid.HeadersVisibility), new CategoryAttribute(Properties.Resources.CategoryHeaders));
+                    b.AddCustomAttributes(nameof(DataGrid.HorizontalGridLinesBrush), new CategoryAttribute(Properties.Resources.CategoryGridLines));
+                    b.AddCustomAttributes(nameof(DataGrid.HorizontalScrollBarVisibility), new CategoryAttribute(Properties.Resources.CategoryLayout));
+                    b.AddCustomAttributes(nameof(DataGrid.IsReadOnly), new CategoryAttribute(Properties.Resources.CategoryMiscellaneous));
+                    b.AddCustomAttributes(nameof(DataGrid.IsValid), new CategoryAttribute(Properties.Resources.CategoryMiscellaneous));
+                    b.AddCustomAttributes(nameof(DataGrid.ItemsSource), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.MaxColumnWidth), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.MinColumnWidth), new CategoryAttribute(Properties.Resources.CategoryColumns));
+                    b.AddCustomAttributes(nameof(DataGrid.RowBackground), new CategoryAttribute(Properties.Resources.CategoryRows));
+                    b.AddCustomAttributes(nameof(DataGrid.RowDetailsTemplate), new CategoryAttribute(Properties.Resources.CategoryRows));
+                    b.AddCustomAttributes(nameof(DataGrid.RowDetailsVisibilityMode), new CategoryAttribute(Properties.Resources.CategoryRows));
+                    b.AddCustomAttributes(nameof(DataGrid.RowGroupHeaderPropertyNameAlternative), new CategoryAttribute(Properties.Resources.CategoryHeaders));
+                    b.AddCustomAttributes(nameof(DataGrid.RowGroupHeaderStyles), new CategoryAttribute(Properties.Resources.CategoryHeaders));
+                    b.AddCustomAttributes(nameof(DataGrid.RowHeaderStyle), new CategoryAttribute(Properties.Resources.CategoryHeaders));
+                    b.AddCustomAttributes(nameof(DataGrid.RowHeaderWidth), new CategoryAttribute(Properties.Resources.CategoryHeaders));
+                    b.AddCustomAttributes(nameof(DataGrid.RowHeight), new CategoryAttribute(Properties.Resources.CategoryRows));
+                    b.AddCustomAttributes(nameof(DataGrid.RowStyle), new CategoryAttribute(Properties.Resources.CategoryRows));
+                    b.AddCustomAttributes(nameof(DataGrid.SelectedIndex), new CategoryAttribute(Properties.Resources.CategoryCommon));
+                    b.AddCustomAttributes(nameof(DataGrid.SelectedItem), new CategoryAttribute(Properties.Resources.CategoryCommon));
+                    b.AddCustomAttributes(nameof(DataGrid.SelectedItems), new CategoryAttribute(Properties.Resources.CategoryAppearance));
+                    b.AddCustomAttributes(nameof(DataGrid.SelectionMode), new CategoryAttribute(Properties.Resources.CategoryRows));
+                    b.AddCustomAttributes(nameof(DataGrid.VerticalGridLinesBrush), new CategoryAttribute(Properties.Resources.CategoryGridLines));
+                    b.AddCustomAttributes(nameof(DataGrid.VerticalScrollBarVisibility), new CategoryAttribute(Properties.Resources.CategoryLayout));
                     b.AddCustomAttributes(new ToolboxCategoryAttribute(ToolboxCategoryPaths.Toolkit, false));
                 });
         }

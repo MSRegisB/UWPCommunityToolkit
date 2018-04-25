@@ -53,6 +53,5 @@ namespace Microsoft.Toolkit.Uwp.Design.Types
 			public static readonly PropertyIdentifier HeightProperty = new PropertyIdentifier(TypeId, "Height");
 			public static readonly PropertyIdentifier WidthProperty = new PropertyIdentifier(TypeId, "Width");
 		}
-
 	}
 }

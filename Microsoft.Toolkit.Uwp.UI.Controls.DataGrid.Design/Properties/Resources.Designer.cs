@@ -70,11 +70,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Design.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Brush.
+        ///   Looks up a localized string similar to Columns.
         /// </summary>
-        internal static string CategoryBrush {
+        internal static string CategoryColumns {
             get {
-                return ResourceManager.GetString("CategoryBrush", resourceCulture);
+                return ResourceManager.GetString("CategoryColumns", resourceCulture);
             }
         }
         
@@ -88,20 +88,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Design.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Drop Shadow.
+        ///   Looks up a localized string similar to Grid Lines.
         /// </summary>
-        internal static string CategoryDropShadow {
+        internal static string CategoryGridLines {
             get {
-                return ResourceManager.GetString("CategoryDropShadow", resourceCulture);
+                return ResourceManager.GetString("CategoryGridLines", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Interactions.
+        ///   Looks up a localized string similar to Headers.
         /// </summary>
-        internal static string CategoryInteractions {
+        internal static string CategoryHeaders {
             get {
-                return ResourceManager.GetString("CategoryInteractions", resourceCulture);
+                return ResourceManager.GetString("CategoryHeaders", resourceCulture);
             }
         }
         
@@ -115,65 +115,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Design.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Markdown Style - Code.
+        ///   Looks up a localized string similar to Miscellaneous.
         /// </summary>
-        internal static string CategoryMarkdownCodeStyle {
+        internal static string CategoryMiscellaneous {
             get {
-                return ResourceManager.GetString("CategoryMarkdownCodeStyle", resourceCulture);
+                return ResourceManager.GetString("CategoryMiscellaneous", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Markdown Style - Header {0}.
+        ///   Looks up a localized string similar to Rows.
         /// </summary>
-        internal static string CategoryMarkdownHeaderStyle {
+        internal static string CategoryRows {
             get {
-                return ResourceManager.GetString("CategoryMarkdownHeaderStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Markdown Style - List.
-        /// </summary>
-        internal static string CategoryMarkdownListStyle {
-            get {
-                return ResourceManager.GetString("CategoryMarkdownListStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Markdown Style - Quote.
-        /// </summary>
-        internal static string CategoryMarkdownQuoteStyle {
-            get {
-                return ResourceManager.GetString("CategoryMarkdownQuoteStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Markdown Style.
-        /// </summary>
-        internal static string CategoryMarkdownStyle {
-            get {
-                return ResourceManager.GetString("CategoryMarkdownStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Markdown Style - Table.
-        /// </summary>
-        internal static string CategoryMarkdownTableStyle {
-            get {
-                return ResourceManager.GetString("CategoryMarkdownTableStyle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text.
-        /// </summary>
-        internal static string CategoryText {
-            get {
-                return ResourceManager.GetString("CategoryText", resourceCulture);
+                return ResourceManager.GetString("CategoryRows", resourceCulture);
             }
         }
     }

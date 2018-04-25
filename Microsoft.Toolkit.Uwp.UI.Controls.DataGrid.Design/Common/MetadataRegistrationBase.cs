@@ -156,7 +156,7 @@ namespace Microsoft.Toolkit.Uwp.Design.Common
 								{
 									builder.AddCallback(t, b => b.AddCustomAttributes(
 										new BrowsableAttribute(false),
-										new Microsoft.Windows.Design.ToolboxBrowsableAttribute(false),
+										new Windows.Design.ToolboxBrowsableAttribute(false),
 										new ToolboxItemAttribute(false)));
 								}
 							}
@@ -186,6 +186,7 @@ namespace Microsoft.Toolkit.Uwp.Design.Common
 				}
 			}
 		}
+
 		private static bool IsBrowsable(Type t)
 		{
 			var attrs = t.GetCustomAttributes(Types.PlatformTypes.EditorBrowsableAttributeType, false);
@@ -196,7 +197,7 @@ namespace Microsoft.Toolkit.Uwp.Design.Common
 			return true;
 		}
 
-		private static bool IsBrowsable(System.Reflection.PropertyInfo pi)
+		private static bool IsBrowsable(PropertyInfo pi)
 		{
             var attrs = pi.GetCustomAttributes(Types.PlatformTypes.EditorBrowsableAttributeType, false);
 			foreach (var attr in attrs)

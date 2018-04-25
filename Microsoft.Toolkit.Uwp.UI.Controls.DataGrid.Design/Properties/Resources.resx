@@ -120,40 +120,31 @@
   <data name="CategoryAppearance" xml:space="preserve">
     <value>Appearance</value>
   </data>
-  <data name="CategoryBrush" xml:space="preserve">
+  <!--<data name="CategoryBrush" xml:space="preserve">
     <value>Brush</value>
+  </data>-->
+  <data name="CategoryColumns" xml:space="preserve">
+    <value>Columns</value>
   </data>
   <data name="CategoryCommon" xml:space="preserve">
     <value>Common</value>
   </data>
-  <data name="CategoryDropShadow" xml:space="preserve">
-    <value>Drop Shadow</value>
+  <data name="CategoryGridLines" xml:space="preserve">
+    <value>Grid Lines</value>
   </data>
-  <data name="CategoryInteractions" xml:space="preserve">
-    <value>Interactions</value>
+  <data name="CategoryHeaders" xml:space="preserve">
+    <value>Headers</value>
   </data>
   <data name="CategoryLayout" xml:space="preserve">
     <value>Layout</value>
   </data>
-  <data name="CategoryMarkdownCodeStyle" xml:space="preserve">
-    <value>Markdown Style - Code</value>
+  <data name="CategoryMiscellaneous" xml:space="preserve">
+    <value>Miscellaneous</value>
   </data>
-  <data name="CategoryMarkdownHeaderStyle" xml:space="preserve">
-    <value>Markdown Style - Header {0}</value>
+  <data name="CategoryRows" xml:space="preserve">
+    <value>Rows</value>
   </data>
-  <data name="CategoryMarkdownListStyle" xml:space="preserve">
-    <value>Markdown Style - List</value>
-  </data>
-  <data name="CategoryMarkdownQuoteStyle" xml:space="preserve">
-    <value>Markdown Style - Quote</value>
-  </data>
-  <data name="CategoryMarkdownStyle" xml:space="preserve">
-    <value>Markdown Style</value>
-  </data>
-  <data name="CategoryMarkdownTableStyle" xml:space="preserve">
-    <value>Markdown Style - Table</value>
-  </data>
-  <data name="CategoryText" xml:space="preserve">
+  <!--<data name="CategoryText" xml:space="preserve">
     <value>Text</value>
-  </data>
+  </data>-->
 </root>
