@@ -120,9 +120,12 @@
   <data name="CategoryAppearance" xml:space="preserve">
     <value>Appearance</value>
   </data>
-  <!--<data name="CategoryBrush" xml:space="preserve">
-    <value>Brush</value>
-  </data>-->
+  <data name="CategoryCellBinding" xml:space="preserve">
+    <value>Cell Binding</value>
+  </data>
+  <data name="CategoryCellTemplate" xml:space="preserve">
+    <value>Cell Template</value>
+  </data>
   <data name="CategoryColumns" xml:space="preserve">
     <value>Columns</value>
   </data>
@@ -132,19 +135,22 @@
   <data name="CategoryGridLines" xml:space="preserve">
     <value>Grid Lines</value>
   </data>
+  <data name="CategoryHeader" xml:space="preserve">
+    <value>Header</value>
+  </data>
   <data name="CategoryHeaders" xml:space="preserve">
     <value>Headers</value>
   </data>
   <data name="CategoryLayout" xml:space="preserve">
     <value>Layout</value>
   </data>
-  <data name="CategoryMiscellaneous" xml:space="preserve">
-    <value>Miscellaneous</value>
-  </data>
   <data name="CategoryRows" xml:space="preserve">
     <value>Rows</value>
   </data>
-  <!--<data name="CategoryText" xml:space="preserve">
+  <data name="CategorySort" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="CategoryText" xml:space="preserve">
     <value>Text</value>
-  </data>-->
+  </data>
 </root>

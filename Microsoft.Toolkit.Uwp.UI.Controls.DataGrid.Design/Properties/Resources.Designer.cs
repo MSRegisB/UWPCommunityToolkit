@@ -70,6 +70,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Design.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cell Binding.
+        /// </summary>
+        internal static string CategoryCellBinding {
+            get {
+                return ResourceManager.GetString("CategoryCellBinding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cell Template.
+        /// </summary>
+        internal static string CategoryCellTemplate {
+            get {
+                return ResourceManager.GetString("CategoryCellTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Columns.
         /// </summary>
         internal static string CategoryColumns {
@@ -97,6 +115,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Design.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Header.
+        /// </summary>
+        internal static string CategoryHeader {
+            get {
+                return ResourceManager.GetString("CategoryHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Headers.
         /// </summary>
         internal static string CategoryHeaders {
@@ -115,20 +142,29 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Design.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Miscellaneous.
-        /// </summary>
-        internal static string CategoryMiscellaneous {
-            get {
-                return ResourceManager.GetString("CategoryMiscellaneous", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Rows.
         /// </summary>
         internal static string CategoryRows {
             get {
                 return ResourceManager.GetString("CategoryRows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort.
+        /// </summary>
+        internal static string CategorySort {
+            get {
+                return ResourceManager.GetString("CategorySort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        internal static string CategoryText {
+            get {
+                return ResourceManager.GetString("CategoryText", resourceCulture);
             }
         }
     }
