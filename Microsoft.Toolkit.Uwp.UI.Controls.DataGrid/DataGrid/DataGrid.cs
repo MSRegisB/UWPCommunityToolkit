@@ -28,6 +28,7 @@ using Microsoft.Toolkit.Uwp.UI.Data.Utilities;
 using Microsoft.Toolkit.Uwp.UI.Utilities;
 using Microsoft.Toolkit.Uwp.Utilities;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System;
@@ -39,10 +40,8 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 
-// TODO - support conscious scrollbars:
-// - show/hide bottom right square based on FullMouseIndicator vs. MouseIndicator states.
-// - switch between NoIndicator, MouseIndicator and TouchIndicator property value based on input and mouse location.
 namespace Microsoft.Toolkit.Uwp.UI.Controls
 {
     /// <summary>
@@ -62,8 +61,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [TemplateVisualState(Name = VisualStates.StateMouseIndicator, GroupName = VisualStates.GroupScrollingIndicator)]
     [TemplateVisualState(Name = VisualStates.StateMouseIndicatorFull, GroupName = VisualStates.GroupScrollingIndicator)]
     [TemplateVisualState(Name = VisualStates.StateNoIndicator, GroupName = VisualStates.GroupScrollingIndicator)]
-    [TemplateVisualState(Name = VisualStates.StateScrollingSeparatorDisabled, GroupName = VisualStates.GroupScrollingSeparator)]
-    [TemplateVisualState(Name = VisualStates.StateScrollingSeparatorNormal, GroupName = VisualStates.GroupScrollingSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateSeparatorExpanded, GroupName = VisualStates.GroupScrollingSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateSeparatorCollapsed, GroupName = VisualStates.GroupScrollingSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateSeparatorExpandedWithoutAnimation, GroupName = VisualStates.GroupScrollingSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateSeparatorCollapsedWithoutAnimation, GroupName = VisualStates.GroupScrollingSeparator)]
     [TemplateVisualState(Name = VisualStates.StateInvalid, GroupName = VisualStates.GroupValidation)]
     [TemplateVisualState(Name = VisualStates.StateValid, GroupName = VisualStates.GroupValidation)]
     [StyleTypedProperty(Property = "CellStyle", StyleTargetType = typeof(DataGridCell))]
@@ -74,9 +75,26 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [StyleTypedProperty(Property = "RowStyle", StyleTargetType = typeof(DataGridRow))]
     public partial class DataGrid : Control
     {
+        private enum ScrollingIndicatorVisualState
+        {
+            NoIndicator,
+            TouchIndicator,
+            MouseIndicator,
+            MouseIndicatorFull
+        }
+
+        private enum ScrollingSeparatorVisualState
+        {
+            SeparatorCollapsed,
+            SeparatorExpanded,
+            SeparatorExpandedWithoutAnimation,
+            SeparatorCollapsedWithoutAnimation
+        }
+
 #if FEATURE_VALIDATION_SUMMARY
         private const string DATAGRID_elementValidationSummary = "ValidationSummary";
 #endif
+        private const string DATAGRID_elementRootName = "Root";
         private const string DATAGRID_elementRowsPresenterName = "RowsPresenter";
         private const string DATAGRID_elementColumnHeadersPresenterName = "ColumnHeadersPresenter";
         private const string DATAGRID_elementFrozenColumnScrollBarSpacerName = "FrozenColumnScrollBarSpacer";
@@ -118,6 +136,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const double DATAGRID_defaultMinColumnWidth = 20;
         private const double DATAGRID_defaultMaxColumnWidth = double.PositiveInfinity;
 
+        // 2 seconds delay used to hide the scrolling indicators for example when OS animations are turned off.
+        private const int DATAGRID_noScrollingIndicatorCountdownMs = 2000;
+        
         // DataGrid Template Parts
 #if FEATURE_VALIDATION_SUMMARY
         private ValidationSummary _validationSummary;
@@ -143,9 +164,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private bool _executingLostFocusActions;
         private bool _flushCurrentCellChanged;
         private bool _focusEditingControl;
+        private FocusInputDeviceKind _focusInputDevice;
         private DependencyObject _focusedObject;
         private DataGridRow _focusedRow;
         private FrameworkElement _frozenColumnScrollBarSpacer;
+        private bool _hasNoIndicatorStateStoryboardCompletedHandler;
+        private DispatcherTimer _hideScrollingIndicatorsTimer;
 
         // the sum of the widths in pixels of the scrolling columns preceding
         // the first displayed scrolling column
@@ -154,6 +178,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private bool _ignoreNextScrollBarsLayout;
         private List<ValidationResult> _indeiValidationResults;
         private bool _initializingNewItem;
+
+        private bool _isHorizontalScrollingIndicatorInteracting;
+        private bool _isVerticalScrollingIndicatorInteracting;
+
+        // Set to True when the pointer is over the optional scrolling indicators.
+        private bool _isPointerOverHorizontalScrollingIndicator;
+        private bool _isPointerOverVerticalScrollingIndicator;
+
+        // Set to True to prevent the normal fade-out of the scrolling indicators.
+        private bool _keepScrollingIndicatorsShowing;
 
         // Nth row of rows 0..N that make up the RowHeightEstimate
         private int _lastEstimatedRow;
@@ -171,10 +205,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private int _noCurrentCellChangeCount;
         private int _noFocusedColumnChangeCount;
         private int _noSelectionChangeCount;
+
+        // Set to True to favor mouse indicators over panning indicators for the scrolling indicators.
+        private bool _preferMouseIndicators;
+
         private DataGridCellCoordinates _previousAutomationFocusCoordinates;
         private DataGridColumn _previousCurrentColumn;
         private object _previousCurrentItem;
         private List<ValidationResult> _propertyValidationResults;
+        private ScrollingIndicatorVisualState _proposedScrollingIndicatorsState;
+        private ScrollingSeparatorVisualState _proposedScrollingSeparatorState;
         private string _rowGroupHeaderPropertyNameAlternative;
         private ObservableCollection<Style> _rowGroupHeaderStyles;
 
@@ -187,6 +227,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private bool _scrollingByHeight;
         private DataGridSelectedItemsCollection _selectedItems;
         private IndexToValueTable<Visibility> _showDetailsTable;
+
+        // Set to True when the mouse scrolling indicators are currently showing.
+        private bool _showingMouseIndicators;
         private bool _successfullyUpdatedSelection;
         private bool _temporarilyResetCurrentCell;
         private bool _isUserSorting; // True if we're currently in a user invoked sorting operation
@@ -354,11 +397,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         public DataGrid()
         {
             this.TabNavigation = KeyboardNavigationMode.Once;
-            this.KeyDown += new KeyEventHandler(DataGrid_KeyDown);
-            this.KeyUp += new KeyEventHandler(DataGrid_KeyUp);
-            this.GotFocus += new RoutedEventHandler(DataGrid_GotFocus);
-            this.LostFocus += new RoutedEventHandler(DataGrid_LostFocus);
-            this.IsEnabledChanged += new DependencyPropertyChangedEventHandler(DataGrid_IsEnabledChanged);
 
             _loadedRows = new List<DataGridRow>();
             _lostFocusActions = new Queue<Action>();
@@ -387,6 +425,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.DataConnection = new DataGridDataConnection(this);
             _showDetailsTable = new IndexToValueTable<Visibility>();
 
+            _focusInputDevice = FocusInputDeviceKind.None;
+            _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.NoIndicator;
+            _proposedScrollingSeparatorState = ScrollingSeparatorVisualState.SeparatorCollapsed;
+
             this.AnchorSlot = -1;
             _lastEstimatedRow = -1;
             _editingColumnIndex = -1;
@@ -396,7 +438,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             this.LastHandledKeyDown = VirtualKey.None;
 
-            DefaultStyleKey = typeof(DataGrid);
+            this.DefaultStyleKey = typeof(DataGrid);
+
+            HookDataGridEvents();
         }
 
         /// <summary>
@@ -2404,10 +2448,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     return;
                 }
 
-                if (_hScrollBar != null && value != _hScrollBar.Value)
-                {
-                    _hScrollBar.Value = value;
-                }
+                SetHorizontalOffset(value);
 
                 _horizontalOffset = value;
 
@@ -2615,6 +2656,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             set;
         }
 
+        private bool AreAllScrollingIndicatorsCollapsed
+        {
+            get
+            {
+                return (_hScrollBar == null || _hScrollBar.Visibility == Visibility.Collapsed) &&
+                       (_vScrollBar == null || _vScrollBar.Visibility == Visibility.Collapsed);
+            }
+        }
+
+        private bool AreBothScrollingIndicatorsVisible
+        {
+            get
+            {
+                return _hScrollBar != null && _hScrollBar.Visibility == Visibility.Visible &&
+                       _vScrollBar != null && _vScrollBar.Visibility == Visibility.Visible;
+            }
+        }
+
         private DataGridCellCoordinates CurrentCellCoordinates
         {
             get
@@ -2656,11 +2715,79 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        private bool IsHorizontalScrollingIndicatorInteracting
+        {
+            get
+            {
+                return _isHorizontalScrollingIndicatorInteracting;
+            }
+
+            set
+            {
+                if (_isHorizontalScrollingIndicatorInteracting != value)
+                {
+                    _isHorizontalScrollingIndicatorInteracting = value;
+
+                    if (_hScrollBar != null)
+                    {
+                        if (_isHorizontalScrollingIndicatorInteracting)
+                        {
+                            // Prevent the vertical scrolling indicator from fading out while the user is interacting with the horizontal one.
+                            _keepScrollingIndicatorsShowing = true;
+
+                            ShowScrollingIndicators();
+                        }
+                        else
+                        {
+                            // Make the scrolling indicators fade out, after the normal delay.
+                            _keepScrollingIndicatorsShowing = false;
+
+                            HideScrollingIndicators(true /*useTransitions*/);
+                        }
+                    }
+                }
+            }
+        }
+
         private bool IsHorizontalScrollbarOverCells
         {
             get
             {
                 return _columnHeadersPresenter != null && Grid.GetColumnSpan(_columnHeadersPresenter) == 2;
+            }
+        }
+
+        private bool IsVerticalScrollingIndicatorInteracting
+        {
+            get
+            {
+                return _isVerticalScrollingIndicatorInteracting;
+            }
+
+            set
+            {
+                if (_isVerticalScrollingIndicatorInteracting != value)
+                {
+                    _isVerticalScrollingIndicatorInteracting = value;
+
+                    if (_vScrollBar != null)
+                    {
+                        if (_isVerticalScrollingIndicatorInteracting)
+                        {
+                            // Prevent the horizontal scrolling indicator from fading out while the user is interacting with the vertical one.
+                            _keepScrollingIndicatorsShowing = true;
+
+                            ShowScrollingIndicators();
+                        }
+                        else
+                        {
+                            // Make the scrolling indicators fade out, after the normal delay.
+                            _keepScrollingIndicatorsShowing = false;
+
+                            HideScrollingIndicators(true /*useTransitions*/);
+                        }
+                    }
+                }
             }
         }
 
@@ -3000,6 +3127,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             // The template has changed, so we need to refresh the visuals
             _measured = false;
 
+            _hasNoIndicatorStateStoryboardCompletedHandler = false;
+            _keepScrollingIndicatorsShowing = false;
+
             if (_columnHeadersPresenter != null)
             {
                 // If we're applying a new template, we want to remove the old column headers first
@@ -3044,7 +3174,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (_hScrollBar != null)
             {
-                _hScrollBar.Scroll -= new ScrollEventHandler(HorizontalScrollBar_Scroll);
+                _isHorizontalScrollingIndicatorInteracting = false;
+                _isPointerOverHorizontalScrollingIndicator = false;
+                UnhookHorizontalScrollingIndicatorEvents();
             }
 
             _hScrollBar = GetTemplateChild(DATAGRID_elementHorizontalScrollbarName) as ScrollBar;
@@ -3054,12 +3186,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _hScrollBar.Maximum = 0.0;
                 _hScrollBar.Orientation = Orientation.Horizontal;
                 _hScrollBar.Visibility = Visibility.Collapsed;
-                _hScrollBar.Scroll += new ScrollEventHandler(HorizontalScrollBar_Scroll);
+                HookHorizontalScrollingIndicatorEvents();
             }
 
             if (_vScrollBar != null)
             {
-                _vScrollBar.Scroll -= new ScrollEventHandler(VerticalScrollBar_Scroll);
+                _isVerticalScrollingIndicatorInteracting = false;
+                _isPointerOverVerticalScrollingIndicator = false;
+                UnhookVerticalScrollingIndicatorEvents();
             }
 
             _vScrollBar = GetTemplateChild(DATAGRID_elementVerticalScrollbarName) as ScrollBar;
@@ -3069,7 +3203,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _vScrollBar.Maximum = 0.0;
                 _vScrollBar.Orientation = Orientation.Vertical;
                 _vScrollBar.Visibility = Visibility.Collapsed;
-                _vScrollBar.Scroll += new ScrollEventHandler(VerticalScrollBar_Scroll);
+                HookVerticalScrollingIndicatorEvents();
             }
 
             _topLeftCornerHeader = GetTemplateChild(DATAGRID_elementTopLeftCornerHeaderName) as ContentControl;
@@ -3105,6 +3239,61 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 #endif
+
+            FrameworkElement root = GetTemplateChild(DATAGRID_elementRootName) as FrameworkElement;
+
+            if (root != null)
+            {
+                IList<VisualStateGroup> rootVisualStateGroups = VisualStateManager.GetVisualStateGroups(root);
+
+                if (rootVisualStateGroups != null)
+                {
+                    int groupCount = rootVisualStateGroups.Count;
+
+                    for (int groupIndex = 0; groupIndex < groupCount; groupIndex++)
+                    {
+                        VisualStateGroup group = rootVisualStateGroups[groupIndex];
+
+                        if (group != null)
+                        {
+                            IList<VisualState> visualStates = group.States;
+
+                            if (visualStates != null)
+                            {
+                                int stateCount = visualStates.Count;
+
+                                for (int stateIndex = 0; stateIndex < stateCount; stateIndex++)
+                                {
+                                    VisualState state = visualStates[stateIndex];
+
+                                    if (state != null)
+                                    {
+                                        string stateName = state.Name;
+                                        Storyboard stateStoryboard = state.Storyboard;
+
+                                        if (stateStoryboard != null)
+                                        {
+                                            if (stateName == VisualStates.StateNoIndicator)
+                                            {
+                                                stateStoryboard.Completed += NoIndicatorStateStoryboard_Completed;
+
+                                                _hasNoIndicatorStateStoryboardCompletedHandler = true;
+                                            }
+                                            else if (stateName == VisualStates.StateTouchIndicator || stateName == VisualStates.StateMouseIndicator || stateName == VisualStates.StateMouseIndicatorFull)
+                                            {
+                                                stateStoryboard.Completed += IndicatorStateStoryboard_Completed;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            HideScrollingIndicators(false /*useTransitions*/);
+
             UpdateDisabledVisual();
         }
 
@@ -3629,6 +3818,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void ProcessHorizontalScroll(ScrollEventType scrollEventType)
         {
+            if (scrollEventType == ScrollEventType.EndScroll)
+            {
+                this.IsHorizontalScrollingIndicatorInteracting = false;
+            }
+            else if (scrollEventType == ScrollEventType.ThumbTrack)
+            {
+                this.IsHorizontalScrollingIndicatorInteracting = true;
+            }
+
             if (_horizontalScrollChangesIgnored > 0)
             {
                 return;
@@ -3652,7 +3850,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 if (scrollBarValueDifference != 0)
                 {
                     Debug.Assert(_horizontalOffset + scrollBarValueDifference >= 0, "Expected positive _horizontalOffset + scrollBarValueDifference.");
-                    _hScrollBar.Value = _horizontalOffset + scrollBarValueDifference;
+                    SetHorizontalOffset(_horizontalOffset + scrollBarValueDifference);
                 }
 
                 UpdateHorizontalOffset(_hScrollBar.Value);
@@ -3882,6 +4080,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void ProcessVerticalScroll(ScrollEventType scrollEventType)
         {
+            if (scrollEventType == ScrollEventType.EndScroll)
+            {
+                this.IsVerticalScrollingIndicatorInteracting = false;
+            }
+            else if (scrollEventType == ScrollEventType.ThumbTrack)
+            {
+                this.IsVerticalScrollingIndicatorInteracting = true;
+            }
+
             if (_verticalScrollChangesIgnored > 0)
             {
                 return;
@@ -4306,6 +4513,39 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             row.Cells.Insert(column.Index, newCell);
         }
 
+        // TODO - Call this method once the UISettings has a public property for the "Automatically hide scroll bars in Windows" setting
+        // private void AutoHideScrollBarsChanged()
+        // {
+        //    if (UISettingsHelper.AreSettingsAutoHidingScrollBars)
+        //    {
+        //        SwitchScrollingIndicatorsVisualStates(_proposedScrollingIndicatorsState, _proposedScrollingSeparatorState, true /*useTransitions*/);
+        //    }
+        //    else
+        //    {
+        //        if (this.AreBothScrollingIndicatorsVisible)
+        //        {
+        //            if (UISettingsHelper.AreSettingsEnablingAnimations)
+        //            {
+        //                SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpanded : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+        //            }
+        //            else
+        //            {
+        //                SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (UISettingsHelper.AreSettingsEnablingAnimations)
+        //            {
+        //                SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicator, ScrollingSeparatorVisualState.SeparatorCollapsed, true/*useTransitions*/);
+        //            }
+        //            else
+        //            {
+        //                SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicator, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+        //            }
+        //        }
+        //    }
+        // }
         private bool BeginCellEdit(RoutedEventArgs editingEventArgs)
         {
             if (this.CurrentColumnIndex == -1 || !GetRowSelection(this.CurrentSlot))
@@ -4752,7 +4992,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             UpdateHorizontalScrollBar(needHorizScrollbar, forceHorizScrollbar, totalVisibleWidth, totalVisibleFrozenWidth, cellsWidth);
             UpdateVerticalScrollBar(needVertScrollbar, forceVertScrollbar, totalVisibleHeight, cellsHeight);
-            UpdateScrollingSeparatorVisual();
 
             if (_topRightCornerHeader != null)
             {
@@ -5116,6 +5355,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
+        private void DataGrid_GettingFocus(UIElement sender, GettingFocusEventArgs e)
+        {
+            _focusInputDevice = e.InputDevice;
+        }
+
         private void DataGrid_GotFocus(object sender, RoutedEventArgs e)
         {
             if (!this.ContainsFocus)
@@ -5149,6 +5393,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 focusedElement = VisualTreeHelper.GetParent(focusedElement);
             }
 
+            _preferMouseIndicators = _focusInputDevice == FocusInputDeviceKind.Mouse || _focusInputDevice == FocusInputDeviceKind.Pen;
+
+            ShowScrollingIndicators();
+
             // If the DataGrid itself got focus, we actually want the automation focus to be on the current element
             if (e.OriginalSource == this && AutomationPeer.ListenerExists(AutomationEvents.AutomationFocusChanged))
             {
@@ -5163,6 +5411,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private void DataGrid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             UpdateDisabledVisual();
+
+            if (!this.IsEnabled)
+            {
+                HideScrollingIndicators(true /*useTransitions*/);
+            }
         }
 
         private void DataGrid_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -5280,6 +5533,69 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
                 }
             }
+        }
+
+        private void DataGrid_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch)
+            {
+                // Mouse/Pen inputs dominate. If touch panning indicators are shown, switch to mouse indicators.
+                _preferMouseIndicators = true;
+                ShowScrollingIndicators();
+            }
+        }
+
+        private void DataGrid_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch)
+            {
+                // Mouse/Pen inputs dominate. If touch panning indicators are shown, switch to mouse indicators.
+                _isPointerOverHorizontalScrollingIndicator = false;
+                _isPointerOverVerticalScrollingIndicator = false;
+                _preferMouseIndicators = true;
+                ShowScrollingIndicators();
+                HideScrollingIndicatorsAfterDelay();
+            }
+        }
+
+        private void DataGrid_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            // Don't process if this is a generated replay of the event.
+            if (/* TODO this.IsRS3OrHigher &&*/ e.IsGenerated)
+            {
+                return;
+            }
+
+            if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch)
+            {
+                // Mouse/Pen inputs dominate. If touch panning indicators are shown, switch to mouse indicators.
+                _preferMouseIndicators = true;
+                ShowScrollingIndicators();
+
+                if (!UISettingsHelper.AreSettingsEnablingAnimations &&
+                    _hideScrollingIndicatorsTimer != null &&
+                    (_isPointerOverHorizontalScrollingIndicator || _isPointerOverVerticalScrollingIndicator))
+                {
+                    StopHideScrollingIndicatorsTimer();
+                }
+            }
+        }
+
+        private void DataGrid_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Handled)
+            {
+                return;
+            }
+
+            // Show the scrolling indicators as soon as a pointer is pressed on the DataGrid.
+            ShowScrollingIndicators();
+        }
+
+        private void DataGrid_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _showingMouseIndicators = false;
+            _keepScrollingIndicatorsShowing = false;
         }
 
 #if FEATURE_VALIDATION
@@ -5807,9 +6123,142 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return 0;
         }
 
+        private void HideScrollingIndicators(bool useTransitions)
+        {
+            if (!_keepScrollingIndicatorsShowing)
+            {
+                _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.NoIndicator;
+                _proposedScrollingSeparatorState = UISettingsHelper.AreSettingsEnablingAnimations ? ScrollingSeparatorVisualState.SeparatorCollapsed : ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation;
+                if (UISettingsHelper.AreSettingsAutoHidingScrollBars)
+                {
+                    SwitchScrollingIndicatorsVisualStates(_proposedScrollingIndicatorsState, _proposedScrollingSeparatorState, useTransitions);
+                }
+            }
+        }
+
+        private void HideScrollingIndicatorsAfterDelay()
+        {
+            if (!_keepScrollingIndicatorsShowing)
+            {
+                DispatcherTimer hideScrollingIndicatorsTimer = null;
+
+                if (_hideScrollingIndicatorsTimer != null)
+                {
+                    hideScrollingIndicatorsTimer = _hideScrollingIndicatorsTimer;
+                    if (hideScrollingIndicatorsTimer.IsEnabled)
+                    {
+                        hideScrollingIndicatorsTimer.Stop();
+                    }
+                }
+                else
+                {
+                    hideScrollingIndicatorsTimer = new DispatcherTimer();
+                    hideScrollingIndicatorsTimer.Interval = TimeSpan.FromMilliseconds(DATAGRID_noScrollingIndicatorCountdownMs);
+                    hideScrollingIndicatorsTimer.Tick += HideScrollingIndicatorsTimerTick;
+                    _hideScrollingIndicatorsTimer = hideScrollingIndicatorsTimer;
+                }
+
+                hideScrollingIndicatorsTimer.Start();
+            }
+        }
+
+        private void HideScrollingIndicatorsTimerTick(object sender, object e)
+        {
+            StopHideScrollingIndicatorsTimer();
+            HideScrollingIndicators(true /*useTransitions*/);
+        }
+
+        private void HookDataGridEvents()
+        {
+            this.IsEnabledChanged += new DependencyPropertyChangedEventHandler(DataGrid_IsEnabledChanged);
+            this.KeyDown += new KeyEventHandler(DataGrid_KeyDown);
+            this.KeyUp += new KeyEventHandler(DataGrid_KeyUp);
+            this.GettingFocus += new TypedEventHandler<UIElement, GettingFocusEventArgs>(DataGrid_GettingFocus);
+            this.GotFocus += new RoutedEventHandler(DataGrid_GotFocus);
+            this.LostFocus += new RoutedEventHandler(DataGrid_LostFocus);
+            this.PointerEntered += new PointerEventHandler(DataGrid_PointerEntered);
+            this.PointerExited += new PointerEventHandler(DataGrid_PointerExited);
+            this.PointerMoved += new PointerEventHandler(DataGrid_PointerMoved);
+            this.PointerPressed += new PointerEventHandler(DataGrid_PointerPressed);
+            this.Unloaded += new RoutedEventHandler(DataGrid_Unloaded);
+        }
+
+        private void HookHorizontalScrollingIndicatorEvents()
+        {
+            if (_hScrollBar != null)
+            {
+                _hScrollBar.Scroll += new ScrollEventHandler(HorizontalScrollBar_Scroll);
+                _hScrollBar.PointerEntered += new PointerEventHandler(HorizontalScrollBar_PointerEntered);
+                _hScrollBar.PointerExited += new PointerEventHandler(HorizontalScrollBar_PointerExited);
+            }
+        }
+
+        private void HookVerticalScrollingIndicatorEvents()
+        {
+            if (_vScrollBar != null)
+            {
+                _vScrollBar.Scroll += new ScrollEventHandler(VerticalScrollBar_Scroll);
+                _vScrollBar.PointerEntered += new PointerEventHandler(VerticalScrollBar_PointerEntered);
+                _vScrollBar.PointerExited += new PointerEventHandler(VerticalScrollBar_PointerExited);
+            }
+        }
+
+        private void HorizontalScrollBar_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            _isPointerOverHorizontalScrollingIndicator = true;
+
+            if (!UISettingsHelper.AreSettingsEnablingAnimations)
+            {
+                HideScrollingIndicatorsAfterDelay();
+            }
+        }
+
+        private void HorizontalScrollBar_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            _isPointerOverHorizontalScrollingIndicator = false;
+            HideScrollingIndicatorsAfterDelay();
+        }
+
+        private void VerticalScrollBar_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            _isPointerOverVerticalScrollingIndicator = true;
+
+            if (!UISettingsHelper.AreSettingsEnablingAnimations)
+            {
+                HideScrollingIndicatorsAfterDelay();
+            }
+        }
+
+        private void VerticalScrollBar_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            _isPointerOverVerticalScrollingIndicator = false;
+            HideScrollingIndicatorsAfterDelay();
+        }
+
         private void HorizontalScrollBar_Scroll(object sender, ScrollEventArgs e)
         {
             ProcessHorizontalScroll(e.ScrollEventType);
+        }
+
+        private void IndicatorStateStoryboard_Completed(object sender, object e)
+        {
+            // If the cursor is currently directly over either scrolling indicator then do not automatically hide the indicators
+            if (!_keepScrollingIndicatorsShowing &&
+                !_isPointerOverVerticalScrollingIndicator &&
+                !_isPointerOverHorizontalScrollingIndicator)
+            {
+                // Go to the NoIndicator state using transitions.
+                if (UISettingsHelper.AreSettingsEnablingAnimations)
+                {
+                    // By default there is a delay before the NoIndicator state actually shows.
+                    HideScrollingIndicators(true /*useTransitions*/);
+                }
+                else
+                {
+                    // Since OS animations are turned off, use a timer to delay the indicators' hiding.
+                    HideScrollingIndicatorsAfterDelay();
+                }
+            }
         }
 
         private bool IsColumnOutOfBounds(int columnIndex)
@@ -5909,6 +6358,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             _makeFirstDisplayedCellCurrentCellPending = false;
             _desiredCurrentColumnIndex = -1;
             FlushCurrentCellChanged();
+        }
+
+        private void NoIndicatorStateStoryboard_Completed(object sender, object e)
+        {
+            Debug.Assert(_hasNoIndicatorStateStoryboardCompletedHandler, "Expected _hasNoIndicatorStateStoryboardCompletedHandler is true.");
+
+            _showingMouseIndicators = false;
         }
 
         private void PopulateCellContent(
@@ -7394,12 +7850,33 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return true;
         }
 
+        private void SetHorizontalOffset(double newHorizontalOffset)
+        {
+            if (_hScrollBar != null && _hScrollBar.Value != newHorizontalOffset)
+            {
+                _hScrollBar.Value = newHorizontalOffset;
+
+                // Unless the control is still loading, show the scrolling indicators when an offset changes. Keep the existing indicator type.
+                if (VisualTreeHelper.GetParent(this) != null)
+                {
+                    ShowScrollingIndicators();
+                }
+            }
+        }
+
         private void SetVerticalOffset(double newVerticalOffset)
         {
             _verticalOffset = newVerticalOffset;
+
             if (_vScrollBar != null && !DoubleUtil.AreClose(newVerticalOffset, _vScrollBar.Value))
             {
                 _vScrollBar.Value = _verticalOffset;
+
+                // Unless the control is still loading, show the scrolling indicators when an offset changes. Keep the existing indicator type.
+                if (VisualTreeHelper.GetParent(this) != null)
+                {
+                    ShowScrollingIndicators();
+                }
             }
         }
 
@@ -7420,6 +7897,165 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return false;
         }
 #endif
+
+        private void ShowScrollingIndicators()
+        {
+            if (this.AreAllScrollingIndicatorsCollapsed)
+            {
+                _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.NoIndicator;
+                _proposedScrollingSeparatorState = ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation;
+                SwitchScrollingIndicatorsVisualStates(_proposedScrollingIndicatorsState, _proposedScrollingSeparatorState, false /*useTransitions*/);
+            }
+            else
+            {
+                if (_hideScrollingIndicatorsTimer != null && _hideScrollingIndicatorsTimer.IsEnabled)
+                {
+                    _hideScrollingIndicatorsTimer.Stop();
+                    _hideScrollingIndicatorsTimer.Start();
+                }
+
+                // Mouse indicators dominate if they are already showing or if we have set the flag to prefer them.
+                if (_preferMouseIndicators || _showingMouseIndicators)
+                {
+                    if (this.AreBothScrollingIndicatorsVisible && (_isPointerOverHorizontalScrollingIndicator || _isPointerOverVerticalScrollingIndicator))
+                    {
+                        _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.MouseIndicatorFull;
+                    }
+                    else
+                    {
+                        _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.MouseIndicator;
+                    }
+
+                    _showingMouseIndicators = true;
+                }
+                else
+                {
+                    _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.TouchIndicator;
+                }
+
+                // Select the proper state for the scrolling separator square within the GroupScrollingSeparator group:
+                if (UISettingsHelper.AreSettingsEnablingAnimations)
+                {
+                    // When OS animations are turned on, show the square when a scrolling indicator is shown unless the DataGrid is disabled, using an animation.
+                    _proposedScrollingSeparatorState =
+                        this.IsEnabled &&
+                        _proposedScrollingIndicatorsState == ScrollingIndicatorVisualState.MouseIndicatorFull ?
+                        ScrollingSeparatorVisualState.SeparatorExpanded : ScrollingSeparatorVisualState.SeparatorCollapsed;
+                }
+                else
+                {
+                    // OS animations are turned off. Show or hide the square depending on the presence of a scrolling indicators, without an animation.
+                    // When the DataGrid is disabled, hide the square in sync with the scrolling indicator(s).
+                    if (_proposedScrollingIndicatorsState == ScrollingIndicatorVisualState.MouseIndicatorFull)
+                    {
+                        _proposedScrollingSeparatorState = this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed;
+                    }
+                    else
+                    {
+                        _proposedScrollingSeparatorState = this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed;
+                    }
+                }
+
+                if (!UISettingsHelper.AreSettingsAutoHidingScrollBars)
+                {
+                    if (this.AreBothScrollingIndicatorsVisible)
+                    {
+                        if (UISettingsHelper.AreSettingsEnablingAnimations)
+                        {
+                            SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpanded : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+                        }
+                        else
+                        {
+                            SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+                        }
+                    }
+                    else
+                    {
+                        if (UISettingsHelper.AreSettingsEnablingAnimations)
+                        {
+                            SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicator, ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+                        }
+                        else
+                        {
+                            SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicator, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+                        }
+                    }
+                }
+                else
+                {
+                    SwitchScrollingIndicatorsVisualStates(_proposedScrollingIndicatorsState, _proposedScrollingSeparatorState, true /*useTransitions*/);
+                }
+            }
+        }
+
+        private void StopHideScrollingIndicatorsTimer()
+        {
+            if (_hideScrollingIndicatorsTimer != null && _hideScrollingIndicatorsTimer.IsEnabled)
+            {
+                _hideScrollingIndicatorsTimer.Stop();
+            }
+        }
+
+        private void SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState indicatorState, ScrollingSeparatorVisualState separatorState, bool useTransitions)
+        {
+            switch (indicatorState)
+            {
+                case ScrollingIndicatorVisualState.NoIndicator:
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateNoIndicator);
+
+                    if (!_hasNoIndicatorStateStoryboardCompletedHandler)
+                    {
+                        _showingMouseIndicators = false;
+                    }
+
+                    break;
+                case ScrollingIndicatorVisualState.TouchIndicator:
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateTouchIndicator);
+                    break;
+                case ScrollingIndicatorVisualState.MouseIndicator:
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateMouseIndicator);
+                    break;
+                case ScrollingIndicatorVisualState.MouseIndicatorFull:
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateMouseIndicatorFull);
+                    break;
+            }
+
+            switch (separatorState)
+            {
+                case ScrollingSeparatorVisualState.SeparatorCollapsed:
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateSeparatorCollapsed);
+                    break;
+                case ScrollingSeparatorVisualState.SeparatorExpanded:
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateSeparatorExpanded);
+                    break;
+                case ScrollingSeparatorVisualState.SeparatorExpandedWithoutAnimation:
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateSeparatorExpandedWithoutAnimation);
+                    break;
+                case ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation:
+                    VisualStates.GoToState(this, useTransitions, VisualStates.StateSeparatorCollapsedWithoutAnimation);
+                    break;
+            }
+        }
+
+        private void UnhookHorizontalScrollingIndicatorEvents()
+        {
+            if (_hScrollBar != null)
+            {
+                _hScrollBar.Scroll -= new ScrollEventHandler(HorizontalScrollBar_Scroll);
+                _hScrollBar.PointerEntered -= new PointerEventHandler(HorizontalScrollBar_PointerEntered);
+                _hScrollBar.PointerExited -= new PointerEventHandler(HorizontalScrollBar_PointerExited);
+            }
+        }
+
+        private void UnhookVerticalScrollingIndicatorEvents()
+        {
+            if (_vScrollBar != null)
+            {
+                _vScrollBar.Scroll -= new ScrollEventHandler(VerticalScrollBar_Scroll);
+                _vScrollBar.PointerEntered -= new PointerEventHandler(VerticalScrollBar_PointerEntered);
+                _vScrollBar.PointerExited -= new PointerEventHandler(VerticalScrollBar_PointerExited);
+            }
+        }
 
         private void UpdateCurrentState(UIElement displayedElement, int columnIndex, bool applyCellState)
         {
@@ -7499,11 +8135,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         _hScrollBar.LargeChange = viewPortSize;
 
                         // The ScrollBar should be in sync with HorizontalOffset at this point.  There's a resize case
-                        // where the ScrollBar will coerce an old value here, but we don't want that
-                        if (_hScrollBar.Value != _horizontalOffset)
-                        {
-                            _hScrollBar.Value = _horizontalOffset;
-                        }
+                        // where the ScrollBar will coerce an old value here, but we don't want that.
+                        SetHorizontalOffset(_horizontalOffset);
 
                         _hScrollBar.IsEnabled = true;
                     }
@@ -7673,19 +8306,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
 
                 _rowsPresenter.ManipulationMode = manipulationMode;
-            }
-        }
-
-        private void UpdateScrollingSeparatorVisual()
-        {
-            if ((_hScrollBar != null && _hScrollBar.IsEnabled) ||
-                (_vScrollBar != null && _vScrollBar.IsEnabled))
-            {
-                VisualStates.GoToState(this, true, VisualStates.StateScrollingSeparatorNormal);
-            }
-            else
-            {
-                VisualStates.GoToState(this, true, VisualStates.StateScrollingSeparatorDisabled, VisualStates.StateScrollingSeparatorNormal);
             }
         }
 

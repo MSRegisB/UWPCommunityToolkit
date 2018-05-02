@@ -212,14 +212,24 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
         // GroupScrollingSeparator
 
         /// <summary>
-        /// ScrollingSeparatorNormal state
+        /// SeparatorExpanded state
         /// </summary>
-        public const string StateScrollingSeparatorNormal = "ScrollingSeparatorNormal";
+        public const string StateSeparatorExpanded = "SeparatorExpanded";
 
         /// <summary>
-        /// ScrollingSeparatorDisabled state
+        /// ScrollingSeparatorCollapsed state
         /// </summary>
-        public const string StateScrollingSeparatorDisabled = "ScrollingSeparatorDisabled";
+        public const string StateSeparatorCollapsed = "SeparatorCollapsed";
+
+        /// <summary>
+        /// SeparatorExpandedWithoutAnimation state
+        /// </summary>
+        public const string StateSeparatorExpandedWithoutAnimation = "SeparatorExpandedWithoutAnimation";
+
+        /// <summary>
+        /// SeparatorCollapsedWithoutAnimation state
+        /// </summary>
+        public const string StateSeparatorCollapsedWithoutAnimation = "SeparatorCollapsedWithoutAnimation";
 
         /// <summary>
         /// ScrollingSeparator state group
