@@ -17,14 +17,17 @@
 
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
+            <SolidColorBrush x:Key="DraggedBrush" Color="#ADB4B4B4"/>
             <SolidColorBrush x:Key="InvalidBrush" Color="#C50500"/>
             <SolidColorBrush x:Key="ScrollBarsSeparatorBackground" Color="{StaticResource SystemChromeMediumColor}" Opacity="0.9" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="HighContrast">
+            <SolidColorBrush x:Key="DraggedBrush" Color="#AD4B4B4B"/>
             <SolidColorBrush x:Key="InvalidBrush" Color="#FFFF00"/>
             <StaticResource x:Key="ScrollBarsSeparatorBackground" ResourceKey="SystemControlPageBackgroundChromeLowBrush" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="DraggedBrush" Color="#ADB4B4B4"/>
             <SolidColorBrush x:Key="InvalidBrush" Color="#C50500"/>
             <SolidColorBrush x:Key="ScrollBarsSeparatorBackground" Color="{StaticResource SystemChromeMediumColor}" Opacity="0.9" />
         </ResourceDictionary>
@@ -55,6 +58,7 @@
     <StaticResource x:Key="GridLinesBrush" ResourceKey="SystemControlGridLinesBaseMediumLowBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseMediumBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderBackgroundBrush" ResourceKey="SystemControlBackgroundAltHighBrush"/>
+    <StaticResource x:Key="DataGridColumnHeaderDraggedBackgroundBrush" ResourceKey="DraggedBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderPointerOverBrush" ResourceKey="SystemControlHighlightListLowBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderPressedBrush" ResourceKey="SystemControlHighlightListMediumBrush"/>
     <StaticResource x:Key="DataGridRowBackgroundBrush" ResourceKey="SystemControlTransparentBrush"/>
@@ -82,15 +86,12 @@
         <Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected"/>
         <Setter Property="DragIndicatorStyle">
             <Setter.Value>
-                <!-- TODO: Change the TargetType to Control when the fix Jolt bugs 18719 is verified -->
                 <Style TargetType="ContentControl">
                     <Setter Property="Foreground" Value="{ThemeResource DataGridColumnHeaderForegroundBrush}"/>
-                    <Setter Property="Background" Value="{ThemeResource DataGridColumnHeaderBackgroundBrush}"/>
                     <Setter Property="Template">
                         <Setter.Value>
-                            <!-- TODO: Change the TargetType to Control when the fix Jolt bugs 18719 is verified -->
                             <ControlTemplate TargetType="ContentControl">
-                                <Grid>
+                                <Grid Background="{ThemeResource DataGridColumnHeaderDraggedBackgroundBrush}">
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="SortStates">
                                             <VisualState x:Name="Unsorted"/>
@@ -111,7 +112,8 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
 
-                                    <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}">
+                                    <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                        Margin="{TemplateBinding Padding}" Opacity="0.8">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition MinWidth="32" Width="Auto"/>
