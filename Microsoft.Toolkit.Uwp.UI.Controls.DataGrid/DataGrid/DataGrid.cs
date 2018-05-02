@@ -53,18 +53,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [TemplatePart(Name = DataGrid.DATAGRID_elementRowsPresenterName, Type = typeof(DataGridRowsPresenter))]
     [TemplatePart(Name = DataGrid.DATAGRID_elementColumnHeadersPresenterName, Type = typeof(DataGridColumnHeadersPresenter))]
     [TemplatePart(Name = DataGrid.DATAGRID_elementFrozenColumnScrollBarSpacerName, Type = typeof(FrameworkElement))]
-    [TemplatePart(Name = DataGrid.DATAGRID_elementHorizontalScrollbarName, Type = typeof(ScrollBar))]
-    [TemplatePart(Name = DataGrid.DATAGRID_elementVerticalScrollbarName, Type = typeof(ScrollBar))]
+    [TemplatePart(Name = DataGrid.DATAGRID_elementHorizontalScrollBarName, Type = typeof(ScrollBar))]
+    [TemplatePart(Name = DataGrid.DATAGRID_elementVerticalScrollBarName, Type = typeof(ScrollBar))]
     [TemplateVisualState(Name = VisualStates.StateDisabled, GroupName = VisualStates.GroupCommon)]
     [TemplateVisualState(Name = VisualStates.StateNormal, GroupName = VisualStates.GroupCommon)]
-    [TemplateVisualState(Name = VisualStates.StateTouchIndicator, GroupName = VisualStates.GroupScrollingIndicator)]
-    [TemplateVisualState(Name = VisualStates.StateMouseIndicator, GroupName = VisualStates.GroupScrollingIndicator)]
-    [TemplateVisualState(Name = VisualStates.StateMouseIndicatorFull, GroupName = VisualStates.GroupScrollingIndicator)]
-    [TemplateVisualState(Name = VisualStates.StateNoIndicator, GroupName = VisualStates.GroupScrollingIndicator)]
-    [TemplateVisualState(Name = VisualStates.StateSeparatorExpanded, GroupName = VisualStates.GroupScrollingSeparator)]
-    [TemplateVisualState(Name = VisualStates.StateSeparatorCollapsed, GroupName = VisualStates.GroupScrollingSeparator)]
-    [TemplateVisualState(Name = VisualStates.StateSeparatorExpandedWithoutAnimation, GroupName = VisualStates.GroupScrollingSeparator)]
-    [TemplateVisualState(Name = VisualStates.StateSeparatorCollapsedWithoutAnimation, GroupName = VisualStates.GroupScrollingSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateTouchIndicator, GroupName = VisualStates.GroupScrollBars)]
+    [TemplateVisualState(Name = VisualStates.StateMouseIndicator, GroupName = VisualStates.GroupScrollBars)]
+    [TemplateVisualState(Name = VisualStates.StateMouseIndicatorFull, GroupName = VisualStates.GroupScrollBars)]
+    [TemplateVisualState(Name = VisualStates.StateNoIndicator, GroupName = VisualStates.GroupScrollBars)]
+    [TemplateVisualState(Name = VisualStates.StateSeparatorExpanded, GroupName = VisualStates.GroupScrollBarsSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateSeparatorCollapsed, GroupName = VisualStates.GroupScrollBarsSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateSeparatorExpandedWithoutAnimation, GroupName = VisualStates.GroupScrollBarsSeparator)]
+    [TemplateVisualState(Name = VisualStates.StateSeparatorCollapsedWithoutAnimation, GroupName = VisualStates.GroupScrollBarsSeparator)]
     [TemplateVisualState(Name = VisualStates.StateInvalid, GroupName = VisualStates.GroupValidation)]
     [TemplateVisualState(Name = VisualStates.StateValid, GroupName = VisualStates.GroupValidation)]
     [StyleTypedProperty(Property = "CellStyle", StyleTargetType = typeof(DataGridCell))]
@@ -75,7 +75,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
     [StyleTypedProperty(Property = "RowStyle", StyleTargetType = typeof(DataGridRow))]
     public partial class DataGrid : Control
     {
-        private enum ScrollingIndicatorVisualState
+        private enum ScrollBarVisualState
         {
             NoIndicator,
             TouchIndicator,
@@ -83,7 +83,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             MouseIndicatorFull
         }
 
-        private enum ScrollingSeparatorVisualState
+        private enum ScrollBarsSeparatorVisualState
         {
             SeparatorCollapsed,
             SeparatorExpanded,
@@ -98,12 +98,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const string DATAGRID_elementRowsPresenterName = "RowsPresenter";
         private const string DATAGRID_elementColumnHeadersPresenterName = "ColumnHeadersPresenter";
         private const string DATAGRID_elementFrozenColumnScrollBarSpacerName = "FrozenColumnScrollBarSpacer";
-        private const string DATAGRID_elementHorizontalScrollbarName = "HorizontalScrollbar";
+        private const string DATAGRID_elementHorizontalScrollBarName = "HorizontalScrollBar";
         private const string DATAGRID_elementRowHeadersPresenterName = "RowHeadersPresenter";
         private const string DATAGRID_elementTopLeftCornerHeaderName = "TopLeftCornerHeader";
         private const string DATAGRID_elementTopRightCornerHeaderName = "TopRightCornerHeader";
         private const string DATAGRID_elementBottomRightCornerHeaderName = "BottomRightCorner";
-        private const string DATAGRID_elementVerticalScrollbarName = "VerticalScrollbar";
+        private const string DATAGRID_elementVerticalScrollBarName = "VerticalScrollBar";
 
         private const bool DATAGRID_defaultAutoGenerateColumns = false;
         private const bool DATAGRID_defaultCanUserReorderColumns = false;
@@ -136,9 +136,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private const double DATAGRID_defaultMinColumnWidth = 20;
         private const double DATAGRID_defaultMaxColumnWidth = double.PositiveInfinity;
 
-        // 2 seconds delay used to hide the scrolling indicators for example when OS animations are turned off.
-        private const int DATAGRID_noScrollingIndicatorCountdownMs = 2000;
-        
+        // 2 seconds delay used to hide the scroll bars for example when OS animations are turned off.
+        private const int DATAGRID_noScrollBarCountdownMs = 2000;
+
         // DataGrid Template Parts
 #if FEATURE_VALIDATION_SUMMARY
         private ValidationSummary _validationSummary;
@@ -169,7 +169,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataGridRow _focusedRow;
         private FrameworkElement _frozenColumnScrollBarSpacer;
         private bool _hasNoIndicatorStateStoryboardCompletedHandler;
-        private DispatcherTimer _hideScrollingIndicatorsTimer;
+        private DispatcherTimer _hideScrollBarsTimer;
 
         // the sum of the widths in pixels of the scrolling columns preceding
         // the first displayed scrolling column
@@ -179,15 +179,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private List<ValidationResult> _indeiValidationResults;
         private bool _initializingNewItem;
 
-        private bool _isHorizontalScrollingIndicatorInteracting;
-        private bool _isVerticalScrollingIndicatorInteracting;
+        private bool _isHorizontalScrollBarInteracting;
+        private bool _isVerticalScrollBarInteracting;
 
-        // Set to True when the pointer is over the optional scrolling indicators.
-        private bool _isPointerOverHorizontalScrollingIndicator;
-        private bool _isPointerOverVerticalScrollingIndicator;
+        // Set to True when the pointer is over the optional scroll bars.
+        private bool _isPointerOverHorizontalScrollBar;
+        private bool _isPointerOverVerticalScrollBar;
 
-        // Set to True to prevent the normal fade-out of the scrolling indicators.
-        private bool _keepScrollingIndicatorsShowing;
+        // Set to True to prevent the normal fade-out of the scroll bars.
+        private bool _keepScrollBarsShowing;
 
         // Nth row of rows 0..N that make up the RowHeightEstimate
         private int _lastEstimatedRow;
@@ -206,15 +206,15 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private int _noFocusedColumnChangeCount;
         private int _noSelectionChangeCount;
 
-        // Set to True to favor mouse indicators over panning indicators for the scrolling indicators.
+        // Set to True to favor mouse indicators over panning indicators for the scroll bars.
         private bool _preferMouseIndicators;
 
         private DataGridCellCoordinates _previousAutomationFocusCoordinates;
         private DataGridColumn _previousCurrentColumn;
         private object _previousCurrentItem;
         private List<ValidationResult> _propertyValidationResults;
-        private ScrollingIndicatorVisualState _proposedScrollingIndicatorsState;
-        private ScrollingSeparatorVisualState _proposedScrollingSeparatorState;
+        private ScrollBarVisualState _proposedScrollBarsState;
+        private ScrollBarsSeparatorVisualState _proposedScrollBarsSeparatorState;
         private string _rowGroupHeaderPropertyNameAlternative;
         private ObservableCollection<Style> _rowGroupHeaderStyles;
 
@@ -228,7 +228,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private DataGridSelectedItemsCollection _selectedItems;
         private IndexToValueTable<Visibility> _showDetailsTable;
 
-        // Set to True when the mouse scrolling indicators are currently showing.
+        // Set to True when the mouse scroll bars are currently showing.
         private bool _showingMouseIndicators;
         private bool _successfullyUpdatedSelection;
         private bool _temporarilyResetCurrentCell;
@@ -426,8 +426,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             _showDetailsTable = new IndexToValueTable<Visibility>();
 
             _focusInputDevice = FocusInputDeviceKind.None;
-            _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.NoIndicator;
-            _proposedScrollingSeparatorState = ScrollingSeparatorVisualState.SeparatorCollapsed;
+            _proposedScrollBarsState = ScrollBarVisualState.NoIndicator;
+            _proposedScrollBarsSeparatorState = ScrollBarsSeparatorVisualState.SeparatorCollapsed;
 
             this.AnchorSlot = -1;
             _lastEstimatedRow = -1;
@@ -1110,7 +1110,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 dataGrid.UpdateRowsPresenterManipulationMode(true /*horizontalMode*/, false /*verticalMode*/);
 
-                if (!dataGrid.IsHorizontalScrollbarOverCells && dataGrid._hScrollBar != null)
+                if (!dataGrid.IsHorizontalScrollBarOverCells && dataGrid._hScrollBar != null)
                 {
                     dataGrid.InvalidateMeasure();
                 }
@@ -1966,7 +1966,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 dataGrid.UpdateRowsPresenterManipulationMode(false /*horizontalMode*/, true /*verticalMode*/);
 
-                if (!dataGrid.IsVerticalScrollbarOverCells && dataGrid._vScrollBar != null)
+                if (!dataGrid.IsVerticalScrollBarOverCells && dataGrid._vScrollBar != null)
                 {
                     dataGrid.InvalidateMeasure();
                 }
@@ -2656,7 +2656,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             set;
         }
 
-        private bool AreAllScrollingIndicatorsCollapsed
+        private bool AreAllScrollBarsCollapsed
         {
             get
             {
@@ -2665,7 +2665,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private bool AreBothScrollingIndicatorsVisible
+        private bool AreBothScrollBarsVisible
         {
             get
             {
@@ -2715,41 +2715,41 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private bool IsHorizontalScrollingIndicatorInteracting
+        private bool IsHorizontalScrollBarInteracting
         {
             get
             {
-                return _isHorizontalScrollingIndicatorInteracting;
+                return _isHorizontalScrollBarInteracting;
             }
 
             set
             {
-                if (_isHorizontalScrollingIndicatorInteracting != value)
+                if (_isHorizontalScrollBarInteracting != value)
                 {
-                    _isHorizontalScrollingIndicatorInteracting = value;
+                    _isHorizontalScrollBarInteracting = value;
 
                     if (_hScrollBar != null)
                     {
-                        if (_isHorizontalScrollingIndicatorInteracting)
+                        if (_isHorizontalScrollBarInteracting)
                         {
-                            // Prevent the vertical scrolling indicator from fading out while the user is interacting with the horizontal one.
-                            _keepScrollingIndicatorsShowing = true;
+                            // Prevent the vertical scroll bar from fading out while the user is interacting with the horizontal one.
+                            _keepScrollBarsShowing = true;
 
-                            ShowScrollingIndicators();
+                            ShowScrollBars();
                         }
                         else
                         {
-                            // Make the scrolling indicators fade out, after the normal delay.
-                            _keepScrollingIndicatorsShowing = false;
+                            // Make the scroll bars fade out, after the normal delay.
+                            _keepScrollBarsShowing = false;
 
-                            HideScrollingIndicators(true /*useTransitions*/);
+                            HideScrollBars(true /*useTransitions*/);
                         }
                     }
                 }
             }
         }
 
-        private bool IsHorizontalScrollbarOverCells
+        private bool IsHorizontalScrollBarOverCells
         {
             get
             {
@@ -2757,41 +2757,41 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private bool IsVerticalScrollingIndicatorInteracting
+        private bool IsVerticalScrollBarInteracting
         {
             get
             {
-                return _isVerticalScrollingIndicatorInteracting;
+                return _isVerticalScrollBarInteracting;
             }
 
             set
             {
-                if (_isVerticalScrollingIndicatorInteracting != value)
+                if (_isVerticalScrollBarInteracting != value)
                 {
-                    _isVerticalScrollingIndicatorInteracting = value;
+                    _isVerticalScrollBarInteracting = value;
 
                     if (_vScrollBar != null)
                     {
-                        if (_isVerticalScrollingIndicatorInteracting)
+                        if (_isVerticalScrollBarInteracting)
                         {
-                            // Prevent the horizontal scrolling indicator from fading out while the user is interacting with the vertical one.
-                            _keepScrollingIndicatorsShowing = true;
+                            // Prevent the horizontal scroll bar from fading out while the user is interacting with the vertical one.
+                            _keepScrollBarsShowing = true;
 
-                            ShowScrollingIndicators();
+                            ShowScrollBars();
                         }
                         else
                         {
-                            // Make the scrolling indicators fade out, after the normal delay.
-                            _keepScrollingIndicatorsShowing = false;
+                            // Make the scroll bars fade out, after the normal delay.
+                            _keepScrollBarsShowing = false;
 
-                            HideScrollingIndicators(true /*useTransitions*/);
+                            HideScrollBars(true /*useTransitions*/);
                         }
                     }
                 }
             }
         }
 
-        private bool IsVerticalScrollbarOverCells
+        private bool IsVerticalScrollBarOverCells
         {
             get
             {
@@ -3002,7 +3002,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         }
                     }
 
-                    // Update Scrollbar and display information
+                    // Update ScrollBar and display information
                     this.NegVerticalOffset = 0;
                     SetVerticalOffset(0);
                     ResetDisplayedRows();
@@ -3128,7 +3128,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             _measured = false;
 
             _hasNoIndicatorStateStoryboardCompletedHandler = false;
-            _keepScrollingIndicatorsShowing = false;
+            _keepScrollBarsShowing = false;
 
             if (_columnHeadersPresenter != null)
             {
@@ -3174,36 +3174,36 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (_hScrollBar != null)
             {
-                _isHorizontalScrollingIndicatorInteracting = false;
-                _isPointerOverHorizontalScrollingIndicator = false;
-                UnhookHorizontalScrollingIndicatorEvents();
+                _isHorizontalScrollBarInteracting = false;
+                _isPointerOverHorizontalScrollBar = false;
+                UnhookHorizontalScrollBarEvents();
             }
 
-            _hScrollBar = GetTemplateChild(DATAGRID_elementHorizontalScrollbarName) as ScrollBar;
+            _hScrollBar = GetTemplateChild(DATAGRID_elementHorizontalScrollBarName) as ScrollBar;
             if (_hScrollBar != null)
             {
                 _hScrollBar.IsTabStop = false;
                 _hScrollBar.Maximum = 0.0;
                 _hScrollBar.Orientation = Orientation.Horizontal;
                 _hScrollBar.Visibility = Visibility.Collapsed;
-                HookHorizontalScrollingIndicatorEvents();
+                HookHorizontalScrollBarEvents();
             }
 
             if (_vScrollBar != null)
             {
-                _isVerticalScrollingIndicatorInteracting = false;
-                _isPointerOverVerticalScrollingIndicator = false;
-                UnhookVerticalScrollingIndicatorEvents();
+                _isVerticalScrollBarInteracting = false;
+                _isPointerOverVerticalScrollBar = false;
+                UnhookVerticalScrollBarEvents();
             }
 
-            _vScrollBar = GetTemplateChild(DATAGRID_elementVerticalScrollbarName) as ScrollBar;
+            _vScrollBar = GetTemplateChild(DATAGRID_elementVerticalScrollBarName) as ScrollBar;
             if (_vScrollBar != null)
             {
                 _vScrollBar.IsTabStop = false;
                 _vScrollBar.Maximum = 0.0;
                 _vScrollBar.Orientation = Orientation.Vertical;
                 _vScrollBar.Visibility = Visibility.Collapsed;
-                HookVerticalScrollingIndicatorEvents();
+                HookVerticalScrollBarEvents();
             }
 
             _topLeftCornerHeader = GetTemplateChild(DATAGRID_elementTopLeftCornerHeaderName) as ContentControl;
@@ -3292,7 +3292,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 }
             }
 
-            HideScrollingIndicators(false /*useTransitions*/);
+            HideScrollBars(false /*useTransitions*/);
 
             UpdateDisabledVisual();
         }
@@ -3820,11 +3820,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (scrollEventType == ScrollEventType.EndScroll)
             {
-                this.IsHorizontalScrollingIndicatorInteracting = false;
+                this.IsHorizontalScrollBarInteracting = false;
             }
             else if (scrollEventType == ScrollEventType.ThumbTrack)
             {
-                this.IsHorizontalScrollingIndicatorInteracting = true;
+                this.IsHorizontalScrollBarInteracting = true;
             }
 
             if (_horizontalScrollChangesIgnored > 0)
@@ -4082,11 +4082,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             if (scrollEventType == ScrollEventType.EndScroll)
             {
-                this.IsVerticalScrollingIndicatorInteracting = false;
+                this.IsVerticalScrollBarInteracting = false;
             }
             else if (scrollEventType == ScrollEventType.ThumbTrack)
             {
-                this.IsVerticalScrollingIndicatorInteracting = true;
+                this.IsVerticalScrollBarInteracting = true;
             }
 
             if (_verticalScrollChangesIgnored > 0)
@@ -4426,8 +4426,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 double cellsHeight = this.CellsHeight;
                 double edgedRowsHeightCalculated = this.EdgedRowsHeightCalculated;
                 UpdateVerticalScrollBar(
-                    edgedRowsHeightCalculated > cellsHeight /*needVertScrollbar*/,
-                    this.VerticalScrollBarVisibility == ScrollBarVisibility.Visible /*forceVertScrollbar*/,
+                    edgedRowsHeightCalculated > cellsHeight /*needVertScrollBar*/,
+                    this.VerticalScrollBarVisibility == ScrollBarVisibility.Visible /*forceVertScrollBar*/,
                     edgedRowsHeightCalculated,
                     cellsHeight);
             }
@@ -4518,30 +4518,30 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         // {
         //    if (UISettingsHelper.AreSettingsAutoHidingScrollBars)
         //    {
-        //        SwitchScrollingIndicatorsVisualStates(_proposedScrollingIndicatorsState, _proposedScrollingSeparatorState, true /*useTransitions*/);
+        //        SwitchScrollBarsVisualStates(_proposedScrollBarsState, _proposedScrollBarsSeparatorState, true /*useTransitions*/);
         //    }
         //    else
         //    {
-        //        if (this.AreBothScrollingIndicatorsVisible)
+        //        if (this.AreBothScrollBarsVisible)
         //        {
         //            if (UISettingsHelper.AreSettingsEnablingAnimations)
         //            {
-        //                SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpanded : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+        //                SwitchScrollBarsVisualStates(ScrollBarVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollBarsSeparatorVisualState.SeparatorExpanded : ScrollBarsSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
         //            }
         //            else
         //            {
-        //                SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+        //                SwitchScrollBarsVisualStates(ScrollBarVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollBarsSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollBarsSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
         //            }
         //        }
         //        else
         //        {
         //            if (UISettingsHelper.AreSettingsEnablingAnimations)
         //            {
-        //                SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicator, ScrollingSeparatorVisualState.SeparatorCollapsed, true/*useTransitions*/);
+        //                SwitchScrollBarsVisualStates(ScrollBarVisualState.MouseIndicator, ScrollBarsSeparatorVisualState.SeparatorCollapsed, true/*useTransitions*/);
         //            }
         //            else
         //            {
-        //                SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicator, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+        //                SwitchScrollBarsVisualStates(ScrollBarVisualState.MouseIndicator, this.IsEnabled ? ScrollBarsSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollBarsSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
         //            }
         //        }
         //    }
@@ -4785,57 +4785,57 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 // TODO  when it first appears after adding a row when this perf improvement is turned on.
             }
 
-            bool isHorizontalScrollbarOverCells = this.IsHorizontalScrollbarOverCells;
-            bool isVerticalScrollbarOverCells = this.IsVerticalScrollbarOverCells;
+            bool isHorizontalScrollBarOverCells = this.IsHorizontalScrollBarOverCells;
+            bool isVerticalScrollBarOverCells = this.IsVerticalScrollBarOverCells;
 
             double cellsWidth = this.CellsWidth;
             double cellsHeight = this.CellsHeight;
 
-            bool allowHorizScrollbar = false;
-            bool forceHorizScrollbar = false;
+            bool allowHorizScrollBar = false;
+            bool forceHorizScrollBar = false;
             double horizScrollBarHeight = 0;
             if (_hScrollBar != null)
             {
-                forceHorizScrollbar = this.HorizontalScrollBarVisibility == ScrollBarVisibility.Visible;
-                allowHorizScrollbar = forceHorizScrollbar || (this.ColumnsInternal.VisibleColumnCount > 0 &&
+                forceHorizScrollBar = this.HorizontalScrollBarVisibility == ScrollBarVisibility.Visible;
+                allowHorizScrollBar = forceHorizScrollBar || (this.ColumnsInternal.VisibleColumnCount > 0 &&
                     this.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled &&
                     this.HorizontalScrollBarVisibility != ScrollBarVisibility.Hidden);
 
                 // Compensate if the horizontal scrollbar is already taking up space
-                if (!forceHorizScrollbar && _hScrollBar.Visibility == Visibility.Visible)
+                if (!forceHorizScrollBar && _hScrollBar.Visibility == Visibility.Visible)
                 {
-                    if (!isHorizontalScrollbarOverCells)
+                    if (!isHorizontalScrollBarOverCells)
                     {
                         cellsHeight += _hScrollBar.DesiredSize.Height;
                     }
                 }
 
-                if (!isHorizontalScrollbarOverCells)
+                if (!isHorizontalScrollBarOverCells)
                 {
                     horizScrollBarHeight = _hScrollBar.Height + _hScrollBar.Margin.Top + _hScrollBar.Margin.Bottom;
                 }
             }
 
-            bool allowVertScrollbar = false;
-            bool forceVertScrollbar = false;
+            bool allowVertScrollBar = false;
+            bool forceVertScrollBar = false;
             double vertScrollBarWidth = 0;
             if (_vScrollBar != null)
             {
-                forceVertScrollbar = this.VerticalScrollBarVisibility == ScrollBarVisibility.Visible;
-                allowVertScrollbar = forceVertScrollbar || (this.ColumnsItemsInternal.Count > 0 &&
+                forceVertScrollBar = this.VerticalScrollBarVisibility == ScrollBarVisibility.Visible;
+                allowVertScrollBar = forceVertScrollBar || (this.ColumnsItemsInternal.Count > 0 &&
                     this.VerticalScrollBarVisibility != ScrollBarVisibility.Disabled &&
                     this.VerticalScrollBarVisibility != ScrollBarVisibility.Hidden);
 
                 // Compensate if the vertical scrollbar is already taking up space
-                if (!forceVertScrollbar && _vScrollBar.Visibility == Visibility.Visible)
+                if (!forceVertScrollBar && _vScrollBar.Visibility == Visibility.Visible)
                 {
-                    if (!isVerticalScrollbarOverCells)
+                    if (!isVerticalScrollBarOverCells)
                     {
                         cellsWidth += _vScrollBar.DesiredSize.Width;
                     }
                 }
 
-                if (!isVerticalScrollbarOverCells)
+                if (!isVerticalScrollBarOverCells)
                 {
                     vertScrollBarWidth = _vScrollBar.Width + _vScrollBar.Margin.Left + _vScrollBar.Margin.Right;
                 }
@@ -4843,8 +4843,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             // Now cellsWidth is the width potentially available for displaying data cells.
             // Now cellsHeight is the height potentially available for displaying data cells.
-            bool needHorizScrollbar = false;
-            bool needVertScrollbar = false;
+            bool needHorizScrollBar = false;
+            bool needVertScrollBar = false;
 
             double totalVisibleWidth = this.ColumnsInternal.VisibleEdgedColumnsWidth;
             double totalVisibleFrozenWidth = this.ColumnsInternal.GetVisibleFrozenEdgedColumnsWidth();
@@ -4852,11 +4852,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             UpdateDisplayedRows(this.DisplayData.FirstScrollingSlot, this.CellsHeight);
             double totalVisibleHeight = this.EdgedRowsHeightCalculated;
 
-            if (!forceHorizScrollbar && !forceVertScrollbar)
+            if (!forceHorizScrollBar && !forceVertScrollBar)
             {
-                bool needHorizScrollbarWithoutVertScrollbar = false;
+                bool needHorizScrollBarWithoutVertScrollBar = false;
 
-                if (allowHorizScrollbar &&
+                if (allowHorizScrollBar &&
                     DoubleUtil.GreaterThan(totalVisibleWidth, cellsWidth) &&
                     DoubleUtil.LessThan(totalVisibleFrozenWidth, cellsWidth) &&
                     DoubleUtil.LessThanOrClose(horizScrollBarHeight, cellsHeight))
@@ -4864,20 +4864,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     double oldDataHeight = cellsHeight;
                     cellsHeight -= horizScrollBarHeight;
                     Debug.Assert(cellsHeight >= 0, "Expected positive cellsHeight.");
-                    needHorizScrollbarWithoutVertScrollbar = needHorizScrollbar = true;
+                    needHorizScrollBarWithoutVertScrollBar = needHorizScrollBar = true;
 
                     if (vertScrollBarWidth > 0 &&
-                        allowVertScrollbar &&
+                        allowVertScrollBar &&
                         (DoubleUtil.LessThanOrClose(totalVisibleWidth - cellsWidth, vertScrollBarWidth) || DoubleUtil.LessThanOrClose(cellsWidth - totalVisibleFrozenWidth, vertScrollBarWidth)))
                     {
                         // Would we still need a horizontal scrollbar without the vertical one?
                         UpdateDisplayedRows(this.DisplayData.FirstScrollingSlot, cellsHeight);
                         if (this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount)
                         {
-                            needHorizScrollbar = DoubleUtil.LessThan(totalVisibleFrozenWidth, cellsWidth - vertScrollBarWidth);
+                            needHorizScrollBar = DoubleUtil.LessThan(totalVisibleFrozenWidth, cellsWidth - vertScrollBarWidth);
                         }
 
-                        if (!needHorizScrollbar)
+                        if (!needHorizScrollBar)
                         {
                             // Restore old data height because turns out a horizontal scroll bar wouldn't make sense
                             cellsHeight = oldDataHeight;
@@ -4891,14 +4891,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 int firstScrollingSlot = this.DisplayData.FirstScrollingSlot;
 
                 UpdateDisplayedRows(firstScrollingSlot, cellsHeight);
-                if (allowVertScrollbar &&
+                if (allowVertScrollBar &&
                     DoubleUtil.GreaterThan(cellsHeight, 0) &&
                     DoubleUtil.LessThanOrClose(vertScrollBarWidth, cellsWidth) &&
                     this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount)
                 {
                     cellsWidth -= vertScrollBarWidth;
                     Debug.Assert(cellsWidth >= 0, "Expected positive cellsWidth.");
-                    needVertScrollbar = true;
+                    needVertScrollBar = true;
                 }
 
                 this.DisplayData.FirstDisplayedScrollingCol = ComputeFirstVisibleScrollingColumn();
@@ -4907,8 +4907,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 ComputeDisplayedColumns();
 
                 if ((vertScrollBarWidth > 0 || horizScrollBarHeight > 0) &&
-                    allowHorizScrollbar &&
-                    needVertScrollbar && !needHorizScrollbar &&
+                    allowHorizScrollBar &&
+                    needVertScrollBar && !needHorizScrollBar &&
                     DoubleUtil.GreaterThan(totalVisibleWidth, cellsWidth) &&
                     DoubleUtil.LessThan(totalVisibleFrozenWidth, cellsWidth) &&
                     DoubleUtil.LessThanOrClose(horizScrollBarHeight, cellsHeight))
@@ -4916,7 +4916,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     cellsWidth += vertScrollBarWidth;
                     cellsHeight -= horizScrollBarHeight;
                     Debug.Assert(cellsHeight >= 0, "Expected positive cellsHeight.");
-                    needVertScrollbar = false;
+                    needVertScrollBar = false;
 
                     UpdateDisplayedRows(firstScrollingSlot, cellsHeight);
                     if (cellsHeight > 0 &&
@@ -4925,22 +4925,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         cellsWidth -= vertScrollBarWidth;
                         Debug.Assert(cellsWidth >= 0, "Expected positive cellsWidth.");
-                        needVertScrollbar = true;
+                        needVertScrollBar = true;
                     }
 
-                    if (needVertScrollbar)
+                    if (needVertScrollBar)
                     {
-                        needHorizScrollbar = true;
+                        needHorizScrollBar = true;
                     }
                     else
                     {
-                        needHorizScrollbar = needHorizScrollbarWithoutVertScrollbar;
+                        needHorizScrollBar = needHorizScrollBarWithoutVertScrollBar;
                     }
                 }
             }
-            else if (forceHorizScrollbar && !forceVertScrollbar)
+            else if (forceHorizScrollBar && !forceVertScrollBar)
             {
-                if (allowVertScrollbar)
+                if (allowVertScrollBar)
                 {
                     if (cellsHeight > 0 &&
                         DoubleUtil.LessThanOrClose(vertScrollBarWidth, cellsWidth) &&
@@ -4948,18 +4948,18 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         cellsWidth -= vertScrollBarWidth;
                         Debug.Assert(cellsWidth >= 0, "Expected positive cellsWidth.");
-                        needVertScrollbar = true;
+                        needVertScrollBar = true;
                     }
 
                     this.DisplayData.FirstDisplayedScrollingCol = ComputeFirstVisibleScrollingColumn();
                     ComputeDisplayedColumns();
                 }
 
-                needHorizScrollbar = totalVisibleWidth > cellsWidth && totalVisibleFrozenWidth < cellsWidth;
+                needHorizScrollBar = totalVisibleWidth > cellsWidth && totalVisibleFrozenWidth < cellsWidth;
             }
-            else if (!forceHorizScrollbar && forceVertScrollbar)
+            else if (!forceHorizScrollBar && forceVertScrollBar)
             {
-                if (allowHorizScrollbar)
+                if (allowHorizScrollBar)
                 {
                     if (cellsWidth > 0 &&
                         DoubleUtil.LessThanOrClose(horizScrollBarHeight, cellsHeight) &&
@@ -4968,7 +4968,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     {
                         cellsHeight -= horizScrollBarHeight;
                         Debug.Assert(cellsHeight >= 0, "Expected positive cellsHeight.");
-                        needHorizScrollbar = true;
+                        needHorizScrollBar = true;
                         UpdateDisplayedRows(this.DisplayData.FirstScrollingSlot, cellsHeight);
                     }
 
@@ -4976,22 +4976,22 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     ComputeDisplayedColumns();
                 }
 
-                needVertScrollbar = this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount;
+                needVertScrollBar = this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount;
             }
             else
             {
-                Debug.Assert(forceHorizScrollbar, "Expected forceHorizScrollbar is true.");
-                Debug.Assert(forceVertScrollbar, "Expected forceVertScrollbar is true.");
-                Debug.Assert(allowHorizScrollbar, "Expected allowHorizScrollbar is true.");
-                Debug.Assert(allowVertScrollbar, "Expected allowVertScrollbar is true.");
+                Debug.Assert(forceHorizScrollBar, "Expected forceHorizScrollBar is true.");
+                Debug.Assert(forceVertScrollBar, "Expected forceVertScrollBar is true.");
+                Debug.Assert(allowHorizScrollBar, "Expected allowHorizScrollBar is true.");
+                Debug.Assert(allowVertScrollBar, "Expected allowVertScrollBar is true.");
                 this.DisplayData.FirstDisplayedScrollingCol = ComputeFirstVisibleScrollingColumn();
                 ComputeDisplayedColumns();
-                needVertScrollbar = this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount;
-                needHorizScrollbar = totalVisibleWidth > cellsWidth && totalVisibleFrozenWidth < cellsWidth;
+                needVertScrollBar = this.DisplayData.NumTotallyDisplayedScrollingElements != this.VisibleSlotCount;
+                needHorizScrollBar = totalVisibleWidth > cellsWidth && totalVisibleFrozenWidth < cellsWidth;
             }
 
-            UpdateHorizontalScrollBar(needHorizScrollbar, forceHorizScrollbar, totalVisibleWidth, totalVisibleFrozenWidth, cellsWidth);
-            UpdateVerticalScrollBar(needVertScrollbar, forceVertScrollbar, totalVisibleHeight, cellsHeight);
+            UpdateHorizontalScrollBar(needHorizScrollBar, forceHorizScrollBar, totalVisibleWidth, totalVisibleFrozenWidth, cellsWidth);
+            UpdateVerticalScrollBar(needVertScrollBar, forceVertScrollBar, totalVisibleHeight, cellsHeight);
 
             if (_topRightCornerHeader != null)
             {
@@ -5395,7 +5395,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             _preferMouseIndicators = _focusInputDevice == FocusInputDeviceKind.Mouse || _focusInputDevice == FocusInputDeviceKind.Pen;
 
-            ShowScrollingIndicators();
+            ShowScrollBars();
 
             // If the DataGrid itself got focus, we actually want the automation focus to be on the current element
             if (e.OriginalSource == this && AutomationPeer.ListenerExists(AutomationEvents.AutomationFocusChanged))
@@ -5414,7 +5414,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
             if (!this.IsEnabled)
             {
-                HideScrollingIndicators(true /*useTransitions*/);
+                HideScrollBars(true /*useTransitions*/);
             }
         }
 
@@ -5541,7 +5541,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 // Mouse/Pen inputs dominate. If touch panning indicators are shown, switch to mouse indicators.
                 _preferMouseIndicators = true;
-                ShowScrollingIndicators();
+                ShowScrollBars();
             }
         }
 
@@ -5550,11 +5550,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch)
             {
                 // Mouse/Pen inputs dominate. If touch panning indicators are shown, switch to mouse indicators.
-                _isPointerOverHorizontalScrollingIndicator = false;
-                _isPointerOverVerticalScrollingIndicator = false;
+                _isPointerOverHorizontalScrollBar = false;
+                _isPointerOverVerticalScrollBar = false;
                 _preferMouseIndicators = true;
-                ShowScrollingIndicators();
-                HideScrollingIndicatorsAfterDelay();
+                ShowScrollBars();
+                HideScrollBarsAfterDelay();
             }
         }
 
@@ -5570,13 +5570,13 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 // Mouse/Pen inputs dominate. If touch panning indicators are shown, switch to mouse indicators.
                 _preferMouseIndicators = true;
-                ShowScrollingIndicators();
+                ShowScrollBars();
 
                 if (!UISettingsHelper.AreSettingsEnablingAnimations &&
-                    _hideScrollingIndicatorsTimer != null &&
-                    (_isPointerOverHorizontalScrollingIndicator || _isPointerOverVerticalScrollingIndicator))
+                    _hideScrollBarsTimer != null &&
+                    (_isPointerOverHorizontalScrollBar || _isPointerOverVerticalScrollBar))
                 {
-                    StopHideScrollingIndicatorsTimer();
+                    StopHideScrollBarsTimer();
                 }
             }
         }
@@ -5588,14 +5588,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 return;
             }
 
-            // Show the scrolling indicators as soon as a pointer is pressed on the DataGrid.
-            ShowScrollingIndicators();
+            // Show the scroll bars as soon as a pointer is pressed on the DataGrid.
+            ShowScrollBars();
         }
 
         private void DataGrid_Unloaded(object sender, RoutedEventArgs e)
         {
             _showingMouseIndicators = false;
-            _keepScrollingIndicatorsShowing = false;
+            _keepScrollBarsShowing = false;
         }
 
 #if FEATURE_VALIDATION
@@ -6123,49 +6123,49 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             return 0;
         }
 
-        private void HideScrollingIndicators(bool useTransitions)
+        private void HideScrollBars(bool useTransitions)
         {
-            if (!_keepScrollingIndicatorsShowing)
+            if (!_keepScrollBarsShowing)
             {
-                _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.NoIndicator;
-                _proposedScrollingSeparatorState = UISettingsHelper.AreSettingsEnablingAnimations ? ScrollingSeparatorVisualState.SeparatorCollapsed : ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation;
+                _proposedScrollBarsState = ScrollBarVisualState.NoIndicator;
+                _proposedScrollBarsSeparatorState = UISettingsHelper.AreSettingsEnablingAnimations ? ScrollBarsSeparatorVisualState.SeparatorCollapsed : ScrollBarsSeparatorVisualState.SeparatorCollapsedWithoutAnimation;
                 if (UISettingsHelper.AreSettingsAutoHidingScrollBars)
                 {
-                    SwitchScrollingIndicatorsVisualStates(_proposedScrollingIndicatorsState, _proposedScrollingSeparatorState, useTransitions);
+                    SwitchScrollBarsVisualStates(_proposedScrollBarsState, _proposedScrollBarsSeparatorState, useTransitions);
                 }
             }
         }
 
-        private void HideScrollingIndicatorsAfterDelay()
+        private void HideScrollBarsAfterDelay()
         {
-            if (!_keepScrollingIndicatorsShowing)
+            if (!_keepScrollBarsShowing)
             {
-                DispatcherTimer hideScrollingIndicatorsTimer = null;
+                DispatcherTimer hideScrollBarsTimer = null;
 
-                if (_hideScrollingIndicatorsTimer != null)
+                if (_hideScrollBarsTimer != null)
                 {
-                    hideScrollingIndicatorsTimer = _hideScrollingIndicatorsTimer;
-                    if (hideScrollingIndicatorsTimer.IsEnabled)
+                    hideScrollBarsTimer = _hideScrollBarsTimer;
+                    if (hideScrollBarsTimer.IsEnabled)
                     {
-                        hideScrollingIndicatorsTimer.Stop();
+                        hideScrollBarsTimer.Stop();
                     }
                 }
                 else
                 {
-                    hideScrollingIndicatorsTimer = new DispatcherTimer();
-                    hideScrollingIndicatorsTimer.Interval = TimeSpan.FromMilliseconds(DATAGRID_noScrollingIndicatorCountdownMs);
-                    hideScrollingIndicatorsTimer.Tick += HideScrollingIndicatorsTimerTick;
-                    _hideScrollingIndicatorsTimer = hideScrollingIndicatorsTimer;
+                    hideScrollBarsTimer = new DispatcherTimer();
+                    hideScrollBarsTimer.Interval = TimeSpan.FromMilliseconds(DATAGRID_noScrollBarCountdownMs);
+                    hideScrollBarsTimer.Tick += HideScrollBarsTimerTick;
+                    _hideScrollBarsTimer = hideScrollBarsTimer;
                 }
 
-                hideScrollingIndicatorsTimer.Start();
+                hideScrollBarsTimer.Start();
             }
         }
 
-        private void HideScrollingIndicatorsTimerTick(object sender, object e)
+        private void HideScrollBarsTimerTick(object sender, object e)
         {
-            StopHideScrollingIndicatorsTimer();
-            HideScrollingIndicators(true /*useTransitions*/);
+            StopHideScrollBarsTimer();
+            HideScrollBars(true /*useTransitions*/);
         }
 
         private void HookDataGridEvents()
@@ -6183,7 +6183,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.Unloaded += new RoutedEventHandler(DataGrid_Unloaded);
         }
 
-        private void HookHorizontalScrollingIndicatorEvents()
+        private void HookHorizontalScrollBarEvents()
         {
             if (_hScrollBar != null)
             {
@@ -6193,7 +6193,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private void HookVerticalScrollingIndicatorEvents()
+        private void HookVerticalScrollBarEvents()
         {
             if (_vScrollBar != null)
             {
@@ -6205,34 +6205,34 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void HorizontalScrollBar_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            _isPointerOverHorizontalScrollingIndicator = true;
+            _isPointerOverHorizontalScrollBar = true;
 
             if (!UISettingsHelper.AreSettingsEnablingAnimations)
             {
-                HideScrollingIndicatorsAfterDelay();
+                HideScrollBarsAfterDelay();
             }
         }
 
         private void HorizontalScrollBar_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            _isPointerOverHorizontalScrollingIndicator = false;
-            HideScrollingIndicatorsAfterDelay();
+            _isPointerOverHorizontalScrollBar = false;
+            HideScrollBarsAfterDelay();
         }
 
         private void VerticalScrollBar_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            _isPointerOverVerticalScrollingIndicator = true;
+            _isPointerOverVerticalScrollBar = true;
 
             if (!UISettingsHelper.AreSettingsEnablingAnimations)
             {
-                HideScrollingIndicatorsAfterDelay();
+                HideScrollBarsAfterDelay();
             }
         }
 
         private void VerticalScrollBar_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            _isPointerOverVerticalScrollingIndicator = false;
-            HideScrollingIndicatorsAfterDelay();
+            _isPointerOverVerticalScrollBar = false;
+            HideScrollBarsAfterDelay();
         }
 
         private void HorizontalScrollBar_Scroll(object sender, ScrollEventArgs e)
@@ -6242,21 +6242,21 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private void IndicatorStateStoryboard_Completed(object sender, object e)
         {
-            // If the cursor is currently directly over either scrolling indicator then do not automatically hide the indicators
-            if (!_keepScrollingIndicatorsShowing &&
-                !_isPointerOverVerticalScrollingIndicator &&
-                !_isPointerOverHorizontalScrollingIndicator)
+            // If the cursor is currently directly over either scroll bar then do not automatically hide the indicators.
+            if (!_keepScrollBarsShowing &&
+                !_isPointerOverVerticalScrollBar &&
+                !_isPointerOverHorizontalScrollBar)
             {
                 // Go to the NoIndicator state using transitions.
                 if (UISettingsHelper.AreSettingsEnablingAnimations)
                 {
                     // By default there is a delay before the NoIndicator state actually shows.
-                    HideScrollingIndicators(true /*useTransitions*/);
+                    HideScrollBars(true /*useTransitions*/);
                 }
                 else
                 {
-                    // Since OS animations are turned off, use a timer to delay the indicators' hiding.
-                    HideScrollingIndicatorsAfterDelay();
+                    // Since OS animations are turned off, use a timer to delay the scroll bars' hiding.
+                    HideScrollBarsAfterDelay();
                 }
             }
         }
@@ -7856,10 +7856,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 _hScrollBar.Value = newHorizontalOffset;
 
-                // Unless the control is still loading, show the scrolling indicators when an offset changes. Keep the existing indicator type.
+                // Unless the control is still loading, show the scroll bars when an offset changes. Keep the existing indicator type.
                 if (VisualTreeHelper.GetParent(this) != null)
                 {
-                    ShowScrollingIndicators();
+                    ShowScrollBars();
                 }
             }
         }
@@ -7872,10 +7872,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             {
                 _vScrollBar.Value = _verticalOffset;
 
-                // Unless the control is still loading, show the scrolling indicators when an offset changes. Keep the existing indicator type.
+                // Unless the control is still loading, show the scroll bars when an offset changes. Keep the existing indicator type.
                 if (VisualTreeHelper.GetParent(this) != null)
                 {
-                    ShowScrollingIndicators();
+                    ShowScrollBars();
                 }
             }
         }
@@ -7898,109 +7898,109 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 #endif
 
-        private void ShowScrollingIndicators()
+        private void ShowScrollBars()
         {
-            if (this.AreAllScrollingIndicatorsCollapsed)
+            if (this.AreAllScrollBarsCollapsed)
             {
-                _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.NoIndicator;
-                _proposedScrollingSeparatorState = ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation;
-                SwitchScrollingIndicatorsVisualStates(_proposedScrollingIndicatorsState, _proposedScrollingSeparatorState, false /*useTransitions*/);
+                _proposedScrollBarsState = ScrollBarVisualState.NoIndicator;
+                _proposedScrollBarsSeparatorState = ScrollBarsSeparatorVisualState.SeparatorCollapsedWithoutAnimation;
+                SwitchScrollBarsVisualStates(_proposedScrollBarsState, _proposedScrollBarsSeparatorState, false /*useTransitions*/);
             }
             else
             {
-                if (_hideScrollingIndicatorsTimer != null && _hideScrollingIndicatorsTimer.IsEnabled)
+                if (_hideScrollBarsTimer != null && _hideScrollBarsTimer.IsEnabled)
                 {
-                    _hideScrollingIndicatorsTimer.Stop();
-                    _hideScrollingIndicatorsTimer.Start();
+                    _hideScrollBarsTimer.Stop();
+                    _hideScrollBarsTimer.Start();
                 }
 
                 // Mouse indicators dominate if they are already showing or if we have set the flag to prefer them.
                 if (_preferMouseIndicators || _showingMouseIndicators)
                 {
-                    if (this.AreBothScrollingIndicatorsVisible && (_isPointerOverHorizontalScrollingIndicator || _isPointerOverVerticalScrollingIndicator))
+                    if (this.AreBothScrollBarsVisible && (_isPointerOverHorizontalScrollBar || _isPointerOverVerticalScrollBar))
                     {
-                        _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.MouseIndicatorFull;
+                        _proposedScrollBarsState = ScrollBarVisualState.MouseIndicatorFull;
                     }
                     else
                     {
-                        _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.MouseIndicator;
+                        _proposedScrollBarsState = ScrollBarVisualState.MouseIndicator;
                     }
 
                     _showingMouseIndicators = true;
                 }
                 else
                 {
-                    _proposedScrollingIndicatorsState = ScrollingIndicatorVisualState.TouchIndicator;
+                    _proposedScrollBarsState = ScrollBarVisualState.TouchIndicator;
                 }
 
-                // Select the proper state for the scrolling separator square within the GroupScrollingSeparator group:
+                // Select the proper state for the scroll bars separator square within the GroupScrollBarsSeparator group:
                 if (UISettingsHelper.AreSettingsEnablingAnimations)
                 {
-                    // When OS animations are turned on, show the square when a scrolling indicator is shown unless the DataGrid is disabled, using an animation.
-                    _proposedScrollingSeparatorState =
+                    // When OS animations are turned on, show the square when a scroll bar is shown unless the DataGrid is disabled, using an animation.
+                    _proposedScrollBarsSeparatorState =
                         this.IsEnabled &&
-                        _proposedScrollingIndicatorsState == ScrollingIndicatorVisualState.MouseIndicatorFull ?
-                        ScrollingSeparatorVisualState.SeparatorExpanded : ScrollingSeparatorVisualState.SeparatorCollapsed;
+                        _proposedScrollBarsState == ScrollBarVisualState.MouseIndicatorFull ?
+                        ScrollBarsSeparatorVisualState.SeparatorExpanded : ScrollBarsSeparatorVisualState.SeparatorCollapsed;
                 }
                 else
                 {
-                    // OS animations are turned off. Show or hide the square depending on the presence of a scrolling indicators, without an animation.
-                    // When the DataGrid is disabled, hide the square in sync with the scrolling indicator(s).
-                    if (_proposedScrollingIndicatorsState == ScrollingIndicatorVisualState.MouseIndicatorFull)
+                    // OS animations are turned off. Show or hide the square depending on the presence of a scroll bars, without an animation.
+                    // When the DataGrid is disabled, hide the square in sync with the scroll bar(s).
+                    if (_proposedScrollBarsState == ScrollBarVisualState.MouseIndicatorFull)
                     {
-                        _proposedScrollingSeparatorState = this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed;
+                        _proposedScrollBarsSeparatorState = this.IsEnabled ? ScrollBarsSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollBarsSeparatorVisualState.SeparatorCollapsed;
                     }
                     else
                     {
-                        _proposedScrollingSeparatorState = this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed;
+                        _proposedScrollBarsSeparatorState = this.IsEnabled ? ScrollBarsSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollBarsSeparatorVisualState.SeparatorCollapsed;
                     }
                 }
 
                 if (!UISettingsHelper.AreSettingsAutoHidingScrollBars)
                 {
-                    if (this.AreBothScrollingIndicatorsVisible)
+                    if (this.AreBothScrollBarsVisible)
                     {
                         if (UISettingsHelper.AreSettingsEnablingAnimations)
                         {
-                            SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpanded : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+                            SwitchScrollBarsVisualStates(ScrollBarVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollBarsSeparatorVisualState.SeparatorExpanded : ScrollBarsSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
                         }
                         else
                         {
-                            SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+                            SwitchScrollBarsVisualStates(ScrollBarVisualState.MouseIndicatorFull, this.IsEnabled ? ScrollBarsSeparatorVisualState.SeparatorExpandedWithoutAnimation : ScrollBarsSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
                         }
                     }
                     else
                     {
                         if (UISettingsHelper.AreSettingsEnablingAnimations)
                         {
-                            SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicator, ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+                            SwitchScrollBarsVisualStates(ScrollBarVisualState.MouseIndicator, ScrollBarsSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
                         }
                         else
                         {
-                            SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState.MouseIndicator, this.IsEnabled ? ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollingSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
+                            SwitchScrollBarsVisualStates(ScrollBarVisualState.MouseIndicator, this.IsEnabled ? ScrollBarsSeparatorVisualState.SeparatorCollapsedWithoutAnimation : ScrollBarsSeparatorVisualState.SeparatorCollapsed, true /*useTransitions*/);
                         }
                     }
                 }
                 else
                 {
-                    SwitchScrollingIndicatorsVisualStates(_proposedScrollingIndicatorsState, _proposedScrollingSeparatorState, true /*useTransitions*/);
+                    SwitchScrollBarsVisualStates(_proposedScrollBarsState, _proposedScrollBarsSeparatorState, true /*useTransitions*/);
                 }
             }
         }
 
-        private void StopHideScrollingIndicatorsTimer()
+        private void StopHideScrollBarsTimer()
         {
-            if (_hideScrollingIndicatorsTimer != null && _hideScrollingIndicatorsTimer.IsEnabled)
+            if (_hideScrollBarsTimer != null && _hideScrollBarsTimer.IsEnabled)
             {
-                _hideScrollingIndicatorsTimer.Stop();
+                _hideScrollBarsTimer.Stop();
             }
         }
 
-        private void SwitchScrollingIndicatorsVisualStates(ScrollingIndicatorVisualState indicatorState, ScrollingSeparatorVisualState separatorState, bool useTransitions)
+        private void SwitchScrollBarsVisualStates(ScrollBarVisualState scrollBarsState, ScrollBarsSeparatorVisualState separatorState, bool useTransitions)
         {
-            switch (indicatorState)
+            switch (scrollBarsState)
             {
-                case ScrollingIndicatorVisualState.NoIndicator:
+                case ScrollBarVisualState.NoIndicator:
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateNoIndicator);
 
                     if (!_hasNoIndicatorStateStoryboardCompletedHandler)
@@ -8009,35 +8009,35 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                     }
 
                     break;
-                case ScrollingIndicatorVisualState.TouchIndicator:
+                case ScrollBarVisualState.TouchIndicator:
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateTouchIndicator);
                     break;
-                case ScrollingIndicatorVisualState.MouseIndicator:
+                case ScrollBarVisualState.MouseIndicator:
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateMouseIndicator);
                     break;
-                case ScrollingIndicatorVisualState.MouseIndicatorFull:
+                case ScrollBarVisualState.MouseIndicatorFull:
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateMouseIndicatorFull);
                     break;
             }
 
             switch (separatorState)
             {
-                case ScrollingSeparatorVisualState.SeparatorCollapsed:
+                case ScrollBarsSeparatorVisualState.SeparatorCollapsed:
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateSeparatorCollapsed);
                     break;
-                case ScrollingSeparatorVisualState.SeparatorExpanded:
+                case ScrollBarsSeparatorVisualState.SeparatorExpanded:
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateSeparatorExpanded);
                     break;
-                case ScrollingSeparatorVisualState.SeparatorExpandedWithoutAnimation:
+                case ScrollBarsSeparatorVisualState.SeparatorExpandedWithoutAnimation:
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateSeparatorExpandedWithoutAnimation);
                     break;
-                case ScrollingSeparatorVisualState.SeparatorCollapsedWithoutAnimation:
+                case ScrollBarsSeparatorVisualState.SeparatorCollapsedWithoutAnimation:
                     VisualStates.GoToState(this, useTransitions, VisualStates.StateSeparatorCollapsedWithoutAnimation);
                     break;
             }
         }
 
-        private void UnhookHorizontalScrollingIndicatorEvents()
+        private void UnhookHorizontalScrollBarEvents()
         {
             if (_hScrollBar != null)
             {
@@ -8047,7 +8047,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private void UnhookVerticalScrollingIndicatorEvents()
+        private void UnhookVerticalScrollBarEvents()
         {
             if (_vScrollBar != null)
             {
@@ -8099,11 +8099,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private void UpdateHorizontalScrollBar(bool needHorizScrollbar, bool forceHorizScrollbar, double totalVisibleWidth, double totalVisibleFrozenWidth, double cellsWidth)
+        private void UpdateHorizontalScrollBar(bool needHorizScrollBar, bool forceHorizScrollBar, double totalVisibleWidth, double totalVisibleFrozenWidth, double cellsWidth)
         {
             if (_hScrollBar != null)
             {
-                if (needHorizScrollbar || forceHorizScrollbar)
+                if (needHorizScrollBar || forceHorizScrollBar)
                 {
                     // ..........viewportSize
                     //         v---v
@@ -8117,7 +8117,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                     // always zero
                     _hScrollBar.Minimum = 0;
-                    if (needHorizScrollbar)
+                    if (needHorizScrollBar)
                     {
                         // maximum travel distance -- not the total width
                         _hScrollBar.Maximum = totalVisibleWidth - cellsWidth;
@@ -8153,7 +8153,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         _hScrollBar.Visibility = Visibility.Visible;
                         _ignoreNextScrollBarsLayout = true;
 
-                        if (!this.IsHorizontalScrollbarOverCells && _hScrollBar.DesiredSize.Height == 0)
+                        if (!this.IsHorizontalScrollBarOverCells && _hScrollBar.DesiredSize.Height == 0)
                         {
                             // We need to know the height for the rest of layout to work correctly so measure it now
                             _hScrollBar.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -8545,11 +8545,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
         }
 
-        private void UpdateVerticalScrollBar(bool needVertScrollbar, bool forceVertScrollbar, double totalVisibleHeight, double cellsHeight)
+        private void UpdateVerticalScrollBar(bool needVertScrollBar, bool forceVertScrollBar, double totalVisibleHeight, double cellsHeight)
         {
             if (_vScrollBar != null)
             {
-                if (needVertScrollbar || forceVertScrollbar)
+                if (needVertScrollBar || forceVertScrollBar)
                 {
                     // ..........viewportSize
                     //         v---v
@@ -8566,7 +8566,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
                     // always zero
                     _vScrollBar.Minimum = 0;
-                    if (needVertScrollbar && !double.IsInfinity(cellsHeight))
+                    if (needVertScrollBar && !double.IsInfinity(cellsHeight))
                     {
                         // maximum travel distance -- not the total height
                         _vScrollBar.Maximum = totalVisibleHeight - cellsHeight;
@@ -8590,7 +8590,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                         _vScrollBar.Visibility = Visibility.Visible;
                         _ignoreNextScrollBarsLayout = true;
 
-                        if (!this.IsVerticalScrollbarOverCells && _vScrollBar.DesiredSize.Width == 0)
+                        if (!this.IsVerticalScrollBarOverCells && _vScrollBar.DesiredSize.Width == 0)
                         {
                             // We need to know the width for the rest of layout to work correctly so measure it now.
                             _vScrollBar.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));

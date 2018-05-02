@@ -209,7 +209,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
         /// </summary>
         public const string GroupValidation = "ValidationStates";
 
-        // GroupScrollingSeparator
+        // GroupScrollBarsSeparator
 
         /// <summary>
         /// SeparatorExpanded state
@@ -217,7 +217,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
         public const string StateSeparatorExpanded = "SeparatorExpanded";
 
         /// <summary>
-        /// ScrollingSeparatorCollapsed state
+        /// ScrollBarsSeparatorCollapsed state
         /// </summary>
         public const string StateSeparatorCollapsed = "SeparatorCollapsed";
 
@@ -232,11 +232,11 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
         public const string StateSeparatorCollapsedWithoutAnimation = "SeparatorCollapsedWithoutAnimation";
 
         /// <summary>
-        /// ScrollingSeparator state group
+        /// ScrollBarsSeparator state group
         /// </summary>
-        public const string GroupScrollingSeparator = "ScrollingSeparatorStates";
+        public const string GroupScrollBarsSeparator = "ScrollBarsSeparatorStates";
 
-        // GroupScrollingIndicator
+        // GroupScrollBars
 
         /// <summary>
         /// TouchIndicator state
@@ -259,9 +259,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Utilities
         public const string StateNoIndicator = "NoIndicator";
 
         /// <summary>
-        /// ScrollingIndicator state group
+        /// ScrollBars state group
         /// </summary>
-        public const string GroupScrollingIndicator = "ScrollingIndicatorStates";
+        public const string GroupScrollBars = "ScrollBarsStates";
 
         /// <summary>
         /// Use VisualStateManager to change the visual state of the control.
