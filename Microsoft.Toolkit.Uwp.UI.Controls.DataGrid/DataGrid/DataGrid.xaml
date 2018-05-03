@@ -17,9 +17,9 @@
 
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
-            <SolidColorBrush x:Key="DraggedBrush" Color="#ADB4B4B4"/>
-            <SolidColorBrush x:Key="InvalidBrush" Color="#C50500"/>
-            <SolidColorBrush x:Key="ScrollBarsSeparatorBackground" Color="{StaticResource SystemChromeMediumColor}" Opacity="0.9" />
+            <SolidColorBrush x:Key="DraggedBrush" Color="#AD4B4B4B"/>
+            <SolidColorBrush x:Key="InvalidBrush" Color="#FFFF00"/>
+            <StaticResource x:Key="ScrollBarsSeparatorBackground" ResourceKey="SystemControlPageBackgroundChromeLowBrush" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="HighContrast">
             <SolidColorBrush x:Key="DraggedBrush" Color="#AD4B4B4B"/>
@@ -54,14 +54,32 @@
     <x:String x:Key="ScrollBarsSeparatorContractDuration">00:00:00.1</x:String>
     <x:String x:Key="ScrollBarsSeparatorContractFinalKeyframe">00:00:02.1</x:String>
     <x:String x:Key="ScrollerViewScrollControllersNoTouchDuration">00:00:00.5</x:String>
+
+    <x:Double x:Key="DraggedOpacity">0.8</x:Double>
     
+    <x:Double x:Key="ListAccentLowOpacity">0.6</x:Double>
+    <x:Double x:Key="ListAccentMediumOpacity">0.8</x:Double>
+    <!--<x:Double x:Key="ListAccentHighOpacity">0.9</x:Double>-->
+
     <StaticResource x:Key="GridLinesBrush" ResourceKey="SystemControlGridLinesBaseMediumLowBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseMediumBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderBackgroundBrush" ResourceKey="SystemControlBackgroundAltHighBrush"/>
+    <StaticResource x:Key="DataGridColumnHeaderHoveredBackgroundColor" ResourceKey="SystemListLowColor"/>
+    <StaticResource x:Key="DataGridColumnHeaderPressedBackgroundColor" ResourceKey="SystemListMediumColor"/>
     <StaticResource x:Key="DataGridColumnHeaderDraggedBackgroundBrush" ResourceKey="DraggedBrush"/>
+    <StaticResource x:Key="DataGridColumnHeaderDraggedBackgroundOpacity" ResourceKey="DraggedOpacity"/>
     <StaticResource x:Key="DataGridColumnHeaderPointerOverBrush" ResourceKey="SystemControlHighlightListLowBrush"/>
     <StaticResource x:Key="DataGridColumnHeaderPressedBrush" ResourceKey="SystemControlHighlightListMediumBrush"/>
     <StaticResource x:Key="DataGridRowBackgroundBrush" ResourceKey="SystemControlTransparentBrush"/>
+    <StaticResource x:Key="DataGridRowSelectedBackgroundColor" ResourceKey="SystemAccentColor"/>
+    <StaticResource x:Key="DataGridRowSelectedBackgroundOpacity" ResourceKey="ListAccentLowOpacity"/>
+    <StaticResource x:Key="DataGridRowSelectedHoveredBackgroundColor" ResourceKey="SystemAccentColor"/>
+    <StaticResource x:Key="DataGridRowSelectedHoveredBackgroundOpacity" ResourceKey="ListAccentMediumOpacity"/>
+    <!--
+    <StaticResource x:Key="DataGridRowSelectedPressedBackgroundColor" ResourceKey="SystemAccentColor"/>
+    <StaticResource x:Key="DataGridRowSelectedPressedBackgroundOpacity" ResourceKey="ListAccentHighOpacity"/>
+    -->
+    <StaticResource x:Key="DataGridRowSelectedDisabledBackgroundColor" ResourceKey="SystemAccentColor"/>
     <StaticResource x:Key="DataGridRowHeaderForegroundBrush" ResourceKey="SystemControlForegroundBaseMediumBrush"/>
     <StaticResource x:Key="DataGridRowHeaderBackgroundBrush" ResourceKey="SystemControlBackgroundAltHighBrush"/>
     <StaticResource x:Key="DataGridRowGroupHeaderBackgroundBrush" ResourceKey="SystemControlRowGroupHeaderBackgroundMediumBrush"/>
@@ -113,7 +131,7 @@
                                     </VisualStateManager.VisualStateGroups>
 
                                     <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                                        Margin="{TemplateBinding Padding}" Opacity="0.8">
+                                        Margin="{TemplateBinding Padding}" Opacity="{ThemeResource DataGridColumnHeaderDraggedBackgroundOpacity}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition MinWidth="32" Width="Auto"/>
@@ -486,7 +504,6 @@
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="SeparatorBrush" Value="{ThemeResource GridLinesBrush}"/>
         <Setter Property="Padding" Value="12,0,0,0"/>
-        <Setter Property="FontSize" Value="12"/>
         <Setter Property="MinHeight" Value="32"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -497,12 +514,12 @@
                                 <VisualState x:Name="Normal"/>
                                 <VisualState x:Name="PointerOver">
                                     <Storyboard>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemChromeMediumLowColor}"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource DataGridColumnHeaderHoveredBackgroundColor}"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemChromeMediumColor}"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource DataGridColumnHeaderPressedBackgroundColor}"/>
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
@@ -589,16 +606,22 @@
                                 </VisualState>
                                 <VisualState x:Name="NormalSelected">
                                     <Storyboard>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemAccentColor}"/>
-                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="0.6"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource DataGridRowSelectedBackgroundColor}"/>
+                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="{ThemeResource DataGridRowSelectedBackgroundOpacity}"/>
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="PointerOverSelected">
                                     <Storyboard>
-                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource SystemAccentColor}"/>
-                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="0.8"/>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource DataGridRowSelectedHoveredBackgroundColor}"/>
+                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="{ThemeResource DataGridRowSelectedHoveredBackgroundOpacity}"/>
                                     </Storyboard>
                                 </VisualState>
+                                <!--<VisualState x:Name="PressedSelected">
+                                    <Storyboard>
+                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{ThemeResource DataGridRowSelectedPressedBackgroundColor}"/>
+                                        <DoubleAnimation Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="Opacity" Duration="0" To="{ThemeResource DataGridRowSelectedPressedBackgroundOpacity}"/>
+                                    </Storyboard>
+                                </VisualState>-->
                                 <VisualState x:Name="UnfocusedSelected">
                                     <Storyboard>
                                         <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundRectangle" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="#33FFFFFF"/>
