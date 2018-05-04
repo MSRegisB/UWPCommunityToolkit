@@ -51,7 +51,6 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         private bool _areIsCheckedHandlersSuspended;
         private ToggleButton _expanderButton;
-        private DataGridRowHeader _headerElement;
         private FrameworkElement _indentSpacer;
         private TextBlock _itemCountElement;
         private TextBlock _propertyNameElement;
@@ -73,6 +72,8 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             this.PointerEntered += new PointerEventHandler(DataGridRowGroupHeader_PointerEntered);
             this.PointerExited += new PointerEventHandler(DataGridRowGroupHeader_PointerExited);
             this.PointerMoved += new PointerEventHandler(DataGridRowGroupHeader_PointerMoved);
+            this.PointerPressed += new PointerEventHandler(DataGridRowGroupHeader_PointerPressed);
+            this.PointerReleased += new PointerEventHandler(DataGridRowGroupHeader_PointerReleased);
         }
 
         /// <summary>
@@ -97,9 +98,9 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private static void OnHeaderStylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DataGridRowGroupHeader groupHeader = d as DataGridRowGroupHeader;
-            if (groupHeader._headerElement != null)
+            if (groupHeader.HeaderElement != null)
             {
-                groupHeader._headerElement.EnsureStyle(e.OldValue as Style);
+                groupHeader.HeaderElement.EnsureStyle(e.OldValue as Style);
             }
         }
 
@@ -270,8 +271,14 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         {
             get
             {
-                return _headerElement;
+                return this.HeaderElement;
             }
+        }
+
+        private DataGridRowHeader HeaderElement
+        {
+            get;
+            set;
         }
 
         private bool IsCurrent
@@ -284,6 +291,12 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         }
 
         private bool IsPointerOver
+        {
+            get;
+            set;
+        }
+
+        private bool IsPressed
         {
             get;
             set;
@@ -321,16 +334,20 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void ApplyHeaderState(bool animate)
         {
-            if (_headerElement != null && this.OwningGrid.AreRowHeadersVisible)
+            if (this.HeaderElement != null && this.OwningGrid.AreRowHeadersVisible)
             {
-                _headerElement.ApplyOwnerState(animate);
+                this.HeaderElement.ApplyOwnerState(animate);
             }
         }
 
         internal void ApplyState(bool useTransitions)
         {
             // Common States
-            if (this.IsPointerOver)
+            if (this.IsPressed)
+            {
+                VisualStates.GoToState(this, useTransitions, VisualStates.StatePressed, VisualStates.StatePointerOver, VisualStates.StateNormal);
+            }
+            else if (this.IsPointerOver)
             {
                 VisualStates.GoToState(this, useTransitions, VisualStates.StatePointerOver, VisualStates.StateNormal);
             }
@@ -492,16 +509,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
 
         internal void EnsureHeaderStyleAndVisibility(Style previousStyle)
         {
-            if (_headerElement != null && this.OwningGrid != null)
+            if (this.HeaderElement != null && this.OwningGrid != null)
             {
                 if (this.OwningGrid.AreRowHeadersVisible)
                 {
-                    _headerElement.EnsureStyle(previousStyle);
-                    _headerElement.Visibility = Visibility.Visible;
+                    this.HeaderElement.EnsureStyle(previousStyle);
+                    this.HeaderElement.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    _headerElement.Visibility = Visibility.Collapsed;
+                    this.HeaderElement.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -552,10 +569,10 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
                 _expanderButton.Unchecked += new RoutedEventHandler(ExpanderButton_Unchecked);
             }
 
-            _headerElement = GetTemplateChild(DataGridRow.DATAGRIDROW_elementRowHeader) as DataGridRowHeader;
-            if (_headerElement != null)
+            this.HeaderElement = GetTemplateChild(DataGridRow.DATAGRIDROW_elementRowHeader) as DataGridRowHeader;
+            if (this.HeaderElement != null)
             {
-                _headerElement.Owner = this;
+                this.HeaderElement.Owner = this;
                 EnsureHeaderStyleAndVisibility(null);
             }
 
@@ -664,6 +681,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
         private void DataGridRowGroupHeader_PointerCanceled(object sender, PointerRoutedEventArgs e)
         {
             UpdateIsPointerOver(false);
+            UpdateIsPressed(false);
         }
 
         private void DataGridRowGroupHeader_PointerEntered(object sender, PointerRoutedEventArgs e)
@@ -681,6 +699,16 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             UpdateIsPointerOver(true);
         }
 
+        private void DataGridRowGroupHeader_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            UpdateIsPressed(true);
+        }
+
+        private void DataGridRowGroupHeader_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            UpdateIsPressed(false);
+        }
+
         private void UpdateIsPointerOver(bool isPointerOver)
         {
             if (!this.IsEnabled || isPointerOver == this.IsPointerOver)
@@ -689,6 +717,17 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             }
 
             this.IsPointerOver = isPointerOver;
+            ApplyState(true /*useTransitions*/);
+        }
+
+        private void UpdateIsPressed(bool isPressed)
+        {
+            if (!this.IsEnabled || isPressed == this.IsPressed)
+            {
+                return;
+            }
+
+            this.IsPressed = isPressed;
             ApplyState(true /*useTransitions*/);
         }
     }

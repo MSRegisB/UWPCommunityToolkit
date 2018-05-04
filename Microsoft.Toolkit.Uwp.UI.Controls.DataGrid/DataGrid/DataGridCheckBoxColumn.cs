@@ -139,6 +139,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls
             checkBoxElement.IsEnabled = isEnabled;
             checkBoxElement.IsHitTestVisible = false;
             checkBoxElement.IsTabStop = false;
+            checkBoxElement.UseSystemFocusVisuals = false;
             ConfigureCheckBox(checkBoxElement);
             return checkBoxElement;
         }
